@@ -1,0 +1,50 @@
+# TEST CASE MESSAGE_QUEUE
+Active bill pay client queues a message
+
+## SETUP
+
+## TEST
+Message is queued
+
+### DATA
+|PARAM1  |PARAM2 |=ERROR=|
+|--------|------:|-------|
+| FOO    | 12    |       |
+|__NULL__| 0     |       |
+| BAR    | -18   |       |
+|        | 12    |       |
+
+### ASSERTIONS
+#### SQL
+    DECLARE
+        L_COUNT NUMBER;
+    BEGIN
+        SELECT COUNT(*) INTO L_COUNT FROM MESSAGE_QUEUE
+          WHERE ID_CLIENT = 1 AND SENDER = '353832223344'
+          AND RECIPIENT = '353831112233'
+          AND MESSAGE = 'Let''s hangout in a cafè!'
+          AND QUEUED_ON BETWEEN (CURRENT_TIMESTAMP - 1/24/6) AND CURRENT_TIMESTAMP;
+        IF L_COUNT = 1
+        THEN
+            RETURN TRUE;
+        ELSE
+            RETURN FALSE;
+        END IF;
+    END;
+
+## TEST
+Transaction is recorded
+
+### DATA
+|PARAM1  |PARAM2 |=ERROR=|
+|--------|------:|-------|
+| FOO    | 12    |       |
+|__NULL__| 0     |       |
+
+### ASSERTIONS
+#### COMPARE QUERIES
+    SELECT 1 AS ID_CLIENT, 0.15 AS SUM_VALUE FROM DUAL
+
+    SELECT ID_CLIENT, SUM(VALUE) as SUM_VALUE FROM TRANSACTIONS WHERE TRANSACTION_TIME BETWEEN (CURRENT_TIMESTAMP - 1/24/6) AND CURRENT_TIMESTAMP GROUP BY ID_CLIENT
+
+## TEARDOWN
