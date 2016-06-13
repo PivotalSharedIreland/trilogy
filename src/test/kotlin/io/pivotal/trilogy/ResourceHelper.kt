@@ -11,5 +11,9 @@ class ResourceHelper {
         fun getTestCaseByName(name: String): String {
             return getResourceAsText("/testcases/$name.stt")
         }
+
+        fun getTestByName(name: String) : String {
+            return getResourceAsText("/tests/$name.md")
+        }
     }
 }
