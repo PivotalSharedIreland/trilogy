@@ -5,6 +5,7 @@ import org.jetbrains.spek.api.Spek
 import kotlin.test.expect
 
 class MarkdownTableTests : Spek({
+
     it("returns empty lists for empty input") {
         val table = MarkdownTable("")
         expect(emptyList()) { table.getHeaders() }
@@ -12,7 +13,7 @@ class MarkdownTableTests : Spek({
     }
 
     it("returns the header for a table with a single header") {
-        val header = "THE_STARLIGHT_TRAVEL_IS_A_NEUTRAL_GREEN_PEOPLE"
+        val header = "THE_STARLIGHT"
         val table = MarkdownTable("|$header|")
         expect(listOf(header)) { table.getHeaders() }
     }
@@ -33,6 +34,18 @@ class MarkdownTableTests : Spek({
         val singleTableFewRows = ResourceHelper.getResourceAsText("/tables/singleColumnFewRows.md")
         val table = MarkdownTable(singleTableFewRows)
         expect(listOf(listOf("FOO"), listOf("BAR"), listOf("BAZ"))) { table.getValues() }
+    }
+
+    it("returns the header for a table with a set of headers") {
+        val fewColumnsFewRows = ResourceHelper.getResourceAsText("/tables/fewColumnsFewRows.md")
+        val table = MarkdownTable(fewColumnsFewRows)
+        expect(listOf("PARAM1", "PARAM2", "=ERROR=")) { table.getHeaders() }
+    }
+
+    it("returns the values from a table with few columns and rows") {
+        val singleTable = ResourceHelper.getResourceAsText("/tables/fewColumnsFewRows.md")
+        val table = MarkdownTable(singleTable)
+        expect(listOf(listOf("FOO", "FOO2", ""), listOf("BAR", "BAR2", ""), listOf("BAZ", "BAZ2", ""))) { table.getValues() }
     }
 
 })
