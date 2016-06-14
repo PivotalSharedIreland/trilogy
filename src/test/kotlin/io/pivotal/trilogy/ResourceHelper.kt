@@ -1,7 +1,14 @@
 package io.pivotal.trilogy
 
+import java.net.URL
+
 class ResourceHelper {
     companion object {
+
+        fun getResourceUrl(path: String): URL {
+            return ResourceHelper::class.java.getResource(path)
+        }
+
         fun getResourceAsText(name: String): String {
             return ResourceHelper::class.java
                     .getResourceAsStream(name)
@@ -12,7 +19,7 @@ class ResourceHelper {
             return getResourceAsText("/testcases/$name.stt")
         }
 
-        fun getTestByName(name: String) : String {
+        fun getTestByName(name: String): String {
             return getResourceAsText("/tests/$name.md")
         }
     }

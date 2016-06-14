@@ -38,6 +38,10 @@ class StringTestReaderTests : Spek({
             expect(dataTable) { StringTestReader(testString).getTest().argumentTable.values }
         }
 
+        it("ignores leading spaces in table definition") {
+            StringTestReader(testString.replace(Regex("^\\|"), "   |"))
+        }
+
     }
 
     it("fails for an empty string") {

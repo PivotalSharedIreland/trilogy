@@ -25,6 +25,20 @@ class StringTestCaseReaderTests : Spek ({
             expect("Test case description") { testCaseParser.getTestCase().description }
         }
 
+        it("parses the test") {
+            val header = listOf("PARAM1", "PARAM2", "=ERROR=")
+            val values = listOf(
+                    listOf("FOO", "12", ""),
+                    listOf("__NULL__", "0", ""),
+                    listOf("BAR", "-18", ""),
+                    listOf("", "12", "")
+            )
+            val arguments = TestArgumentTable(header, values)
+            val test = TrilogyTest("Test description", arguments)
+
+            expect(test) { StringTestCaseReader(validTestCase).getTestCase().tests.first() }
+        }
+
     }
 
     it("fails with invalid test case") {

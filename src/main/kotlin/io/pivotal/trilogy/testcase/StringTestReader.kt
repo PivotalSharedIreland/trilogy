@@ -2,15 +2,15 @@ package io.pivotal.trilogy.testcase
 
 import io.pivotal.trilogy.parsing.MarkdownTable
 
-class StringTestReader(val scenario: String) : TestReader {
+class StringTestReader(val testBody: String) : TestReader {
     class InvalidTestFormat(message: String?) : RuntimeException(message) {}
     class MissingDataSection(message: String?) : RuntimeException(message) {}
     class MissingDescription(message: String?) : RuntimeException(message) {}
 
     private val dataSectionHeader = "### DATA\\n"
-    private val headerRow = "\\|.*?\\n"
-    private val headerSeparationRow = "\\|([:-]+\\|)+\\n"
-    private val valueRows = "(\\|.+?\\n)+"
+    private val headerRow = "\\s*\\|.*?\\n"
+    private val headerSeparationRow = "\\s*\\|([:-]+\\|)+\\n"
+    private val valueRows = "(\\s*\\|.+?\\n)+"
 
     private val testHeaderRegex = Regex("\\A\\s*## TEST\\s*")
 
@@ -27,20 +27,20 @@ class StringTestReader(val scenario: String) : TestReader {
     }
 
     private fun parseArgumentTable(): TestArgumentTable {
-        val dataSection = scenario.replace(Regex("\\A.*?$dataSectionHeader\\s*", RegexOption.DOT_MATCHES_ALL), "").trim()
+        val dataSection = testBody.replace(Regex("\\A.*?$dataSectionHeader\\s*", RegexOption.DOT_MATCHES_ALL), "").trim()
         val table = MarkdownTable(dataSection)
         return TestArgumentTable(table.getHeaders(), table.getValues())
     }
 
     private fun parseDescription(): String {
-        val description = scenario.replace(testHeaderRegex, "").replace(Regex("\\s*### DATA.*", RegexOption.DOT_MATCHES_ALL), "").trim()
+        val description = testBody.replace(testHeaderRegex, "").replace(Regex("\\s*### DATA.*", RegexOption.DOT_MATCHES_ALL), "").trim()
         if (description.isEmpty()) throw MissingDescription("Every test should have a description")
         return description
     }
 
     private fun validate() {
-        if (!scenario.hasValidFormat()) throw InvalidTestFormat("Unable to recognise the test")
-        if (!scenario.hasDataSection()) throw MissingDataSection("The test is missing a data section")
+        if (!testBody.hasValidFormat()) throw InvalidTestFormat("Unable to recognise the test")
+        if (!testBody.hasDataSection()) throw MissingDataSection("The test is missing a data section")
     }
 
 

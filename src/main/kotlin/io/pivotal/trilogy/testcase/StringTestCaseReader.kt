@@ -1,19 +1,19 @@
 package io.pivotal.trilogy.testcase
 
-class StringTestCaseReader(val testCase: String) : TestCaseReader {
+class StringTestCaseReader(val testCaseBody: String) : TestCaseReader {
 
     class InvalidTestCaseFormat(message: String?) : RuntimeException(message) {}
     class MissingDescription(message: String?) : RuntimeException(message) {}
     class MissingFunctionName(message: String?) : RuntimeException(message) {}
 
-    private val testCaseHeaderRegex = Regex("^# TEST CASE (\\S+)\\s+")
+    private val testCaseHeaderRegex = Regex("^# TEST CASE (\\S*)\\s+")
 
     init {
         validate()
     }
 
     private fun validate() {
-        if (!testCase.isValidTestCase()) throw InvalidTestCaseFormat("Unable to recognise a test case")
+        if (!testCaseBody.isValidTestCase()) throw InvalidTestCaseFormat("Unable to recognise a test case")
     }
 
     override fun getTestCase(): TrilogyTestCase {
@@ -21,19 +21,24 @@ class StringTestCaseReader(val testCase: String) : TestCaseReader {
     }
 
     private fun parse(): TrilogyTestCase {
-        return TrilogyTestCase(parseFunctionName(), parseDescription(), emptyList())
+        return TrilogyTestCase(parseFunctionName(), parseDescription(), parseTests())
     }
 
     private fun parseDescription(): String {
-        val description = testCase.replace(testCaseHeaderRegex, "").replace(Regex("\\s*## TEST.*", RegexOption.DOT_MATCHES_ALL), "").trim()
+        val description = testCaseBody.replace(testCaseHeaderRegex, "").replace(Regex("\\s*## TEST.*", RegexOption.DOT_MATCHES_ALL), "").trim()
         if (description.isEmpty()) throw MissingDescription("Every test case must have a description")
         return description
     }
 
     private fun parseFunctionName(): String {
-        val functionName = testCaseHeaderRegex.find(testCase)!!.groupValues[1].trim()
+        val functionName = testCaseHeaderRegex.find(testCaseBody)!!.groupValues[1].trim()
         if (functionName.isEmpty()) throw MissingFunctionName("A test case should specify a function name for testing")
         return functionName
+    }
+
+    private fun parseTests(): List<TrilogyTest> {
+        val tests = Regex("(## TEST.*)\\Z", RegexOption.DOT_MATCHES_ALL).find(testCaseBody)!!.groupValues[1].trim()
+        return listOf(StringTestReader(tests).getTest())
     }
 
     private fun String.isValidTestCase(): Boolean {
