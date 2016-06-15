@@ -2,7 +2,7 @@
 Example test case
 ## TEST
 Example failing test
-## DATA
+### DATA
   |V_IN|V_OUT$|ERROR    |
   |----|------|---------|
   |1   |0     |         |

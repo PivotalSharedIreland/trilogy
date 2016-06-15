@@ -3,7 +3,7 @@ Example test case
 ## TEST
 Example passing test
 ### DATA
-    |V_IN|V_OUT$|ERROR    |
+    |V_IN|V_OUT$|=ERROR=  |
     |----|------|---------|
     |1   |1     |         |
     |0   |0     |         |
