@@ -37,10 +37,9 @@ class TestSubjectCallerTests : Spek ({
         val mockCall = mock(SimpleJdbcCall::class)
         val expectedCallArguments = mapOf(Pair("BAR", "1"), Pair("BAZ", "2"))
         val returnValue = mapOf(Pair("JOE", BigInteger.ONE), Pair("BEN", BigInteger.TEN))
-        When calling  mockCall.execute(expectedCallArguments) itReturns returnValue
+        When calling mockCall.execute(expectedCallArguments) itReturns returnValue
 
         expect(returnValue) { TestSubjectCaller(mockCall, "foo", listOf("BAR", "BAZ")).call(listOf("1", "2")) }
     }
-
 
 })
