@@ -28,4 +28,9 @@ class OutputArgumentValidatorTests : Spek ({
         expect(false) { OutputArgumentValidator(listOf("FOO", "BAR")).validate(listOf("10", "1"), actualValues) }
     }
 
+    it("passes validation with a null value") {
+        val actualValues = mapOf(Pair("FOO", null), Pair("BAR", BigDecimal.TEN))
+        expect(true) { OutputArgumentValidator(listOf("FOO", "BAR")).validate(listOf("__NULL__", "10"), actualValues) }
+    }
+
 })
