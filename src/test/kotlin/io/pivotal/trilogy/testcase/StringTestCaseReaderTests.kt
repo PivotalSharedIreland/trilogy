@@ -34,7 +34,7 @@ class StringTestCaseReaderTests : Spek ({
                     listOf("", "12", "")
             )
             val arguments = TestArgumentTable(header, values)
-            val test = TrilogyTest("Test description", arguments)
+            val test = TrilogyTest("Test description", arguments, emptyList())
 
             expect(test) { StringTestCaseReader(validTestCase).getTestCase().tests.first() }
         }

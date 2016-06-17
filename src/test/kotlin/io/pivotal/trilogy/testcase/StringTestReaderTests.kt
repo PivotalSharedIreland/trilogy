@@ -42,6 +42,35 @@ class StringTestReaderTests : Spek({
             StringTestReader(testString.replace(Regex("^\\|"), "   |"))
         }
 
+        it("returns a test with an empty assertion list when it is absent") {
+            expect(emptyList()) { StringTestReader(testString).getTest().assertions }
+        }
+    }
+
+    context("with SQL assertion") {
+        val testString = ResourceHelper.getTestByName("sqlAssertion")
+
+        it("reads assertion description") {
+            expect("Assertion description") { StringTestReader(testString).getTest().assertions[0].description }
+        }
+
+        it("maintains the argument table size") {
+            expect(4) { StringTestReader(testString).getTest().argumentTable.values.count() }
+        }
+
+        it("reads assertion body") {
+            val sqlStatement = "DECLARE\n" +
+                    "    l_count NUMBER;\n" +
+                    "    wrong_count EXCEPTION;\n" +
+                    "BEGIN\n" +
+                    "    SELECT count(*) INTO l_count FROM dual;\n" +
+                    "    IF l_count = 0\n" +
+                    "    THEN\n" +
+                    "        RAISE wrong_count;\n" +
+                    "    END IF;\n" +
+                    "END;"
+            expect(sqlStatement) { StringTestReader(testString).getTest().assertions[0].body }
+        }
     }
 
     it("fails for an empty string") {

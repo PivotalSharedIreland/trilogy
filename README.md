@@ -4,7 +4,7 @@ Trilogy is a tool for testing SQL stored procedures and functions. Test cases ar
 
 ## Command-line options
 ```
-$ ./trilogy <filename>[ <filename>...] --db-url=<jdbc url>
+$ ./trilogy <filename> --db-url=<jdbc url>
 ```
 
 ## Test case file format
@@ -20,15 +20,16 @@ $ ./trilogy <filename>[ <filename>...] --db-url=<jdbc url>
 |123        |Ramen shrimps |   __NULL__   | 25            | Soup        |         |
 |234        |Red wine      |   __NULL__   | 41            | Mulled      |         |
 ### ASSERTIONS
-#### SQL <optional? assertion description>
+#### SQL <assertion description>
 DECLARE
-  V_COUNT INTEGER
+    l_count NUMBER;
+    wrong_count EXCEPTION;
 BEGIN
-  SELECT COUNT(*) INTO V_COUNT FROM DUAL;
-  IF V_COUNT > 0 THEN
-    RETURN TRUE;
-  ELSE
-    RETURN FALSE;
-  END IF;
-END
+    SELECT count(*) INTO l_count FROM dual;
+    IF l_count = 0
+    THEN
+        RAISE wrong_count;
+    END IF;
+END;
+
 ```
