@@ -11,36 +11,36 @@ class TrilogyApplicationTests : Spek({
         describe("simple cases") {
             it("succeeds for a simple case") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/should_pass.stt", jdbcUrl)
-                expect(true) { TrilogyApplication().run(options) }
+                expect(true) { TrilogyApplication().run(options).didPass }
             }
 
             it("fails for a simple case") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/should_fail.stt", jdbcUrl)
-                expect(false) { TrilogyApplication().run(options) }
+                expect(false) { TrilogyApplication().run(options).didPass }
             }
         }
 
         describe("tests with assertions") {
             it("succeed when the assertions pass") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/should_pass_with_sql.stt", jdbcUrl)
-                expect(true) { TrilogyApplication().run(options) }
+                expect(true) { TrilogyApplication().run(options).didPass }
             }
 
             it("fail when the assertions raise an error") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/should_fail_with_sql.stt", jdbcUrl)
-                expect(false) { TrilogyApplication().run(options) }
+                expect(false) { TrilogyApplication().run(options).didPass }
             }
         }
 
         describe("multiple tests in a test case") {
             it("succeeds when all the tests succeed") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/multiple/shouldPass.stt", jdbcUrl)
-                expect(true) { TrilogyApplication().run(options) }
+                expect(true) { TrilogyApplication().run(options).didPass }
             }
 
             it("fails when one of the tests is failing") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/multiple/shouldFail.stt", jdbcUrl)
-                expect(false) { TrilogyApplication().run(options) }
+                expect(false) { TrilogyApplication().run(options).didPass }
             }
         }
     }

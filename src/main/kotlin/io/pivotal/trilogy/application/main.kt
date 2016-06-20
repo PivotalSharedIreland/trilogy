@@ -1,10 +1,11 @@
 package io.pivotal.trilogy.application
 
 import io.pivotal.trilogy.parsing.TrilogyApplicationOptionsParser
+import io.pivotal.trilogy.reporting.TestCaseReporter
 
 
-public fun main(arguments: Array<String>) {
+fun main(arguments: Array<String>) {
     val applicationOptions = TrilogyApplicationOptionsParser.parse(arguments)
-    val output = if (TrilogyApplication().run(applicationOptions)) "All tests passed" else "Some tests failed"
+    val output = TestCaseReporter.generateReport(TrilogyApplication().run(applicationOptions))
     System.out.println(output)
 }

@@ -15,7 +15,7 @@ class TestCaseRunner(val jdbcUrl: String) {
             runData(test.argumentTable, trilogyTestCase.functionName) and runAssertions(test.assertions)
         }
 
-        val numberPassed = 0
+        val numberPassed = stats.filter { it }.size
         val numberFailed = stats.filterNot { it }.size
 
         return TestCaseReport(numberPassed, numberFailed)
