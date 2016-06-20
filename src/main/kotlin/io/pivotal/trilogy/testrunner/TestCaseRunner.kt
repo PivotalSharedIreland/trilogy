@@ -8,11 +8,10 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall
 import org.springframework.jdbc.datasource.DriverManagerDataSource
 import javax.sql.DataSource
 
-class TestCaseRunner(val trilogyTestCase: TrilogyTestCase, val jdbcUrl: String) {
-
-    fun run(): Boolean {
+class TestCaseRunner(val jdbcUrl: String) {
+    fun run(trilogyTestCase: TrilogyTestCase): Boolean {
         return trilogyTestCase.tests.all { test ->
-            runData(test.argumentTable) and runAssertions(test.assertions)
+            runData(test.argumentTable, trilogyTestCase.functionName) and runAssertions(test.assertions)
         }
     }
 
@@ -23,8 +22,8 @@ class TestCaseRunner(val trilogyTestCase: TrilogyTestCase, val jdbcUrl: String) 
         }
     }
 
-    private fun runData(testArgumentTable: TestArgumentTable): Boolean {
-        val testSubjectCaller = TestSubjectCaller(SimpleJdbcCall(getDataSource()), trilogyTestCase.functionName, testArgumentTable.inputArgumentNames)
+    private fun runData(testArgumentTable: TestArgumentTable, functionName : String): Boolean {
+        val testSubjectCaller = TestSubjectCaller(SimpleJdbcCall(getDataSource()), functionName, testArgumentTable.inputArgumentNames)
         val outputValidator = OutputArgumentValidator(testArgumentTable.outputArgumentNames)
 
         return testArgumentTable.inputArgumentValues.mapIndexed { index, inputRow ->

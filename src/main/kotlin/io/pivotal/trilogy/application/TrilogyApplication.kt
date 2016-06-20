@@ -8,6 +8,6 @@ class TrilogyApplication {
     fun run(options: TrilogyApplicationOptions): Boolean {
         val testCaseUrl = File(options.testCaseFilePath).toURI().toURL()
         val trilogyTestCase = UrlTestCaseReader(testCaseUrl).getTestCase()
-        return TestCaseRunner(trilogyTestCase, options.jdbcUrl).run()
+        return TestCaseRunner(options.jdbcUrl).run(trilogyTestCase)
     }
 }
