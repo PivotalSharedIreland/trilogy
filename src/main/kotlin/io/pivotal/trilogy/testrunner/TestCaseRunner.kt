@@ -1,5 +1,6 @@
 package io.pivotal.trilogy.testrunner
 
+import io.pivotal.trilogy.reporting.TestCaseReport
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testcase.TrilogyTestCase
@@ -9,10 +10,15 @@ import org.springframework.jdbc.datasource.DriverManagerDataSource
 import javax.sql.DataSource
 
 class TestCaseRunner(val jdbcUrl: String) {
-    fun run(trilogyTestCase: TrilogyTestCase): Boolean {
-        return trilogyTestCase.tests.all { test ->
+    fun run(trilogyTestCase: TrilogyTestCase): TestCaseReport {
+        val stats = trilogyTestCase.tests.map { test ->
             runData(test.argumentTable, trilogyTestCase.functionName) and runAssertions(test.assertions)
         }
+
+        val numberPassed = 0
+        val numberFailed = stats.filterNot { it }.size
+
+        return TestCaseReport(numberPassed, numberFailed)
     }
 
     private fun runAssertions(assertions: List<TrilogyAssertion>): Boolean {
