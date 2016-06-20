@@ -6,7 +6,7 @@ import kotlin.test.assertTrue
 class TestCaseReporterTests : Spek({
 
     describe("no failures") {
-        val report = TestCaseReport(passed = 3)
+        val report = TestCaseResult(passed = 3)
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report success") {
@@ -27,7 +27,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("passed and failed") {
-        val report = TestCaseReport(passed = 2, failed = 3)
+        val report = TestCaseResult(passed = 2, failed = 3)
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report the number of failed tests, as well as passed tests") {
@@ -42,7 +42,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("all failures") {
-        val report = TestCaseReport(failed = 3)
+        val report = TestCaseResult(failed = 3)
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report failure") {

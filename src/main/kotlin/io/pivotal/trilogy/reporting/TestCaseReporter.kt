@@ -1,12 +1,12 @@
 package io.pivotal.trilogy.reporting
 
 object TestCaseReporter {
-    fun generateReport(report: TestCaseReport): String {
-        return if (report.didPass) reportSuccess(report) else reportFailure(report)
+    fun generateReport(result: TestCaseResult): String {
+        return if (result.didPass) reportSuccess(result) else reportFailure(result)
     }
 
-    private fun reportFailure(report: TestCaseReport) = "FAILED\nTotal: ${report.total}, Passed: ${report.passed}, Failed: ${report.failed}"
+    private fun reportFailure(result: TestCaseResult) = "FAILED\nTotal: ${result.total}, Passed: ${result.passed}, Failed: ${result.failed}"
 
-    private fun reportSuccess(report: TestCaseReport) = "SUCCEEDED\nTotal: ${report.total}, Passed: ${report.passed}, Failed: 0"
+    private fun reportSuccess(result: TestCaseResult) = "SUCCEEDED\nTotal: ${result.total}, Passed: ${result.passed}, Failed: 0"
 
 }
