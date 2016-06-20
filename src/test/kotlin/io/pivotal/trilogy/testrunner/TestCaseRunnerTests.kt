@@ -31,5 +31,17 @@ class TestCaseRunnerTests : Spek({
 
         expect(false) { TestCaseRunner(trilogyTestCase, DatabaseHelper.jdbcUrl).run() }
     }
+
+    it("should run test case with two tests") {
+        val trilogyTestCase = Fixtures.getTestCase("multiple/shouldPass")
+
+        expect(true) { TestCaseRunner(trilogyTestCase, DatabaseHelper.jdbcUrl).run() }
+    }
+
+    it("should run test case with two tests with one failing") {
+        val trilogyTestCase = Fixtures.getTestCase("multiple/shouldFail")
+
+        expect(false) { TestCaseRunner(trilogyTestCase, DatabaseHelper.jdbcUrl).run() }
+    }
 })
 

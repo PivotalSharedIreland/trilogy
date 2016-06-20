@@ -37,8 +37,8 @@ class StringTestCaseReader(val testCaseBody: String) : TestCaseReader {
     }
 
     private fun parseTests(): List<TrilogyTest> {
-        val tests = Regex("(## TEST.*)\\Z", RegexOption.DOT_MATCHES_ALL).find(testCaseBody)!!.groupValues[1].trim()
-        return listOf(StringTestReader(tests).getTest())
+        val individualTestSections = testCaseBody.split("## TEST").drop(1).map { "## TEST$it".trim() }
+        return individualTestSections.map { StringTestReader(it).getTest() }
     }
 
     private fun String.isValidTestCase(): Boolean {

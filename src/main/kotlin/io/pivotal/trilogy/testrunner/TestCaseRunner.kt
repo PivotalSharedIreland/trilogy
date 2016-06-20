@@ -11,8 +11,9 @@ import javax.sql.DataSource
 class TestCaseRunner(val trilogyTestCase: TrilogyTestCase, val jdbcUrl: String) {
 
     fun run(): Boolean {
-        val test = trilogyTestCase.tests.first()
-        return runData(test.argumentTable) and runAssertions(test.assertions)
+        return trilogyTestCase.tests.all { test ->
+            runData(test.argumentTable) and runAssertions(test.assertions)
+        }
     }
 
     private fun runAssertions(assertions: List<TrilogyAssertion>): Boolean {

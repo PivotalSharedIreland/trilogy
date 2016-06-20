@@ -7,7 +7,6 @@ import kotlin.test.expect
 
 class StringTestCaseReaderTests : Spek ({
 
-
     describe("degenerate") {
         val validTestCase = ResourceHelper.getTestCaseByName("degenerate")
 
@@ -39,6 +38,15 @@ class StringTestCaseReaderTests : Spek ({
             expect(test) { StringTestCaseReader(validTestCase).getTestCase().tests.first() }
         }
 
+    }
+
+    describe("multiple tests") {
+        val validTestCase = ResourceHelper.getTestCaseByName("multiple/shouldPass")
+
+        it("should return two tests") {
+            val testCaseReader = StringTestCaseReader(validTestCase)
+            expect(2) { testCaseReader.getTestCase().tests.count() }
+        }
     }
 
     it("fails with invalid test case") {

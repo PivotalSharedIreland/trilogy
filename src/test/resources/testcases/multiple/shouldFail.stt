@@ -1,0 +1,14 @@
+# TEST CASE DEGENERATE
+Example test case with one test that should pass and one test that should fail
+## TEST
+Example passing test
+### DATA
+    |V_IN|V_OUT$|=ERROR=  |
+    |----|------|---------|
+    |0   |0     |         |
+## TEST
+Example failing test
+### DATA
+    |V_IN|V_OUT$|=ERROR=  |
+    |----|------|---------|
+    |1   |0     |         |

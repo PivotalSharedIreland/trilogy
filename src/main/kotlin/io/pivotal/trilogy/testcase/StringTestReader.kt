@@ -10,7 +10,7 @@ class StringTestReader(val testBody: String) : TestReader {
     private val dataSectionHeader = "### DATA\\n"
     private val headerRow = "\\s*\\|.*?\\n"
     private val headerSeparationRow = "\\s*\\|([:-]+\\|)+\\n"
-    private val valueRows = "(\\s*\\|.+?\\n)+"
+    private val valueRows = "(\\s*\\|.+?(\\n|\\Z))+"
 
     private val testHeaderRegex = Regex("\\A\\s*## TEST\\s*")
     private val assertionHeaderRegex = Regex("### ASSERTIONS\\s+(.*)", RegexOption.DOT_MATCHES_ALL)
