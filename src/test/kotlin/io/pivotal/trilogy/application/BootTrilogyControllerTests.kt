@@ -1,7 +1,8 @@
-package io.pivotal.trilogy.application.boot
+package io.pivotal.trilogy.application
 
 import io.pivotal.trilogy.DatabaseHelper
 import io.pivotal.trilogy.application.TrilogyApplicationOptions
+import io.pivotal.trilogy.application.TrilogyController
 import io.pivotal.trilogy.testrunner.AssertionExecutor
 import io.pivotal.trilogy.testrunner.TestSubjectCaller
 import org.jetbrains.spek.api.Spek
@@ -11,8 +12,8 @@ import kotlin.test.expect
 
 class BootTrilogyControllerTests : Spek ({
 
-    fun bootTrilogyController(): BootTrilogyController {
-        val controller = BootTrilogyController()
+    fun bootTrilogyController(): TrilogyController {
+        val controller = TrilogyController()
         val dataSource = DatabaseHelper.dataSource()
         val jdbcTemplate = JdbcTemplate(dataSource)
         val simpleJdbcCall = SimpleJdbcCall(dataSource)

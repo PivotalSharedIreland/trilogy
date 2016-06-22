@@ -1,4 +1,4 @@
-package io.pivotal.trilogy.application.boot
+package io.pivotal.trilogy.application
 
 import io.pivotal.trilogy.parsing.TrilogyApplicationOptionsParser
 import io.pivotal.trilogy.reporting.TestCaseReporter
@@ -8,16 +8,16 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
 
 @Component
-class BootTrilogyApplicationRunner : ApplicationRunner {
+class TrilogyApplicationRunner : ApplicationRunner {
 
     @Autowired
-    lateinit var bootTrilogyController: BootTrilogyController
+    lateinit var trilogyController: TrilogyController
 
     override fun run(args: ApplicationArguments?) {
         if (args != null && args.sourceArgs.size > 0) {
             try {
                 val applicationOptions = TrilogyApplicationOptionsParser.parse(args.sourceArgs)
-                val output = TestCaseReporter.generateReport(bootTrilogyController.run(applicationOptions))
+                val output = TestCaseReporter.generateReport(trilogyController.run(applicationOptions))
                 System.out.println(output)
             } catch (e: RuntimeException) {
                 printFailure()

@@ -1,4 +1,4 @@
-package io.pivotal.trilogy.application.boot
+package io.pivotal.trilogy.application
 
 import io.pivotal.trilogy.application.TrilogyApplicationOptions
 import io.pivotal.trilogy.reporting.TestCaseResult
@@ -11,7 +11,7 @@ import org.springframework.stereotype.Controller
 import java.io.File
 
 @Controller
-open class BootTrilogyController {
+open class TrilogyController {
 
     @Autowired
     lateinit var testSubjectCaller: TestSubjectCaller
@@ -21,7 +21,7 @@ open class BootTrilogyController {
     fun run(options: TrilogyApplicationOptions): TestCaseResult {
         val testCaseUrl = File(options.testCaseFilePath).toURI().toURL()
         val trilogyTestCase = UrlTestCaseReader(testCaseUrl).getTestCase()
-        return TestCaseRunner(testSubjectCaller,assertionExecutor).run(trilogyTestCase)
+        return TestCaseRunner(testSubjectCaller, assertionExecutor).run(trilogyTestCase)
     }
 
 }

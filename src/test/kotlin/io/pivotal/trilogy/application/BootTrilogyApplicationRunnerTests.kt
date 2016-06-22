@@ -1,4 +1,4 @@
-package io.pivotal.trilogy.application.boot
+package io.pivotal.trilogy.application
 
 import io.pivotal.trilogy.application.TrilogyApplicationOptions
 import org.amshove.kluent.*

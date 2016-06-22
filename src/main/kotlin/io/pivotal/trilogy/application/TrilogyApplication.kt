@@ -1,4 +1,4 @@
-package io.pivotal.trilogy.application.boot
+package io.pivotal.trilogy.application
 
 import io.pivotal.trilogy.testrunner.TestRunnerConfiguration
 import org.springframework.boot.SpringApplication
@@ -7,11 +7,11 @@ import org.springframework.context.annotation.Import
 
 @SpringBootApplication
 @Import(TestRunnerConfiguration::class)
-open class BootTrilogyApplication {
+open class TrilogyApplication {
 
     companion object {
         @JvmStatic fun main(args: Array<String>) {
-            SpringApplication.run(BootTrilogyApplication::class.java, *args)
+            SpringApplication.run(TrilogyApplication::class.java, *args)
         }
     }
 
