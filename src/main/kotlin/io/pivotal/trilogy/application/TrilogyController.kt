@@ -1,11 +1,9 @@
 package io.pivotal.trilogy.application
 
-import io.pivotal.trilogy.application.TrilogyApplicationOptions
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.testcase.UrlTestCaseReader
-import io.pivotal.trilogy.testrunner.AssertionExecutor
 import io.pivotal.trilogy.testrunner.TestCaseRunner
-import io.pivotal.trilogy.testrunner.TestSubjectCaller
+import io.pivotal.trilogy.testrunner.TestProjectRunner
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Controller
 import java.io.File
@@ -14,14 +12,23 @@ import java.io.File
 open class TrilogyController {
 
     @Autowired
-    lateinit var testSubjectCaller: TestSubjectCaller
+    lateinit var testCaseRunner: TestCaseRunner
+
     @Autowired
-    lateinit var assertionExecutor: AssertionExecutor
+    lateinit var testProjectRunner: TestProjectRunner
 
     fun run(options: TrilogyApplicationOptions): TestCaseResult {
-        val testCaseUrl = File(options.testCaseFilePath).toURI().toURL()
-        val trilogyTestCase = UrlTestCaseReader(testCaseUrl).getTestCase()
-        return TestCaseRunner(testSubjectCaller, assertionExecutor).run(trilogyTestCase)
+        return if (options.testCaseFilePath.isNullOrEmpty()) runTestProject(options) else runTestCase(options)
     }
 
+    private fun runTestProject(options: TrilogyApplicationOptions): TestCaseResult {
+        val projectUrl = File(options.testProjectPath).toURI().toURL()
+        return testProjectRunner.run(projectUrl)
+    }
+
+    private fun runTestCase(options: TrilogyApplicationOptions): TestCaseResult {
+        val testCaseUrl = File(options.testCaseFilePath).toURI().toURL()
+        val trilogyTestCase = UrlTestCaseReader(testCaseUrl).getTestCase()
+        return testCaseRunner.run(trilogyTestCase)
+    }
 }

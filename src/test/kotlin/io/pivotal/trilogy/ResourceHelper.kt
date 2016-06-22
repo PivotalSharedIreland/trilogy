@@ -20,4 +20,9 @@ object ResourceHelper {
     fun getTestByName(name: String): String {
         return getResourceAsText("/tests/$name.md")
     }
+
+    fun getScriptByName(name: String): String {
+        return getResourceAsText("/scripts/$name.sql")
+    }
+
 }

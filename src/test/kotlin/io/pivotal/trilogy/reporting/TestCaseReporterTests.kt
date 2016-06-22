@@ -1,7 +1,8 @@
 package io.pivotal.trilogy.reporting
 
+import io.pivotal.trilogy.shouldContain
+import io.pivotal.trilogy.shouldStartWith
 import org.jetbrains.spek.api.Spek
-import kotlin.test.assertTrue
 
 class TestCaseReporterTests : Spek({
 
@@ -64,6 +65,3 @@ class TestCaseReporterTests : Spek({
 
 
 })
-
-private infix fun String.shouldContain(other: String) = assertTrue(this.contains(other), "Expected '$this' to contain '$other'")
-private infix fun String.shouldStartWith(other: String) = assertTrue(this.startsWith(other), "Expected '$this' to start with '$other'")

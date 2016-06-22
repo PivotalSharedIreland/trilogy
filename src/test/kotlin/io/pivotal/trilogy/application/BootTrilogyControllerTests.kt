@@ -1,9 +1,10 @@
 package io.pivotal.trilogy.application
 
 import io.pivotal.trilogy.DatabaseHelper
-import io.pivotal.trilogy.application.TrilogyApplicationOptions
-import io.pivotal.trilogy.application.TrilogyController
 import io.pivotal.trilogy.testrunner.AssertionExecutor
+import io.pivotal.trilogy.testrunner.DatabaseScriptExecuter
+import io.pivotal.trilogy.testrunner.DatabaseTestCaseRunner
+import io.pivotal.trilogy.testrunner.DatabaseTestProjectRunner
 import io.pivotal.trilogy.testrunner.TestSubjectCaller
 import org.jetbrains.spek.api.Spek
 import org.springframework.jdbc.core.JdbcTemplate
@@ -17,8 +18,12 @@ class BootTrilogyControllerTests : Spek ({
         val dataSource = DatabaseHelper.dataSource()
         val jdbcTemplate = JdbcTemplate(dataSource)
         val simpleJdbcCall = SimpleJdbcCall(dataSource)
-        controller.assertionExecutor = AssertionExecutor(jdbcTemplate)
-        controller.testSubjectCaller = TestSubjectCaller(simpleJdbcCall)
+        val assertionExecutor = AssertionExecutor(jdbcTemplate)
+        val testSubjectCaller = TestSubjectCaller(simpleJdbcCall)
+        val testCaseRunner = DatabaseTestCaseRunner(testSubjectCaller, assertionExecutor)
+        val scriptExecuter = DatabaseScriptExecuter(jdbcTemplate)
+        controller.testCaseRunner = testCaseRunner
+        controller.testProjectRunner = DatabaseTestProjectRunner(testCaseRunner, scriptExecuter)
         return controller
     }
 
@@ -60,6 +65,18 @@ class BootTrilogyControllerTests : Spek ({
                 expect(false) { controller.run(options).didPass }
             }
         }
+
+        describe("project") {
+            beforeEach { DatabaseHelper.executeScript("simpleProjectCleanup") }
+            it("passes for a simple project") {
+                val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/simple")
+                val testCaseResult = controller.run(options)
+                expect(true) { testCaseResult.didPass }
+                expect(2) { testCaseResult.passed }
+                expect(0) { testCaseResult.failed }
+            }
+        }
+
     }
 
 })
