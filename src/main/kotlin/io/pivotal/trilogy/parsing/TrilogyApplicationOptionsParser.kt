@@ -8,9 +8,8 @@ class TrilogyApplicationOptionsParser {
     companion object {
 
         fun parse(arguments: Array<String>): TrilogyApplicationOptions {
-            val options = Options().apply { addOption("", "db-url", true, "The JDBC URL for the database under test") }
-            val command = DefaultParser().parse(options, arguments)
-            return TrilogyApplicationOptions(command.args.first(), command.getOptionValue("db-url"))
+            val command = DefaultParser().parse(Options(), arguments)
+            return TrilogyApplicationOptions(command.args.first())
         }
     }
 }

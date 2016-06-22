@@ -16,7 +16,7 @@ class StringTestCaseReaderTests : Spek ({
 
         it("gets a valid test case name") {
             val testCaseParser = StringTestCaseReader(validTestCase)
-            expect("DEGENERATE") { testCaseParser.getTestCase().functionName }
+            expect("DEGENERATE") { testCaseParser.getTestCase().procedureName }
         }
 
         it("gets the test case description") {

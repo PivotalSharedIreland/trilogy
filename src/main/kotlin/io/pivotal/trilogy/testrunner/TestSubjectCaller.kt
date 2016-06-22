@@ -3,20 +3,17 @@ package io.pivotal.trilogy.testrunner
 import org.springframework.jdbc.core.simple.SimpleJdbcCall
 import java.util.*
 
+class TestSubjectCaller (val subject: SimpleJdbcCall) {
 
-class TestSubjectCaller(val subject: SimpleJdbcCall, val functionName: String, val parameterNames: List<String>) {
-    init {
-        subject.withProcedureName(functionName)
+    fun call(procedureName: String, parameterNames: List<String>, parameterValues: List<String>): Map<String, Any?> {
+        subject.withProcedureName(procedureName) //FIXME (stateful dependency, should use factory or something)
+        return subject.execute(inputParameters(parameterNames, parameterValues))
     }
 
-    fun call(values: List<String>): Map<String, Any?> {
-        return subject.execute(inputParameters(values))
-    }
-
-    private fun inputParameters(values: List<String>): Map<String, String?> {
+    private fun inputParameters(parameterNames: List<String>, parameterValues: List<String>): Map<String, String?> {
         return HashMap<String, String?>().apply {
             parameterNames.forEachIndexed { index, name ->
-                if (values[index].isValuePresent()) put(name, values[index]) else put(name, null)
+                if (parameterValues[index].isValuePresent()) put(name, parameterValues[index]) else put(name, null)
             }
         }
     }

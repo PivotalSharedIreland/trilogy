@@ -5,14 +5,11 @@ import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 import io.pivotal.trilogy.validators.OutputArgumentValidator
-import org.springframework.jdbc.core.simple.SimpleJdbcCall
-import org.springframework.jdbc.datasource.DriverManagerDataSource
-import javax.sql.DataSource
 
-class TestCaseRunner(val jdbcUrl: String) {
+class TestCaseRunner (val testSubjectCaller: TestSubjectCaller, val assertionExecutor: AssertionExecutor) {
     fun run(trilogyTestCase: TrilogyTestCase): TestCaseResult {
         val stats = trilogyTestCase.tests.map { test ->
-            runData(test.argumentTable, trilogyTestCase.functionName) and runAssertions(test.assertions)
+            runData(test.argumentTable, trilogyTestCase.procedureName) and runAssertions(test.assertions)
         }
 
         val numberPassed = stats.filter { it }.size
@@ -21,30 +18,20 @@ class TestCaseRunner(val jdbcUrl: String) {
         return TestCaseResult(numberPassed, numberFailed)
     }
 
-    private fun runAssertions(assertions: List<TrilogyAssertion>): Boolean {
-        val assertionExecutor = AssertionExecuter(getDataSource())
-        return assertions.all { assertion ->
-            assertionExecutor execute assertion
-        }
-    }
-
-    private fun runData(testArgumentTable: TestArgumentTable, functionName : String): Boolean {
-        val testSubjectCaller = TestSubjectCaller(SimpleJdbcCall(getDataSource()), functionName, testArgumentTable.inputArgumentNames)
+    private fun runData(testArgumentTable: TestArgumentTable, procedureName : String): Boolean {
         val outputValidator = OutputArgumentValidator(testArgumentTable.outputArgumentNames)
 
-        return testArgumentTable.inputArgumentValues.mapIndexed { index, inputRow ->
-            val output = testSubjectCaller.call(inputRow)
+        return testArgumentTable.inputArgumentValues.mapIndexed { index, inputArgumentValueRow ->
+            val output = testSubjectCaller.call(procedureName, testArgumentTable.inputArgumentNames, inputArgumentValueRow)
             outputValidator.validate(testArgumentTable.outputArgumentValues[index], output)
         }.fold(true, { a, b -> a and b })
     }
 
-    private fun getDataSource(): DataSource {
-        return DriverManagerDataSource().apply {
-            setDriverClassName("oracle.jdbc.driver.OracleDriver")
-            url = jdbcUrl
-            username = "APP_USER"
-            password = "secret"
+    private fun runAssertions(assertions: List<TrilogyAssertion>): Boolean {
+        return assertions.all { assertion ->
+            assertionExecutor execute assertion
         }
+
     }
 }
 
