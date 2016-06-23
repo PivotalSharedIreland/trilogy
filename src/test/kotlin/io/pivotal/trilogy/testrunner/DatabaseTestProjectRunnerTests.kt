@@ -8,7 +8,7 @@ import org.jetbrains.spek.api.Spek
 import java.io.File
 import kotlin.test.expect
 
-class TestProjectRunnerTests : Spek ({
+class DatabaseTestProjectRunnerTests : Spek ({
 
     val projectRoot = "src/test/resources/projects/"
 

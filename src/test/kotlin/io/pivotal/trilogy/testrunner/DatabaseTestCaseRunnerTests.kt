@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall
 import kotlin.test.expect
 
 
-class TestCaseRunnerTests : Spek({
+class DatabaseTestCaseRunnerTests : Spek({
 
     val testSubjectCaller = TestSubjectCaller(SimpleJdbcCall(DatabaseHelper.dataSource()))
     val assertionExecutor = AssertionExecutor(JdbcTemplate(DatabaseHelper.dataSource()));
