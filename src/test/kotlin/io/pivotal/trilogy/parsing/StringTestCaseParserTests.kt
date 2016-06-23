@@ -1,26 +1,28 @@
-package io.pivotal.trilogy.testcase
+package io.pivotal.trilogy.parsing
 
 import io.pivotal.trilogy.ResourceHelper
+import io.pivotal.trilogy.testcase.TestArgumentTable
+import io.pivotal.trilogy.testcase.TrilogyTest
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect
 
-class StringTestCaseReaderTests : Spek ({
+class StringTestCaseParserTests : Spek ({
 
     describe("degenerate") {
         val validTestCase = ResourceHelper.getTestCaseByName("degenerate")
 
         it("succeeds with a valid test case") {
-            StringTestCaseReader(validTestCase)
+            StringTestCaseParser(validTestCase)
         }
 
         it("gets a valid test case name") {
-            val testCaseParser = StringTestCaseReader(validTestCase)
+            val testCaseParser = StringTestCaseParser(validTestCase)
             expect("DEGENERATE") { testCaseParser.getTestCase().procedureName }
         }
 
         it("gets the test case description") {
-            val testCaseParser = StringTestCaseReader(validTestCase)
+            val testCaseParser = StringTestCaseParser(validTestCase)
             expect("Test case description") { testCaseParser.getTestCase().description }
         }
 
@@ -35,7 +37,7 @@ class StringTestCaseReaderTests : Spek ({
             val arguments = TestArgumentTable(header, values)
             val test = TrilogyTest("Test description", arguments, emptyList())
 
-            expect(test) { StringTestCaseReader(validTestCase).getTestCase().tests.first() }
+            expect(test) { StringTestCaseParser(validTestCase).getTestCase().tests.first() }
         }
 
     }
@@ -44,21 +46,21 @@ class StringTestCaseReaderTests : Spek ({
         val validTestCase = ResourceHelper.getTestCaseByName("multiple/shouldPass")
 
         it("should return two tests") {
-            val testCaseReader = StringTestCaseReader(validTestCase)
+            val testCaseReader = StringTestCaseParser(validTestCase)
             expect(2) { testCaseReader.getTestCase().tests.count() }
         }
     }
 
     it("fails with invalid test case") {
-        assertFails { StringTestCaseReader("") }
+        assertFails { StringTestCaseParser("") }
     }
 
     it("fails with empty test case description") {
-        assertFails { StringTestCaseReader(ResourceHelper.getTestCaseByName("emptyDescription")).getTestCase() }
+        assertFails { StringTestCaseParser(ResourceHelper.getTestCaseByName("emptyDescription")).getTestCase() }
     }
 
     it("fails with empty function name") {
-        assertFails { StringTestCaseReader(ResourceHelper.getTestCaseByName("emptyFunctionName")).getTestCase() }
+        assertFails { StringTestCaseParser(ResourceHelper.getTestCaseByName("emptyFunctionName")).getTestCase() }
     }
 
 

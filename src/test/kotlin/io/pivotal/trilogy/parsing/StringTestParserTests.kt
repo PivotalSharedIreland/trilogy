@@ -1,11 +1,11 @@
-package io.pivotal.trilogy.testcase
+package io.pivotal.trilogy.parsing
 
 import io.pivotal.trilogy.ResourceHelper
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect
 
-class StringTestReaderTests : Spek({
+class StringTestParserTests : Spek({
     context("minimal") {
         val testString = ResourceHelper.getTestByName("minimal")
         val firstRow = listOf("FOO", "12", "")
@@ -15,35 +15,35 @@ class StringTestReaderTests : Spek({
         val dataTable = listOf(firstRow, secondRow, thirdRow, fourthRow)
 
         it("can be read") {
-            StringTestReader(testString)
+            StringTestParser(testString)
         }
 
         it("ignores leading whitespace") {
-            StringTestReader("     \n\n  \n$testString")
+            StringTestParser("     \n\n  \n$testString")
         }
 
         it("fails if the test header is not the first") {
-            assertFails { StringTestReader("foo\n\n\n    \n$testString") }
+            assertFails { StringTestParser("foo\n\n\n    \n$testString") }
         }
 
         it("reads the test description") {
-            expect("Test description") { StringTestReader(testString).getTest().description }
+            expect("Test description") { StringTestParser(testString).getTest().description }
         }
 
         it("reads the execution table headers") {
-            expect(listOf("PARAM1", "PARAM2", "=ERROR=")) { StringTestReader(testString).getTest().argumentTable.labels }
+            expect(listOf("PARAM1", "PARAM2", "=ERROR=")) { StringTestParser(testString).getTest().argumentTable.labels }
         }
 
         it("reads the execution table values") {
-            expect(dataTable) { StringTestReader(testString).getTest().argumentTable.values }
+            expect(dataTable) { StringTestParser(testString).getTest().argumentTable.values }
         }
 
         it("ignores leading spaces in table definition") {
-            StringTestReader(testString.replace(Regex("^\\|"), "   |"))
+            StringTestParser(testString.replace(Regex("^\\|"), "   |"))
         }
 
         it("returns a test with an empty assertion list when it is absent") {
-            expect(emptyList()) { StringTestReader(testString).getTest().assertions }
+            expect(emptyList()) { StringTestParser(testString).getTest().assertions }
         }
     }
 
@@ -51,11 +51,11 @@ class StringTestReaderTests : Spek({
         val testString = ResourceHelper.getTestByName("sqlAssertion")
 
         it("reads assertion description") {
-            expect("Assertion description") { StringTestReader(testString).getTest().assertions[0].description }
+            expect("Assertion description") { StringTestParser(testString).getTest().assertions[0].description }
         }
 
         it("maintains the argument table size") {
-            expect(4) { StringTestReader(testString).getTest().argumentTable.values.count() }
+            expect(4) { StringTestParser(testString).getTest().argumentTable.values.count() }
         }
 
         it("reads assertion body") {
@@ -69,19 +69,19 @@ class StringTestReaderTests : Spek({
                     "        RAISE wrong_count;\n" +
                     "    END IF;\n" +
                     "END;"
-            expect(sqlStatement) { StringTestReader(testString).getTest().assertions[0].body }
+            expect(sqlStatement) { StringTestParser(testString).getTest().assertions[0].body }
         }
     }
 
     it("fails for an empty string") {
-        assertFails { StringTestReader("") }
+        assertFails { StringTestParser("") }
     }
 
     it("fails for a test without a data section") {
-        assertFails { StringTestReader("## TEST\nAll sea-dogs hail cold, coal-black reefs.") }
+        assertFails { StringTestParser("## TEST\nAll sea-dogs hail cold, coal-black reefs.") }
     }
 
     it("fails for empty test description") {
-        assertFails { StringTestReader(ResourceHelper.getTestByName("emptyDescription")).getTest() }
+        assertFails { StringTestParser(ResourceHelper.getTestByName("emptyDescription")).getTest() }
     }
 })

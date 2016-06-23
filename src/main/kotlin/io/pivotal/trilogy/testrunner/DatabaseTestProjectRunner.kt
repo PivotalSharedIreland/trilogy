@@ -1,7 +1,8 @@
 package io.pivotal.trilogy.testrunner
 
+import io.pivotal.trilogy.parsing.StringTestCaseParser
 import io.pivotal.trilogy.reporting.TestCaseResult
-import io.pivotal.trilogy.testcase.StringTestCaseReader
+import org.springframework.beans.factory.annotation.Autowired
 import java.io.File
 import java.net.URL
 
@@ -32,7 +33,7 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
         val testCaseResults = testsDirectory(projectUrl).listFiles()
                 .filter { file -> file.name.endsWith(".stt") }
                 .map { testFile ->
-            testCaseRunner.run(StringTestCaseReader(testFile.readText()).getTestCase())
+            testCaseRunner.run(StringTestCaseParser(testFile.readText()).getTestCase())
         }
 
         return testCaseResults.fold(TestCaseResult()) { accumulated, current ->

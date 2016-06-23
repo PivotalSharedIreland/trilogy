@@ -1,8 +1,10 @@
-package io.pivotal.trilogy.testcase
+package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.parsing.MarkdownTable
+import io.pivotal.trilogy.testcase.TestArgumentTable
+import io.pivotal.trilogy.testcase.TrilogyAssertion
+import io.pivotal.trilogy.testcase.TrilogyTest
 
-class StringTestReader(val testBody: String) : TestReader {
+class StringTestParser(val testBody: String) : TestParser {
     class InvalidTestFormat(message: String?) : RuntimeException(message) {}
     class MissingDataSection(message: String?) : RuntimeException(message) {}
     class MissingDescription(message: String?) : RuntimeException(message) {}

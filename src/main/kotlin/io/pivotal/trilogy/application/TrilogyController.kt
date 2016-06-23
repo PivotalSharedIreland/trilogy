@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.application
 
+import io.pivotal.trilogy.parsing.UrlTestCaseParser
 import io.pivotal.trilogy.reporting.TestCaseResult
-import io.pivotal.trilogy.testcase.UrlTestCaseReader
 import io.pivotal.trilogy.testrunner.TestCaseRunner
 import io.pivotal.trilogy.testrunner.TestProjectRunner
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,7 +28,7 @@ open class TrilogyController {
 
     private fun runTestCase(options: TrilogyApplicationOptions): TestCaseResult {
         val testCaseUrl = File(options.testCaseFilePath).toURI().toURL()
-        val trilogyTestCase = UrlTestCaseReader(testCaseUrl).getTestCase()
+        val trilogyTestCase = UrlTestCaseParser(testCaseUrl).getTestCase()
         return testCaseRunner.run(trilogyTestCase)
     }
 }

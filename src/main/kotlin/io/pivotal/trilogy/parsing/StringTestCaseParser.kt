@@ -1,6 +1,9 @@
-package io.pivotal.trilogy.testcase
+package io.pivotal.trilogy.parsing
 
-class StringTestCaseReader(val testCaseBody: String) : TestCaseReader {
+import io.pivotal.trilogy.testcase.TrilogyTest
+import io.pivotal.trilogy.testcase.TrilogyTestCase
+
+class StringTestCaseParser(val testCaseBody: String) : TestCaseParser {
 
     class InvalidTestCaseFormat(message: String?) : RuntimeException(message) {}
     class MissingDescription(message: String?) : RuntimeException(message) {}
@@ -38,7 +41,7 @@ class StringTestCaseReader(val testCaseBody: String) : TestCaseReader {
 
     private fun parseTests(): List<TrilogyTest> {
         val individualTestSections = testCaseBody.split("## TEST").drop(1).map { "## TEST$it".trim() }
-        return individualTestSections.map { StringTestReader(it).getTest() }
+        return individualTestSections.map { StringTestParser(it).getTest() }
     }
 
     private fun String.isValidTestCase(): Boolean {
