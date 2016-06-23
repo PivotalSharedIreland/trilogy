@@ -5,9 +5,9 @@ import org.springframework.core.NestedRuntimeException
 import org.springframework.jdbc.core.JdbcTemplate
 import java.sql.SQLException
 
-class AssertionExecutor(val jdbcTemplate : JdbcTemplate) {
+class AssertionExecutor(val jdbcTemplate : JdbcTemplate) : IAssertionExecutor {
 
-    infix fun execute(assertion: TrilogyAssertion): Boolean {
+    override infix fun execute(assertion: TrilogyAssertion): Boolean {
         try {
             jdbcTemplate.execute(assertion.body)
         } catch(e: NestedRuntimeException) {

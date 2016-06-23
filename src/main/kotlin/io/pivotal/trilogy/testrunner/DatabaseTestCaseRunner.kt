@@ -7,8 +7,8 @@ import io.pivotal.trilogy.testcase.TrilogyTestCase
 import io.pivotal.trilogy.validators.OutputArgumentValidator
 import org.springframework.beans.factory.annotation.Autowired
 
-class DatabaseTestCaseRunner(@Autowired val testSubjectCaller: TestSubjectCaller,
-                             @Autowired val assertionExecutor: AssertionExecutor) : TestCaseRunner {
+class DatabaseTestCaseRunner(@Autowired val testSubjectCaller: ITestSubjectCaller,
+                             @Autowired val assertionExecutor: IAssertionExecutor) : TestCaseRunner {
 
     override fun run(trilogyTestCase: TrilogyTestCase): TestCaseResult {
         val stats = trilogyTestCase.tests.map { test ->
