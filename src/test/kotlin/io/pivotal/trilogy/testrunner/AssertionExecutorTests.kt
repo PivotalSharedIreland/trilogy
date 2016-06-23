@@ -13,13 +13,13 @@ class AssertionExecutorTests : Spek ({
         val jdbcTemplate = JdbcTemplate(DatabaseHelper.dataSource())
 
         it("returns true when the assertion does not raise an error") {
-            val executer = AssertionExecutor(jdbcTemplate)
+            val executer = DatabaseAssertionExecutor(jdbcTemplate)
             val sql = "BEGIN NULL; END;"
             expect(true) { executer.execute(TrilogyAssertion("", sql)) }
         }
 
         it("returns false when the assertion raises an error") {
-            val executer = AssertionExecutor(jdbcTemplate)
+            val executer = DatabaseAssertionExecutor(jdbcTemplate)
             val sql = "BEGIN RAISE_APPLICATION_ERROR(-20000, 'Oops'); END;"
             expect(false) { executer.execute(TrilogyAssertion("", sql)) }
         }

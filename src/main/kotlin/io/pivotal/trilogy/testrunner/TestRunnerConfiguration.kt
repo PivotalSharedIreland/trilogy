@@ -14,8 +14,8 @@ open class TestRunnerConfiguration {
     lateinit var dataSource: DataSource
 
     @Bean
-    open fun assertionExecutor(): IAssertionExecutor {
-        return AssertionExecutor(jdbcTemplate())
+    open fun assertionExecutor(): AssertionExecutor {
+        return DatabaseAssertionExecutor(jdbcTemplate())
     }
 
     @Bean

@@ -12,8 +12,8 @@ class BootTrilogyControllerTests : Spek ({
         val controller = TrilogyController()
         val dataSource = DatabaseHelper.dataSource()
         val jdbcTemplate = JdbcTemplate(dataSource)
-        val assertionExecutor = AssertionExecutor(jdbcTemplate)
-        val testSubjectCaller = TestSubjectCaller(dataSource)
+        val assertionExecutor = DatabaseAssertionExecutor(jdbcTemplate)
+        val testSubjectCaller = DatabaseTestSubjectCaller(dataSource)
         val testCaseRunner = DatabaseTestCaseRunner(testSubjectCaller, assertionExecutor)
         val scriptExecuter = DatabaseScriptExecuter(jdbcTemplate)
         controller.testCaseRunner = testCaseRunner
