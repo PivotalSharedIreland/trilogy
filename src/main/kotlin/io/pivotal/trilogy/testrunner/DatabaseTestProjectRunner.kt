@@ -2,11 +2,10 @@ package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.testcase.StringTestCaseReader
-import org.springframework.beans.factory.annotation.Autowired
 import java.io.File
 import java.net.URL
 
-class DatabaseTestProjectRunner(@Autowired val testCaseRunner: TestCaseRunner, @Autowired val scriptExecuter: ScriptExecuter) : TestProjectRunner {
+class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptExecuter: ScriptExecuter) : TestProjectRunner {
 
     override fun run(projectUrl: URL): TestCaseResult {
         if (testsAbsentAtUrl(projectUrl)) return TestCaseResult()

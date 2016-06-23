@@ -1,31 +1,34 @@
 package io.pivotal.trilogy.testrunner
 
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.simple.SimpleJdbcCall
 import javax.sql.DataSource
 
 @Configuration
 open class TestRunnerConfiguration {
-
-    @Autowired
-    lateinit var dataSource: DataSource
-
     @Bean
-    open fun assertionExecutor(): AssertionExecutor {
-        return DatabaseAssertionExecutor(jdbcTemplate())
+    open fun testSubjectCaller(dataSource: DataSource): TestSubjectCaller {
+        return DatabaseTestSubjectCaller(dataSource)
     }
 
     @Bean
-    open fun simpleJdbcCall(): SimpleJdbcCall {
-        return SimpleJdbcCall(dataSource)
+    open fun assertionExecutor(jdbcTemplate: JdbcTemplate): AssertionExecutor {
+        return DatabaseAssertionExecutor(jdbcTemplate)
     }
 
     @Bean
-    open fun jdbcTemplate() : JdbcTemplate {
-        return JdbcTemplate(dataSource)
+    open fun scriptExecuter(jdbcTemplate: JdbcTemplate): ScriptExecuter {
+        return DatabaseScriptExecuter(jdbcTemplate)
     }
 
+    @Bean
+    open fun testCaseRunner(testSubjectCaller : TestSubjectCaller, assertionExecutor: AssertionExecutor) : TestCaseRunner {
+        return DatabaseTestCaseRunner(testSubjectCaller, assertionExecutor)
+    }
+
+    @Bean
+    open fun testProjectRunner(testCaseRunner : TestCaseRunner, scriptExecuter : ScriptExecuter) : TestProjectRunner {
+        return DatabaseTestProjectRunner(testCaseRunner, scriptExecuter)
+    }
 }

@@ -27,7 +27,7 @@ jar {
 
 sourceCompatibility = 1.7
 targetCompatibility = 1.7
-mainClassName = 'io.pivotal.trilogy.application.boot.BootTrilogyApplication'
+mainClassName = 'io.pivotal.trilogy.application.TrilogyApplication'
 
 repositories {
     mavenCentral()

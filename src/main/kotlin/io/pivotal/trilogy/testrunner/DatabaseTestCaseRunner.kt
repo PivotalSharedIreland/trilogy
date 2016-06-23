@@ -5,10 +5,9 @@ import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 import io.pivotal.trilogy.validators.OutputArgumentValidator
-import org.springframework.beans.factory.annotation.Autowired
 
-class DatabaseTestCaseRunner(@Autowired val testSubjectCaller: TestSubjectCaller,
-                             @Autowired val assertionExecutor: AssertionExecutor) : TestCaseRunner {
+class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
+                             val assertionExecutor: AssertionExecutor) : TestCaseRunner {
 
     override fun run(trilogyTestCase: TrilogyTestCase): TestCaseResult {
         val stats = trilogyTestCase.tests.map { test ->
