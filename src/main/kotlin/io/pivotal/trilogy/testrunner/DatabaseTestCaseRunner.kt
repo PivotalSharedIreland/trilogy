@@ -30,10 +30,13 @@ class DatabaseTestCaseRunner(@Autowired val testSubjectCaller: TestSubjectCaller
     private fun runData(testArgumentTable: TestArgumentTable, functionName: String): Boolean {
         val outputValidator = OutputArgumentValidator(testArgumentTable.outputArgumentNames)
 
-        return testArgumentTable.inputArgumentValues.mapIndexed { index, inputRow ->
+        return testArgumentTable.inputArgumentValues.withIndex().all { inputRowWithIndex ->
+            val inputRow = inputRowWithIndex.value
+            val index = inputRowWithIndex.index
+
             val output = testSubjectCaller.call(functionName, testArgumentTable.inputArgumentNames, inputRow)
             outputValidator.validate(testArgumentTable.outputArgumentValues[index], output)
-        }.fold(true, { a, b -> a and b })
+        }
     }
 
 }
