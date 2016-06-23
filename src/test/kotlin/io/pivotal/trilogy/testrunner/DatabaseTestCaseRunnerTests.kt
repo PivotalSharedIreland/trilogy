@@ -4,13 +4,12 @@ import io.pivotal.trilogy.DatabaseHelper
 import io.pivotal.trilogy.Fixtures
 import org.jetbrains.spek.api.Spek
 import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.simple.SimpleJdbcCall
 import kotlin.test.expect
 
 
 class DatabaseTestCaseRunnerTests : Spek({
 
-    val testSubjectCaller = TestSubjectCaller(SimpleJdbcCall(DatabaseHelper.dataSource()))
+    val testSubjectCaller = TestSubjectCaller(DatabaseHelper.dataSource())
     val assertionExecutor = AssertionExecutor(JdbcTemplate(DatabaseHelper.dataSource()));
 
     it("should run successful test case") {

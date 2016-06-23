@@ -62,5 +62,22 @@ class DatabaseTestProjectRunnerTests : Spek ({
             scriptExecuterSpy.executeArgList.last() shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE_PROCEDURE"
         }
     }
+
+    describe("test cases with schema") {
+        val projectUrl = File("${projectRoot}schema").toURI().toURL()
+
+        it("excludes fixtures from test case file list") {
+            val testCaseRunner = TestCaseRunnerSpy()
+            DatabaseTestProjectRunner(testCaseRunner, ScriptExecuterSpy()).run(projectUrl)
+            expect(1) { testCaseRunner.runCount }
+        }
+
+        it("loads schema before tests") {
+            val scriptExecuterSpy = ScriptExecuterSpy()
+            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterSpy).run(projectUrl)
+            scriptExecuterSpy.executeArgList.first() shouldStartWith "CREATE TABLE CLIENTS"
+        }
+    }
+
 })
 

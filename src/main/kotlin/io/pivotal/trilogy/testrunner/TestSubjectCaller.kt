@@ -1,13 +1,20 @@
 package io.pivotal.trilogy.testrunner
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.simple.SimpleJdbcCall
 import java.util.*
+import javax.sql.DataSource
 
-class TestSubjectCaller (val subject: SimpleJdbcCall) {
+class TestSubjectCaller (@Autowired val dataSource: DataSource) {
 
     fun call(procedureName: String, parameterNames: List<String>, parameterValues: List<String>): Map<String, Any?> {
-        subject.withProcedureName(procedureName) //FIXME (stateful dependency, should use factory or something)
-        return subject.execute(inputParameters(parameterNames, parameterValues))
+        return jdbcCall(procedureName).execute(inputParameters(parameterNames, parameterValues))
+    }
+
+    private fun jdbcCall(procedureName: String): SimpleJdbcCall {
+        return SimpleJdbcCall(dataSource).apply {
+            withProcedureName(procedureName)
+        }
     }
 
     private fun inputParameters(parameterNames: List<String>, parameterValues: List<String>): Map<String, String?> {

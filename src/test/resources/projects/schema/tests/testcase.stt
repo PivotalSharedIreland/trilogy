@@ -1,0 +1,8 @@
+# TEST CASE COUNT_CLIENTS
+Example
+## TEST
+Output should echo the input
+### DATA
+|CLIENT_COUNT$|=ERROR=|
+|------------:|-------|
+| 0           |       |

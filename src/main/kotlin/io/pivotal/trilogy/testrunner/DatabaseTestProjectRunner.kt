@@ -10,8 +10,14 @@ class DatabaseTestProjectRunner(@Autowired val testCaseRunner: TestCaseRunner, @
 
     override fun run(projectUrl: URL): TestCaseResult {
         if (testsAbsentAtUrl(projectUrl)) return TestCaseResult()
+        applySchema(projectUrl)
         runSourceScripts(projectUrl)
         return runTestCases(projectUrl)
+    }
+
+    private fun applySchema(projectUrl: URL) {
+        val schema = schemaFile(projectUrl)
+        if (schema.isFile) scriptExecuter.execute(schema.readText())
     }
 
     private fun runSourceScripts(projectUrl: URL) {
@@ -24,7 +30,9 @@ class DatabaseTestProjectRunner(@Autowired val testCaseRunner: TestCaseRunner, @
     }
 
     private fun runTestCases(projectUrl: URL): TestCaseResult {
-        val testCaseResults = testsDirectory(projectUrl).listFiles().map() { testFile ->
+        val testCaseResults = testsDirectory(projectUrl).listFiles()
+                .filter { file -> file.name.endsWith(".stt") }
+                .map { testFile ->
             testCaseRunner.run(StringTestCaseReader(testFile.readText()).getTestCase())
         }
 
@@ -35,7 +43,7 @@ class DatabaseTestProjectRunner(@Autowired val testCaseRunner: TestCaseRunner, @
 
     private fun testsDirectory(projectUrl: URL) = File("${projectUrl.path}tests")
     private fun sourceDirectory(projectUrl: URL) = File("${projectUrl.path}src")
-
+    private fun schemaFile(projectUrl: URL) = File("${projectUrl.path}tests/fixtures/schema.sql")
     private fun testsAbsentAtUrl(projectUrl: URL): Boolean = !testsPresentAtUrl(projectUrl)
 
     private fun testsPresentAtUrl(projectUrl: URL): Boolean {
