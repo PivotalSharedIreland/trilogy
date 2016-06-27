@@ -2,7 +2,6 @@ package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.parsing.StringTestCaseParser
 import io.pivotal.trilogy.reporting.TestCaseResult
-import org.springframework.beans.factory.annotation.Autowired
 import java.io.File
 import java.net.URL
 

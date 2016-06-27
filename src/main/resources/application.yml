@@ -2,7 +2,6 @@ spring:
     application:
         name: Trilogy
     datasource:
-        url: jdbc:oracle:thin:@192.168.99.101:32781:xe
-        username: system
-        password: oracle
-
+        url: ${db-url}
+        username: app_user
+        password: secret

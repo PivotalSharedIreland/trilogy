@@ -63,7 +63,7 @@ class DatabaseTestProjectRunnerTests : Spek ({
         }
     }
 
-    describe("test cases with schema") {
+    describe("test cases with schema definition") {
         val projectUrl = File("${projectRoot}schema").toURI().toURL()
 
         it("excludes fixtures from test case file list") {

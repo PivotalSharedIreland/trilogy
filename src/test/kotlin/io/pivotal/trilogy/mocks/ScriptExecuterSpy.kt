@@ -6,8 +6,8 @@ class ScriptExecuterSpy : ScriptExecuter {
     var executeCalls = 0
     val executeArgList = mutableListOf<String>()
 
-    override fun execute(script: String) {
+    override fun execute(scriptBody: String) {
         executeCalls ++
-        executeArgList.add(script)
+        executeArgList.add(scriptBody)
     }
 }

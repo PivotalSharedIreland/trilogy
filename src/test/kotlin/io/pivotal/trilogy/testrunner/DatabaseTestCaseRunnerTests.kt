@@ -1,10 +1,8 @@
 package io.pivotal.trilogy.testrunner
 
+import io.pivotal.trilogy.Fixtures
 import io.pivotal.trilogy.mocks.AssertionExecutorStub
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub
-import io.pivotal.trilogy.testcase.TestArgumentTable
-import io.pivotal.trilogy.testcase.TrilogyAssertion
-import io.pivotal.trilogy.testcase.TrilogyTest
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 import org.jetbrains.spek.api.Spek
 import kotlin.test.expect
@@ -35,7 +33,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         }
 
         context("given there is only a single test") {
-            val singleTest = buildSingleTest()
+            val singleTest = Fixtures.buildSingleTest()
 
             it("then the test case should pass") {
                 expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest)).didPass }
@@ -47,7 +45,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         }
 
         context("when there are multiple tests to run") {
-            val multipleTests = buildMultipleTests()
+            val multipleTests = Fixtures.buildMultipleTests()
 
             it("then the number of successful tests should be reported on") {
                 expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests)).passed }
@@ -62,7 +60,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         }
 
         context("when a single test is run") {
-            val singleTest = buildSingleTest()
+            val singleTest = Fixtures.buildSingleTest()
 
             it("then the test case should fail") {
                 expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest)).didPass }
@@ -74,7 +72,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         }
 
         context("when multiple tests run") {
-            val multipleTests = buildMultipleTests()
+            val multipleTests = Fixtures.buildMultipleTests()
 
             it("then multiple failures should be reported on") {
                 expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests)).failed }
@@ -89,19 +87,8 @@ class DatabaseTestCaseRunnerTests : Spek({
         }
 
         it("then the test case should fail") {
-            val singleTest = buildSingleTest()
+            val singleTest = Fixtures.buildSingleTest()
             expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest)).didPass }
         }
     }
 })
-
-val argumentTable = TestArgumentTable(listOf("IN", "OUT$"), listOf(listOf("1", "1")))
-val assertions = listOf(TrilogyAssertion("some description", "some SQL"))
-
-fun buildSingleTest(): List<TrilogyTest> = listOf(TrilogyTest("I am a test", argumentTable, assertions))
-
-fun buildMultipleTests(): List<TrilogyTest> = listOf(
-        TrilogyTest("I am a test", argumentTable, assertions),
-        TrilogyTest("I am also a test", argumentTable, assertions),
-        TrilogyTest("Me three", argumentTable, assertions)
-)
