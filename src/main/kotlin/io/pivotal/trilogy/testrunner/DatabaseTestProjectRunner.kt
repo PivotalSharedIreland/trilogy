@@ -2,51 +2,51 @@ package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.parsing.StringTestCaseParser
 import io.pivotal.trilogy.reporting.TestCaseResult
+import io.pivotal.trilogy.testproject.TestProject
 import java.io.File
 import java.net.URL
 
 class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptExecuter: ScriptExecuter) : TestProjectRunner {
+    inner class TestProjectExecutor(val projectUrl: URL) {
+        val testProject = TestProject(projectUrl)
+        fun run(): TestCaseResult {
+            if (testProject.testsAbsent) return TestCaseResult()
+            applySchema()
+            runSourceScripts()
+            return runTestCases()
+        }
+
+        private fun applySchema() {
+            if (testProject.schemaFile.isFile) executeSqlFile(testProject.schemaFile)
+        }
+
+        private fun runSourceScripts() {
+            testProject.sourceDirectory.apply {
+                isDirectory && listFiles().filter { file -> file.name.endsWith(".sql") }
+                        .map { file -> executeSqlFile(file) }.any()
+            }
+        }
+
+        private fun executeSqlFile(file: File) {
+            scriptExecuter.execute(file.readText())
+        }
+
+        private fun runTestCases(): TestCaseResult {
+            val testCaseResults = testProject.testsDirectory.listFiles()
+                    .filter { file -> file.name.endsWith(".stt") }
+                    .map { testFile ->
+                        testCaseRunner.run(StringTestCaseParser(testFile.readText()).getTestCase())
+                    }
+
+            return testCaseResults.fold(TestCaseResult()) { accumulated, current ->
+                accumulated + current
+            }
+        }
+
+    }
 
     override fun run(projectUrl: URL): TestCaseResult {
-        if (testsAbsentAtUrl(projectUrl)) return TestCaseResult()
-        applySchema(projectUrl)
-        runSourceScripts(projectUrl)
-        return runTestCases(projectUrl)
+        return TestProjectExecutor(projectUrl).run()
     }
 
-    private fun applySchema(projectUrl: URL) {
-        val schema = schemaFile(projectUrl)
-        if (schema.isFile) scriptExecuter.execute(schema.readText())
-    }
-
-    private fun runSourceScripts(projectUrl: URL) {
-        sourceDirectory(projectUrl).apply {
-            isDirectory && listFiles().filter { file -> file.name.endsWith(".sql") }
-                    .map { file ->
-                scriptExecuter.execute(file.readText())
-            }.any()
-        }
-    }
-
-    private fun runTestCases(projectUrl: URL): TestCaseResult {
-        val testCaseResults = testsDirectory(projectUrl).listFiles()
-                .filter { file -> file.name.endsWith(".stt") }
-                .map { testFile ->
-            testCaseRunner.run(StringTestCaseParser(testFile.readText()).getTestCase())
-        }
-
-        return testCaseResults.fold(TestCaseResult()) { accumulated, current ->
-            accumulated + current
-        }
-    }
-
-    private fun testsDirectory(projectUrl: URL) = File("${projectUrl.path}tests")
-    private fun sourceDirectory(projectUrl: URL) = File("${projectUrl.path}src")
-    private fun schemaFile(projectUrl: URL) = File("${projectUrl.path}tests/fixtures/schema.sql")
-    private fun testsAbsentAtUrl(projectUrl: URL): Boolean = !testsPresentAtUrl(projectUrl)
-
-    private fun testsPresentAtUrl(projectUrl: URL): Boolean {
-        val testsDirectory = testsDirectory(projectUrl)
-        return testsDirectory.isDirectory && testsDirectory.listFiles().any { file -> file.name.endsWith(".stt") }
-    }
 }
