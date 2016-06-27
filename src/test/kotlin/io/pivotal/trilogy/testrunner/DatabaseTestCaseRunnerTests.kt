@@ -3,6 +3,7 @@ package io.pivotal.trilogy.testrunner
 import io.pivotal.trilogy.Fixtures
 import io.pivotal.trilogy.mocks.AssertionExecutorStub
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub
+import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 import org.jetbrains.spek.api.Spek
 import kotlin.test.expect
@@ -13,6 +14,7 @@ class DatabaseTestCaseRunnerTests : Spek({
     var testSubjectCallerStub: TestSubjectCallerStub = TestSubjectCallerStub()
     var assertionExecutorStub: AssertionExecutorStub = AssertionExecutorStub()
     var testCaseRunner: DatabaseTestCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecutorStub)
+    val testCaseHooks = TestCaseHooks(emptyList(), emptyList(), emptyList(), emptyList())
 
     beforeEach {
         testSubjectCallerStub = TestSubjectCallerStub()
@@ -22,7 +24,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
     context("when the test case has no tests") {
         it("then the test case should pass") {
-            expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", emptyList())).didPass }
+            expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", emptyList(), testCaseHooks)).didPass }
         }
     }
 
@@ -36,11 +38,11 @@ class DatabaseTestCaseRunnerTests : Spek({
             val singleTest = Fixtures.buildSingleTest()
 
             it("then the test case should pass") {
-                expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest)).didPass }
+                expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).didPass }
             }
 
             it("then the number of successful tests should be reported on") {
-                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest)).passed }
+                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).passed }
             }
         }
 
@@ -48,7 +50,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val multipleTests = Fixtures.buildMultipleTests()
 
             it("then the number of successful tests should be reported on") {
-                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests)).passed }
+                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks)).passed }
             }
         }
     }
@@ -63,11 +65,11 @@ class DatabaseTestCaseRunnerTests : Spek({
             val singleTest = Fixtures.buildSingleTest()
 
             it("then the test case should fail") {
-                expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest)).didPass }
+                expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).didPass }
             }
 
             it("then a single failure should be reported on") {
-                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest)).failed }
+                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).failed }
             }
         }
 
@@ -75,7 +77,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val multipleTests = Fixtures.buildMultipleTests()
 
             it("then multiple failures should be reported on") {
-                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests)).failed }
+                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks)).failed }
             }
         }
     }
@@ -88,7 +90,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         it("then the test case should fail") {
             val singleTest = Fixtures.buildSingleTest()
-            expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest)).didPass }
+            expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).didPass }
         }
     }
 })

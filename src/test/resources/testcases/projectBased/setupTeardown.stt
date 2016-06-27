@@ -1,0 +1,30 @@
+# TEST CASE DEGENERATE
+Example
+## BEFORE EACH
+- Set client balance
+- Grace life and passion
+- With tunas drink tea
+## AFTER EACH
+- Remove transactions
+- Be mysterious
+## BEFORE ALL
+-   Setup client
+- Ships reproduce with xray vision
+- With melons drink maple syrup
+## AFTER ALL
+- Remove clients
+- Fraticinidas ire
+## TEST
+Output should echo the input
+### DATA
+|V_IN      |V_OUT$    |=ERROR=|
+|---------:|---------:|-------|
+| 1243     | 1243     |       |
+| 321      | 321      |       |
+| 5834     | 5834     |       |
+## TEST
+Must handle NULL values
+### DATA
+|V_IN      |V_OUT$    |=ERROR=|
+|---------:|---------:|-------|
+| __NULL__ | __NULL__ |       |

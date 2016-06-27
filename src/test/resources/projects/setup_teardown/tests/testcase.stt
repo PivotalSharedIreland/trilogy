@@ -1,0 +1,16 @@
+# TEST CASE VALIDATE_BALANCE
+Example
+## BEFORE EACH
+- Set client balance
+## AFTER EACH
+- Remove transactions
+## BEFORE ALL
+- Setup client
+## AFTER ALL
+- Remove clients
+## TEST
+The client balance should be valid
+### DATA
+|V_CLIENT_ID|V_IS_VALID$|=ERROR=|
+|----------:|----------:|-------|
+| 66778899  | 1         |       |

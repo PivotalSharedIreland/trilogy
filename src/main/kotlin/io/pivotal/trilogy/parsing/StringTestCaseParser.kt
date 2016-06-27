@@ -1,5 +1,6 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyTest
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 
@@ -10,6 +11,7 @@ class StringTestCaseParser(val testCaseBody: String) : TestCaseParser {
     class MissingFunctionName(message: String?) : RuntimeException(message) {}
 
     private val testCaseHeaderRegex = Regex("^# TEST CASE (\\S*)\\s+")
+    private val hookSectionNameSplitRegex = Regex("^-\\s+", RegexOption.MULTILINE)
 
     init {
         validate()
@@ -24,7 +26,7 @@ class StringTestCaseParser(val testCaseBody: String) : TestCaseParser {
     }
 
     private fun parse(): TrilogyTestCase {
-        return TrilogyTestCase(parseFunctionName(), parseDescription(), parseTests())
+        return TrilogyTestCase(parseFunctionName(), parseDescription(), parseTests(), parseHooks())
     }
 
     private fun parseDescription(): String {
@@ -42,6 +44,25 @@ class StringTestCaseParser(val testCaseBody: String) : TestCaseParser {
     private fun parseTests(): List<TrilogyTest> {
         val individualTestSections = testCaseBody.split("## TEST").drop(1).map { "## TEST$it".trim() }
         return individualTestSections.map { StringTestParser(it).getTest() }
+    }
+
+    private fun parseHooks(): TestCaseHooks {
+        return TestCaseHooks(parseHookSection("BEFORE ALL"), parseHookSection("BEFORE EACH"),
+                parseHookSection("AFTER ALL"), parseHookSection("AFTER EACH"))
+    }
+
+
+    private fun parseHookSection(sectionName: String): List<String> {
+        val matchResult = hookSectionHeaderRegex(sectionName).find(testCaseBody)
+        val list = matchResult?.groupValues?.get(1)?.let { nameListString ->
+            nameListString.trim().split(hookSectionNameSplitRegex)
+                    .filter { name -> name.isNotBlank() }.map { name -> name.trim() }.toList()
+        }
+        return list ?: emptyList()
+    }
+
+    private fun hookSectionHeaderRegex(sectionName: String): Regex {
+        return Regex("^## $sectionName\\s(.*?)##", setOf(RegexOption.DOT_MATCHES_ALL, RegexOption.MULTILINE))
     }
 
     private fun String.isValidTestCase(): Boolean {
