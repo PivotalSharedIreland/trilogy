@@ -2,26 +2,28 @@ package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.parsing.StringTestCaseParser
 import io.pivotal.trilogy.reporting.TestCaseResult
-import io.pivotal.trilogy.testproject.TestProject
+import io.pivotal.trilogy.testproject.FixtureLibrary
+import io.pivotal.trilogy.testproject.TestProjectResources
 import java.io.File
 import java.net.URL
 
 class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptExecuter: ScriptExecuter) : TestProjectRunner {
     inner class TestProjectExecutor(val projectUrl: URL) {
-        val testProject = TestProject(projectUrl)
+        val resources = TestProjectResources(projectUrl)
+
         fun run(): TestCaseResult {
-            if (testProject.testsAbsent) return TestCaseResult()
+            if (resources.testsAbsent) return TestCaseResult()
             applySchema()
             runSourceScripts()
             return runTestCases()
         }
 
         private fun applySchema() {
-            if (testProject.schemaFile.isFile) executeSqlFile(testProject.schemaFile)
+            if (resources.schemaFile.isFile) executeSqlFile(resources.schemaFile)
         }
 
         private fun runSourceScripts() {
-            testProject.sourceDirectory.apply {
+            resources.sourceDirectory.apply {
                 isDirectory && listFiles().filter { file -> file.name.endsWith(".sql") }
                         .map { file -> executeSqlFile(file) }.any()
             }
@@ -32,10 +34,10 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
         }
 
         private fun runTestCases(): TestCaseResult {
-            val testCaseResults = testProject.testsDirectory.listFiles()
+            val testCaseResults = resources.testsDirectory.listFiles()
                     .filter { file -> file.name.endsWith(".stt") }
                     .map { testFile ->
-                        testCaseRunner.run(StringTestCaseParser(testFile.readText()).getTestCase())
+                        testCaseRunner.run(StringTestCaseParser(testFile.readText()).getTestCase(), FixtureLibrary.emptyLibrary())
                     }
 
             return testCaseResults.fold(TestCaseResult()) { accumulated, current ->

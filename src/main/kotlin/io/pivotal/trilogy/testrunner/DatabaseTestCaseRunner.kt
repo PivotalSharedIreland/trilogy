@@ -4,15 +4,20 @@ import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testcase.TrilogyTestCase
+import io.pivotal.trilogy.testproject.FixtureLibrary
 import io.pivotal.trilogy.validators.OutputArgumentValidator
 
 class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
                              val assertionExecutor: AssertionExecutor) : TestCaseRunner {
 
-    override fun run(trilogyTestCase: TrilogyTestCase): TestCaseResult {
+    override fun run(trilogyTestCase: TrilogyTestCase, library: FixtureLibrary): TestCaseResult {
+        // before all
         val stats = trilogyTestCase.tests.map { test ->
+            // before each
             runData(test.argumentTable, trilogyTestCase.procedureName) and runAssertions(test.assertions)
+            // after each
         }
+        // after all
 
         val numberPassed = stats.filter { it }.size
         val numberFailed = stats.filterNot { it }.size

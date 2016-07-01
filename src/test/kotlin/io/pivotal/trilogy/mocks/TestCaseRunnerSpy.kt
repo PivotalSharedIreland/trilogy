@@ -2,6 +2,7 @@ package io.pivotal.trilogy.mocks
 
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.testcase.TrilogyTestCase
+import io.pivotal.trilogy.testproject.FixtureLibrary
 import io.pivotal.trilogy.testrunner.TestCaseRunner
 
 class TestCaseRunnerSpy : TestCaseRunner {
@@ -9,7 +10,7 @@ class TestCaseRunnerSpy : TestCaseRunner {
     var runResult = TestCaseResult(0, 0)
     var runArgument: TrilogyTestCase? = null
 
-    override fun run(trilogyTestCase: TrilogyTestCase): TestCaseResult {
+    override fun run(trilogyTestCase: TrilogyTestCase, library: FixtureLibrary): TestCaseResult {
         runCount++
         runArgument = trilogyTestCase
         return runResult

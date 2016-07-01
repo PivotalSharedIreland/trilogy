@@ -5,6 +5,7 @@ import io.pivotal.trilogy.mocks.AssertionExecutorStub
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyTestCase
+import io.pivotal.trilogy.testproject.FixtureLibrary
 import org.jetbrains.spek.api.Spek
 import kotlin.test.expect
 
@@ -24,7 +25,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
     context("when the test case has no tests") {
         it("then the test case should pass") {
-            expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", emptyList(), testCaseHooks)).didPass }
+            expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", emptyList(), testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
         }
     }
 
@@ -38,11 +39,11 @@ class DatabaseTestCaseRunnerTests : Spek({
             val singleTest = Fixtures.buildSingleTest()
 
             it("then the test case should pass") {
-                expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).didPass }
+                expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
             }
 
             it("then the number of successful tests should be reported on") {
-                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).passed }
+                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).passed }
             }
         }
 
@@ -50,7 +51,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val multipleTests = Fixtures.buildMultipleTests()
 
             it("then the number of successful tests should be reported on") {
-                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks)).passed }
+                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks), FixtureLibrary.emptyLibrary()).passed }
             }
         }
     }
@@ -65,11 +66,11 @@ class DatabaseTestCaseRunnerTests : Spek({
             val singleTest = Fixtures.buildSingleTest()
 
             it("then the test case should fail") {
-                expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).didPass }
+                expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
             }
 
             it("then a single failure should be reported on") {
-                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).failed }
+                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).failed }
             }
         }
 
@@ -77,7 +78,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val multipleTests = Fixtures.buildMultipleTests()
 
             it("then multiple failures should be reported on") {
-                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks)).failed }
+                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks), FixtureLibrary.emptyLibrary()).failed }
             }
         }
     }
@@ -90,7 +91,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         it("then the test case should fail") {
             val singleTest = Fixtures.buildSingleTest()
-            expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks)).didPass }
+            expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
         }
     }
 })
