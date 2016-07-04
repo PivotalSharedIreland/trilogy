@@ -7,6 +7,7 @@ import kotlin.test.assertTrue
 
 infix fun String.shouldContain(other: String) = assertTrue(this.contains(other), "Expected '$this' to contain '$other'")
 infix fun String.shouldStartWith(other: String) = assertTrue(this.startsWith(other), "Expected '$this' to start with '$other'")
+infix fun String.shouldEndWith(other: String) = assertTrue(this.endsWith(other), "Expected '$this' to end with '$other'")
 
 infix fun <T : Exception> (() -> Any).shouldThrow(expectedException: KClass<T>) {
     val voidBlock = { this.invoke(); Unit }

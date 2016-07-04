@@ -1,8 +1,6 @@
-package io.pivotal.trilogy.parsing
+package io.pivotal.trilogy.testcase
 
 import io.pivotal.trilogy.ResourceHelper
-import io.pivotal.trilogy.testcase.TestArgumentTable
-import io.pivotal.trilogy.testcase.TrilogyTest
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect

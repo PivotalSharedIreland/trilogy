@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.application
 
-import io.pivotal.trilogy.parsing.UrlTestCaseParser
 import io.pivotal.trilogy.reporting.TestCaseResult
+import io.pivotal.trilogy.testcase.UrlTestCaseParser
 import io.pivotal.trilogy.testproject.FixtureLibrary
 import io.pivotal.trilogy.testrunner.TestCaseRunner
 import io.pivotal.trilogy.testrunner.TestProjectRunner

@@ -1,6 +1,5 @@
-package io.pivotal.trilogy.parsing
+package io.pivotal.trilogy.testcase
 
-import io.pivotal.trilogy.testcase.TrilogyTestCase
 import java.net.URL
 
 class UrlTestCaseParser(val testCaseUrl: URL) : TestCaseParser {

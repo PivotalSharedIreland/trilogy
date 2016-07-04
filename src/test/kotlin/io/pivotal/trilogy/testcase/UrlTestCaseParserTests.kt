@@ -1,4 +1,4 @@
-package io.pivotal.trilogy.parsing
+package io.pivotal.trilogy.testcase
 
 import io.pivotal.trilogy.Fixtures
 import io.pivotal.trilogy.ResourceHelper

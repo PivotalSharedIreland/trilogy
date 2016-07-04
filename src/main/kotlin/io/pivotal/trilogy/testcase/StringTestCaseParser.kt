@@ -1,8 +1,6 @@
-package io.pivotal.trilogy.parsing
+package io.pivotal.trilogy.testcase
 
-import io.pivotal.trilogy.testcase.TestCaseHooks
-import io.pivotal.trilogy.testcase.TrilogyTest
-import io.pivotal.trilogy.testcase.TrilogyTestCase
+import io.pivotal.trilogy.parsing.StringTestParser
 
 class StringTestCaseParser(val testCaseBody: String) : TestCaseParser {
 
