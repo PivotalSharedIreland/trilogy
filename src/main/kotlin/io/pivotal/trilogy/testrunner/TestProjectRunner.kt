@@ -1,8 +1,8 @@
 package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.reporting.TestCaseResult
-import java.net.URL
+import io.pivotal.trilogy.testproject.TrilogyTestProject
 
 interface TestProjectRunner {
-    open fun run(projectUrl: URL): TestCaseResult
+    fun run(project: TrilogyTestProject): TestCaseResult
 }

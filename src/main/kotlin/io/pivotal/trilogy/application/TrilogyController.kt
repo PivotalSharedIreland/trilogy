@@ -3,6 +3,8 @@ package io.pivotal.trilogy.application
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.testcase.UrlTestCaseParser
 import io.pivotal.trilogy.testproject.FixtureLibrary
+import io.pivotal.trilogy.testproject.TestProjectBuilder
+import io.pivotal.trilogy.testproject.UrlTestProjectResourceLocator
 import io.pivotal.trilogy.testrunner.TestCaseRunner
 import io.pivotal.trilogy.testrunner.TestProjectRunner
 import org.springframework.beans.factory.annotation.Autowired
@@ -24,7 +26,8 @@ open class TrilogyController {
 
     private fun runTestProject(options: TrilogyApplicationOptions): TestCaseResult {
         val projectUrl = File(options.testProjectPath).toURI().toURL()
-        return testProjectRunner.run(projectUrl)
+        val project = TestProjectBuilder.build(UrlTestProjectResourceLocator(projectUrl))
+        return testProjectRunner.run(project)
     }
 
     private fun runTestCase(options: TrilogyApplicationOptions): TestCaseResult {
