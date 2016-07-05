@@ -1,10 +1,10 @@
 package io.pivotal.trilogy.testcase
 
-data class TestArgumentTable(val labels: List<String>, val values: List<List<String>>) {
+data class TestArgumentTable(private val labels: List<String>, private val values: List<List<String>>) {
 
     val inputArgumentNames: List<String> by lazy {
         labels.filterNot {
-            it.isAnOutputArgumentName() or it.isAnErrorLabel()
+            it.isAnOutputArgumentName() || it.isAnErrorLabel()
         }
     }
 

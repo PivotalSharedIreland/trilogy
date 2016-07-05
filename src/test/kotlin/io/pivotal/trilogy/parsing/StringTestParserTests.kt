@@ -13,6 +13,7 @@ class StringTestParserTests : Spek({
         val thirdRow = listOf("BAR", "-18", "")
         val fourthRow = listOf("", "12", "")
         val dataTable = listOf(firstRow, secondRow, thirdRow, fourthRow)
+        val inputTable = dataTable.map { row -> listOf(row[0], row[1]) }
 
         it("can be read") {
             StringTestParser(testString)
@@ -31,11 +32,13 @@ class StringTestParserTests : Spek({
         }
 
         it("reads the execution table headers") {
-            expect(listOf("PARAM1", "PARAM2", "=ERROR=")) { StringTestParser(testString).getTest().argumentTable.labels }
+            expect(listOf("PARAM1", "PARAM2")) { StringTestParser(testString).getTest().argumentTable.inputArgumentNames }
         }
 
         it("reads the execution table values") {
-            expect(dataTable) { StringTestParser(testString).getTest().argumentTable.values }
+            val parsedTest = StringTestParser(testString).getTest()
+            expect(inputTable) { parsedTest.argumentTable.inputArgumentValues }
+            expect(listOf(emptyList(), emptyList(), emptyList(), emptyList())) { parsedTest.argumentTable.outputArgumentValues }
         }
 
         it("ignores leading spaces in table definition") {
@@ -55,7 +58,7 @@ class StringTestParserTests : Spek({
         }
 
         it("maintains the argument table size") {
-            expect(4) { StringTestParser(testString).getTest().argumentTable.values.count() }
+            expect(4) { StringTestParser(testString).getTest().argumentTable.inputArgumentValues.count() }
         }
 
         it("reads assertion body") {

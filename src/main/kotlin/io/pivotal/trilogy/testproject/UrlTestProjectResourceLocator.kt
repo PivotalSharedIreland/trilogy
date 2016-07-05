@@ -31,7 +31,7 @@ class UrlTestProjectResourceLocator(val projectUrl: URL) : TestProjectResourceLo
 
     private val File.fixtureName: String? get() {
         return Regex("$fixturesPath(setup|teardown)[\\\\/](.+)\\.sql").find(this.absolutePath).let { match ->
-            match?.groupValues?.get(2)?.replace(Regex("\\s*([\\\\/])\\s*"), "$1")?.replace("_", " ")
+            match?.groupValues?.get(2)?.replace(Regex("\\s*([\\\\/])\\s*"), "$1")
         }
     }
 
