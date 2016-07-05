@@ -1,10 +1,10 @@
 package io.pivotal.trilogy.testproject
 
 
-data class FixtureLibrary(val fixtures: Map<String, String>) {
+class FixtureLibrary(private val fixtures: Map<String, String>) {
 
     companion object {
-        fun emptyLibrary() : FixtureLibrary {
+        fun emptyLibrary(): FixtureLibrary {
             return FixtureLibrary(emptyMap())
         }
     }
@@ -27,6 +27,17 @@ data class FixtureLibrary(val fixtures: Map<String, String>) {
 
     private fun fixtureKey(name: String): String {
         return name.toLowerCase().replace(Regex("\\s*/\\s*"), "/").replace(" ", "_")
+    }
+
+    val setupFixtureCount: Int by lazy {
+        fixtures.keys.fold(0) { count, name ->
+            if (name.startsWith("setup/")) count + 1 else count
+        }
+    }
+    val teardownFixtureCount: Int by lazy {
+        fixtures.keys.fold(0) { count, name ->
+            if (name.startsWith("teardown/")) count + 1 else count
+        }
     }
 
 
