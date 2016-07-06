@@ -1,11 +1,15 @@
 # TEST CASE VALIDATE_BALANCE
 Example
-## BEFORE EACH
-- Set client balance
-## AFTER EACH
-- Remove transactions
 ## BEFORE ALL
 - Setup client
+## BEFORE EACH TEST
+- Set client balance
+## BEFORE EACH ROW
+- Set client balance
+## AFTER EACH ROW
+- Remove transactions
+## AFTER EACH TEST
+- Remove transactions
 ## AFTER ALL
 - Remove clients
 ## TEST

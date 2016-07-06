@@ -50,9 +50,11 @@ class StringTestCaseParserTests : Spek ({
 
         it("should return empty fixture hook lists") {
             expect(true) { testCase.hooks.beforeAll.isEmpty() }
-            expect(true) { testCase.hooks.beforeEach.isEmpty() }
+            expect(true) { testCase.hooks.beforeEachRow.isEmpty() }
+            expect(true) { testCase.hooks.beforeEachTest.isEmpty() }
             expect(true) { testCase.hooks.afterAll.isEmpty() }
-            expect(true) { testCase.hooks.afterEach.isEmpty() }
+            expect(true) { testCase.hooks.afterEachRow.isEmpty() }
+            expect(true) { testCase.hooks.afterEachTest.isEmpty() }
         }
     }
 
@@ -68,12 +70,19 @@ class StringTestCaseParserTests : Spek ({
             expect("With melons drink maple syrup") { beforeAllHooks.last() }
         }
 
-        it("should extract before each hook names") {
-            val beforeEachHooks = testCaseHooks.beforeEach
-            expect(3) { beforeEachHooks.count() }
-            expect("Set client balance") { beforeEachHooks.first() }
-            expect("Grace life and passion") { beforeEachHooks[1] }
-            expect("With tunas drink tea") { beforeEachHooks.last() }
+        it("should extract before each test hook names") {
+            val beforeEachTestHooks = testCaseHooks.beforeEachTest
+            expect(3) { beforeEachTestHooks.count() }
+            expect("Set client balance") { beforeEachTestHooks.first() }
+            expect("Grace life and passion") { beforeEachTestHooks[1] }
+            expect("With tunas drink tea") { beforeEachTestHooks.last() }
+        }
+
+        it("should extract before each row hook names") {
+            val beforeEachRowHooks = testCaseHooks.beforeEachRow
+            expect(2) { beforeEachRowHooks.count() }
+            expect("Contencio flavum vita est") { beforeEachRowHooks.first() }
+            expect("Everyone just loves the fierceness of chicken cheesecake flavord with cumin.") { beforeEachRowHooks[1] }
         }
 
         it("should extract after all hook names") {
@@ -83,11 +92,17 @@ class StringTestCaseParserTests : Spek ({
             expect("Fraticinidas ire") { afterAllHooks.last() }
         }
 
-        it("should extract after each hook names") {
-            val afterEachHooks = testCaseHooks.afterEach
-            expect(2) { afterEachHooks.count() }
-            expect("Remove transactions") { afterEachHooks.first() }
-            expect("Be mysterious") { afterEachHooks.last() }
+        it("should extract after each test hook names") {
+            val afterEachTestHooks = testCaseHooks.afterEachTest
+            expect(2) { afterEachTestHooks.count() }
+            expect("Remove transactions") { afterEachTestHooks.first() }
+            expect("Be mysterious") { afterEachTestHooks.last() }
+        }
+
+        it("should extract after each row hook names") {
+            val afterEachRowHooks = testCaseHooks.afterEachRow
+            expect(1) { afterEachRowHooks.count() }
+            expect("Always solitary yearn the spiritual saint.") { afterEachRowHooks.first() }
         }
     }
 
@@ -97,9 +112,11 @@ class StringTestCaseParserTests : Spek ({
 
         it("should return empty fixture hook lists") {
             expect(true) { testCaseHooks.beforeAll.isEmpty() }
-            expect(true) { testCaseHooks.beforeEach.isEmpty() }
+            expect(true) { testCaseHooks.beforeEachTest.isEmpty() }
+            expect(true) { testCaseHooks.beforeEachRow.isEmpty() }
             expect(true) { testCaseHooks.afterAll.isEmpty() }
-            expect(true) { testCaseHooks.afterEach.isEmpty() }
+            expect(true) { testCaseHooks.afterEachTest.isEmpty() }
+            expect(true) { testCaseHooks.afterEachRow.isEmpty() }
         }
 
     }

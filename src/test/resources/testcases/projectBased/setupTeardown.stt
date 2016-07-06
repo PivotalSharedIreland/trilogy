@@ -1,12 +1,17 @@
 # TEST CASE DEGENERATE
 Example
-## BEFORE EACH
+## BEFORE EACH ROW
+- Contencio flavum vita est
+- Everyone just loves the fierceness of chicken cheesecake flavord with cumin.
+## BEFORE EACH TEST
 - Set client balance
 - Grace life and passion
 - With tunas drink tea
-## AFTER EACH
+## AFTER EACH TEST
 - Remove transactions
 - Be mysterious
+## AFTER EACH ROW
+- Always solitary yearn the spiritual saint.
 ## BEFORE ALL
 -   Setup client
 - Ships reproduce with xray vision

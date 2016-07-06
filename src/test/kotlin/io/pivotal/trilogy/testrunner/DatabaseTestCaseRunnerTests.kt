@@ -19,7 +19,7 @@ class DatabaseTestCaseRunnerTests : Spek({
     var assertionExecutorStub = AssertionExecutorStub()
     var scriptExecutorSpy = ScriptExecuterSpy()
     var testCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecutorStub, scriptExecutorSpy)
-    val testCaseHooks = TestCaseHooks(emptyList(), emptyList(), emptyList(), emptyList())
+    val testCaseHooks = TestCaseHooks()
 
     beforeEach {
         testSubjectCallerStub = TestSubjectCallerStub()
@@ -38,7 +38,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         it("should run the setup script once") {
             val beforeAll = listOf("Set client balance")
-            val hooks = TestCaseHooks(beforeAll, emptyList(), emptyList(), emptyList())
+            val hooks = TestCaseHooks(beforeAll = beforeAll)
             val testCase = TrilogyTestCase("someProcedure", "someDescription", emptyList(), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
@@ -49,7 +49,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         it("runs the before all steps in order") {
             val beforeAll = listOf("Set client balance", "UpdAte client Messages")
-            val hooks = TestCaseHooks(beforeAll, emptyList(), emptyList(), emptyList())
+            val hooks = TestCaseHooks(beforeAll = beforeAll)
             val testCase = TrilogyTestCase("someProcedure", "someDescription", emptyList(), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)

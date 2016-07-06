@@ -45,8 +45,14 @@ class StringTestCaseParser(val testCaseBody: String) : TestCaseParser {
     }
 
     private fun parseHooks(): TestCaseHooks {
-        return TestCaseHooks(parseHookSection("BEFORE ALL"), parseHookSection("BEFORE EACH"),
-                parseHookSection("AFTER ALL"), parseHookSection("AFTER EACH"))
+        return TestCaseHooks(
+                beforeAll = parseHookSection("BEFORE ALL"),
+                beforeEachTest = parseHookSection("BEFORE EACH TEST"),
+                afterAll = parseHookSection("AFTER ALL"),
+                afterEachTest = parseHookSection("AFTER EACH TEST"),
+                beforeEachRow = parseHookSection("BEFORE EACH ROW"),
+                afterEachRow = parseHookSection("AFTER EACH ROW")
+        )
     }
 
 
