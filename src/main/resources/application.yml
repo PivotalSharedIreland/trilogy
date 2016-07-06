@@ -5,3 +5,10 @@ spring:
         url: ${db-url}
         username: app_user
         password: secret
+    main:
+      banner-mode: 'off'
+flyway:
+  enabled: false
+logging:
+  pattern:
+    console: ''

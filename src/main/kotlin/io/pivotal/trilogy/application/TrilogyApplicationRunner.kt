@@ -8,27 +8,35 @@ import org.springframework.boot.ApplicationRunner
 import org.springframework.stereotype.Component
 
 @Component
-class TrilogyApplicationRunner : ApplicationRunner {
+open class TrilogyApplicationRunner : ApplicationRunner {
 
     @Autowired
     lateinit var trilogyController: TrilogyController
 
     override fun run(args: ApplicationArguments?) {
-        if (args != null && args.sourceArgs.size > 0) {
+        if (args != null) {
             try {
                 val applicationOptions = TrilogyApplicationOptionsParser.parse(args.sourceArgs)
+                printBanner()
                 val output = TestCaseReporter.generateReport(trilogyController.run(applicationOptions))
                 System.out.println(output)
             } catch (e: RuntimeException) {
-                printFailure()
+                printFailure(e.stackTrace)
             }
         } else {
-            printFailure()
+            printFailure(null)
         }
     }
 
-    private fun printFailure() {
-        System.out.println("Invalid command (filepath required). Usage: trilogy <filePath>")
+    private fun printFailure(stackTrace: Array<StackTraceElement>?) {
+        stackTrace?.forEach { frame -> System.out.println(frame) }
+        System.out.println("Usage: trilogy [<filePath>|--project=<path to trilogy test project>] --db-url=<jdbc url>")
+    }
+
+    private fun printBanner() {
+        val banner = TrilogyApplicationRunner::class.java
+                .getResourceAsStream("/banner.txt").reader().readText()
+        System.out.println(banner)
     }
 
 }
