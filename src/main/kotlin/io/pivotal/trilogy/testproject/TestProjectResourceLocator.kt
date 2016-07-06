@@ -1,11 +1,11 @@
 package io.pivotal.trilogy.testproject
 
 interface TestProjectResourceLocator {
-    val testsPresent: Boolean
-    val testsAbsent: Boolean get() = !testsPresent
-    val schema: String?
     val testCases: List<String>
-    val sourceScripts: List<String>
-    val setupFixtures: List<NamedStringResource>
-    val teardownFixtures: List<NamedStringResource>
+    val testsPresent: Boolean get() = testCases.isNotEmpty()
+    val testsAbsent: Boolean get() = !testsPresent
+    val schema: String? get() = null
+    val sourceScripts: List<String> get() = emptyList()
+    val setupFixtures: List<NamedStringResource> get() = emptyList()
+    val teardownFixtures: List<NamedStringResource> get() = emptyList()
 }
