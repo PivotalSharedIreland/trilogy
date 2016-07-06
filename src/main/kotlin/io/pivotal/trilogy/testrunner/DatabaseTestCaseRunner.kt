@@ -8,10 +8,14 @@ import io.pivotal.trilogy.testproject.FixtureLibrary
 import io.pivotal.trilogy.validators.OutputArgumentValidator
 
 class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
-                             val assertionExecutor: AssertionExecutor) : TestCaseRunner {
+                             val assertionExecutor: AssertionExecutor, val scriptExecutor: ScriptExecuter) : TestCaseRunner {
 
     override fun run(trilogyTestCase: TrilogyTestCase, library: FixtureLibrary): TestCaseResult {
-        // before all
+
+        trilogyTestCase.hooks.beforeAll.forEach { fixtureName ->
+            scriptExecutor.execute(library.getSetupFixtureByName(fixtureName))
+        }
+
         val stats = trilogyTestCase.tests.map { test ->
             // before each
             runData(test.argumentTable, trilogyTestCase.procedureName) and runAssertions(test.assertions)

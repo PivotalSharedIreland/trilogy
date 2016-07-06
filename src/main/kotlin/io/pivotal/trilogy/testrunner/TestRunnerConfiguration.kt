@@ -23,8 +23,8 @@ open class TestRunnerConfiguration {
     }
 
     @Bean
-    open fun testCaseRunner(testSubjectCaller : TestSubjectCaller, assertionExecutor: AssertionExecutor) : TestCaseRunner {
-        return DatabaseTestCaseRunner(testSubjectCaller, assertionExecutor)
+    open fun testCaseRunner(testSubjectCaller : TestSubjectCaller, assertionExecutor: AssertionExecutor, scriptExecuter: ScriptExecuter) : TestCaseRunner {
+        return DatabaseTestCaseRunner(testSubjectCaller, assertionExecutor, scriptExecuter)
     }
 
     @Bean

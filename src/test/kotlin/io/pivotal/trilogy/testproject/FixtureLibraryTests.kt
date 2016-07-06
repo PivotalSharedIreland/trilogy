@@ -48,10 +48,9 @@ class FixtureLibraryTests : Spek({
     }
 
     it("crashes when accessing non-existing fixture") {
-        val emptyLibrary = FixtureLibrary.emptyLibrary()
-        val getFixtureByNameBlock = { emptyLibrary.getTeardownFixtureByName("aasdfad") }
+        val emptyLibrary = FixtureLibrary.emptyLibrary();
 
-        getFixtureByNameBlock shouldThrow AnyException
+        { emptyLibrary.getTeardownFixtureByName("aasdfad") } shouldThrow AnyException
     }
 
     it("is able to provide an null object") {
