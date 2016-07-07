@@ -11,17 +11,15 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
                              val assertionExecutor: AssertionExecutor, val scriptExecutor: ScriptExecuter) : TestCaseRunner {
 
     override fun run(trilogyTestCase: TrilogyTestCase, library: FixtureLibrary): TestCaseResult {
-
-        trilogyTestCase.hooks.beforeAll.forEach { fixtureName ->
-            scriptExecutor.execute(library.getSetupFixtureByName(fixtureName))
-        }
+        trilogyTestCase.hooks.beforeAll.runSetupScripts(library)
 
         val stats = trilogyTestCase.tests.map { test ->
-            // before each
-            runData(test.argumentTable, trilogyTestCase.procedureName) and runAssertions(test.assertions)
-            // after each
+            trilogyTestCase.hooks.beforeEachTest.runSetupScripts(library)
+            val success = runData(test.argumentTable, trilogyTestCase, library) and runAssertions(test.assertions)
+            trilogyTestCase.hooks.afterEachTest.runTeardownScripts(library)
+            success
         }
-        // after all
+        trilogyTestCase.hooks.afterAll.runTeardownScripts(library)
 
         val numberPassed = stats.filter { it }.size
         val numberFailed = stats.filterNot { it }.size
@@ -35,17 +33,23 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         }
     }
 
-    private fun runData(testArgumentTable: TestArgumentTable, functionName: String): Boolean {
+    private fun runData(testArgumentTable: TestArgumentTable, testCase: TrilogyTestCase, library: FixtureLibrary): Boolean {
         val outputValidator = OutputArgumentValidator(testArgumentTable.outputArgumentNames)
 
         return testArgumentTable.inputArgumentValues.withIndex().all { inputRowWithIndex ->
+
+            testCase.hooks.beforeEachRow.runSetupScripts(library)
             val inputRow = inputRowWithIndex.value
             val index = inputRowWithIndex.index
 
-            val output = testSubjectCaller.call(functionName, testArgumentTable.inputArgumentNames, inputRow)
-            outputValidator.validate(testArgumentTable.outputArgumentValues[index], output)
+            val output = testSubjectCaller.call(testCase.procedureName, testArgumentTable.inputArgumentNames, inputRow)
+            val success = outputValidator.validate(testArgumentTable.outputArgumentValues[index], output)
+            testCase.hooks.afterEachRow.runTeardownScripts(library)
+            success
         }
     }
 
+    private fun List<String>.runSetupScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecutor.execute(library.getSetupFixtureByName(name)) }
+    private fun List<String>.runTeardownScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecutor.execute(library.getTeardownFixtureByName(name)) }
 }
 

@@ -2,14 +2,12 @@
 Example
 ## BEFORE ALL
 - Setup client
-## BEFORE EACH TEST
-- Set client balance
 ## AFTER EACH TEST
 - Remove transactions
 ## AFTER ALL
 - Remove clients
 ## TEST
-The client balance should be valid
+The client balance should be invalid
 ### DATA
 |V_CLIENT_ID|V_IS_VALID$|=ERROR=|
 |----------:|----------:|-------|

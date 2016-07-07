@@ -18,3 +18,6 @@ infix fun <T : Exception> (() -> Any).shouldNotThrow(expectedException: KClass<T
     val voidBlock = { this.invoke(); Unit }
     voidBlock `should not throw` expectedException
 }
+
+val Int.isOdd: Boolean get() = this % 2 != 0
+val Int.isEven: Boolean get() = !isOdd

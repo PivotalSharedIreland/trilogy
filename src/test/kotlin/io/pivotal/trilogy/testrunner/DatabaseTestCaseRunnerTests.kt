@@ -1,6 +1,7 @@
 package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.Fixtures
+import io.pivotal.trilogy.isEven
 import io.pivotal.trilogy.mocks.AssertionExecutorStub
 import io.pivotal.trilogy.mocks.ScriptExecuterSpy
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub
@@ -20,6 +21,18 @@ class DatabaseTestCaseRunnerTests : Spek({
     var scriptExecutorSpy = ScriptExecuterSpy()
     var testCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecutorStub, scriptExecutorSpy)
     val testCaseHooks = TestCaseHooks()
+    val firstSetupScript = "Per guest prepare eight pounds of remoulade with heated turkey for dessert."
+    val secondSetupScript = "The collision course is an evil parasite."
+    val firstTeardownScript = "Nirvana of dogma will theosophically shape a closest body."
+    val secondTeardownScript = "C'mon, arrr."
+    val fixtureLibrary = FixtureLibrary(mapOf(
+            Pair("setup/set_client_balance", firstSetupScript),
+            Pair("setup/update_client_messages", secondSetupScript),
+            Pair("teardown/clear_client_balance", firstTeardownScript),
+            Pair("teardown/nowhere", secondTeardownScript)
+    ))
+
+
 
     beforeEach {
         testSubjectCallerStub = TestSubjectCallerStub()
@@ -28,12 +41,6 @@ class DatabaseTestCaseRunnerTests : Spek({
         testCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecutorStub, scriptExecutorSpy)
     }
     context("with before all specified") {
-        val firstSetupScript = "Per guest prepare eight pounds of remoulade with heated turkey for dessert."
-        val secondSetupScript = "The collision course is an evil parasite."
-        val fixtureLibrary = FixtureLibrary(mapOf(
-                Pair("setup/set_client_balance", firstSetupScript),
-                Pair("setup/update_client_messages", secondSetupScript)
-        ))
 
 
         it("should run the setup script once") {
@@ -59,6 +66,119 @@ class DatabaseTestCaseRunnerTests : Spek({
             scriptExecutorSpy.executeArgList[1] shouldEqual secondSetupScript
         }
     }
+
+    context("with before each row specified") {
+        it("should run the before each row script once for each row") {
+            val beforeEachRow = listOf("Set client balance")
+            val hooks = TestCaseHooks(beforeEachRow = beforeEachRow)
+            val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+            expect(3) { scriptExecutorSpy.executeCalls }
+        }
+
+        it("should run the before each row scripts in sequence") {
+            val beforeEachRow = listOf("Set client balance", "upDate client messages")
+            val hooks = TestCaseHooks(beforeEachRow = beforeEachRow)
+            val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+            expect(6) { scriptExecutorSpy.executeCalls }
+            scriptExecutorSpy.executeArgList.forEachIndexed { index, script ->
+                if (index.isEven)
+                    script shouldEqual firstSetupScript
+                else
+                    script shouldEqual secondSetupScript
+            }
+        }
+    }
+
+    context("with after each row scripts") {
+        it("should run the script once for each row") {
+            val afterEachRow = listOf("Clear client balance")
+            val hooks = TestCaseHooks(afterEachRow = afterEachRow)
+            val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+            expect(3) { scriptExecutorSpy.executeCalls }
+        }
+
+        it("should run the scripts in sequence") {
+            val afterEachRow = listOf("Clear Client BalaNce", "NOwhere")
+            val hooks = TestCaseHooks(afterEachRow = afterEachRow)
+            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+            expect(6) { scriptExecutorSpy.executeCalls }
+            scriptExecutorSpy.executeArgList.forEachIndexed { index, script ->
+                if (index.isEven)
+                    script shouldEqual firstTeardownScript
+                else
+                    script shouldEqual secondTeardownScript
+            }
+        }
+    }
+    context("with after each test") {
+        it("should run after each test") {
+            val afterEachTest = listOf("nowhere")
+            val hooks = TestCaseHooks(afterEachTest = afterEachTest)
+            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+            expect(1) { scriptExecutorSpy.executeCalls }
+        }
+
+        it("should run each script in order") {
+            val afterEachTest = listOf("nowhere", "CLEAR client BALANCE")
+            val hooks = TestCaseHooks(afterEachTest = afterEachTest)
+            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+
+            expect(2) { scriptExecutorSpy.executeCalls }
+            scriptExecutorSpy.executeArgList.first() shouldEqual secondTeardownScript
+            scriptExecutorSpy.executeArgList.last() shouldEqual firstTeardownScript
+        }
+    }
+
+    context("with after all") {
+        it ("should run after all") {
+            val afterAll = listOf("nowhere")
+            val hooks = TestCaseHooks(afterAll = afterAll)
+            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+            expect(1) { scriptExecutorSpy.executeCalls }
+        }
+
+        it("should run each script in order") {
+            val afterAll = listOf("nowhere", "CLEAR client BALANCE")
+            val hooks = TestCaseHooks(afterAll = afterAll)
+            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+
+            expect(2) { scriptExecutorSpy.executeCalls }
+            scriptExecutorSpy.executeArgList.first() shouldEqual secondTeardownScript
+            scriptExecutorSpy.executeArgList.last() shouldEqual firstTeardownScript
+        }
+
+    }
+
+    context("with before each test") {
+        it("should run the script once for each test") {
+            val beforeEachTest = listOf("set client balance")
+            val hooks = TestCaseHooks(beforeEachTest = beforeEachTest)
+            val testCase = TrilogyTestCase("boo", "far", listOf(Fixtures.testWithThreeRows, Fixtures.testWithThreeRows), hooks)
+
+            testCaseRunner.run(testCase, fixtureLibrary)
+            expect(2) { scriptExecutorSpy.executeCalls }
+        }
+
+
+    }
+    // everything in sync 1
+
     context("when the test case has no tests") {
         it("should run test case successfully") {
             expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", emptyList(), testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }

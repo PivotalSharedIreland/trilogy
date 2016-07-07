@@ -16,7 +16,7 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
     }
 
     private fun TrilogyTestProject.runSourceScripts() {
-        sourceScripts.map { script -> scriptExecuter.execute(script) }
+        sourceScripts.forEach { script -> scriptExecuter.execute(script) }
     }
 
     private fun TrilogyTestProject.runTestCases(): TestCaseResult {

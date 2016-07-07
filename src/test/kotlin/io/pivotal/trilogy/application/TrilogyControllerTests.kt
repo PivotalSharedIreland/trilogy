@@ -85,7 +85,7 @@ class TrilogyControllerTests : Spek ({
 
             describe("fixtures") {
                 val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/setup_teardown")
-                xit("runs") {
+                it("runs the test project with fixtures") {
                     val testCaseResult = controller.run(options)
                     expect(true) { testCaseResult.didPass }
                     expect(0) { testCaseResult.failed }
