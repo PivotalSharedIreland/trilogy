@@ -13,18 +13,18 @@ open class TestRunnerConfiguration {
     }
 
     @Bean
-    open fun assertionExecutor(jdbcTemplate: JdbcTemplate): AssertionExecutor {
-        return DatabaseAssertionExecutor(jdbcTemplate)
-    }
-
-    @Bean
     open fun scriptExecuter(jdbcTemplate: JdbcTemplate): ScriptExecuter {
         return DatabaseScriptExecuter(jdbcTemplate)
     }
 
     @Bean
-    open fun testCaseRunner(testSubjectCaller : TestSubjectCaller, assertionExecutor: AssertionExecutor, scriptExecuter: ScriptExecuter) : TestCaseRunner {
-        return DatabaseTestCaseRunner(testSubjectCaller, assertionExecutor, scriptExecuter)
+    open fun assertionExecuter(scriptExecuter: ScriptExecuter): AssertionExecuter {
+        return DatabaseAssertionExecuter(scriptExecuter)
+    }
+
+    @Bean
+    open fun testCaseRunner(testSubjectCaller : TestSubjectCaller, assertionExecuter: AssertionExecuter, scriptExecuter: ScriptExecuter) : TestCaseRunner {
+        return DatabaseTestCaseRunner(testSubjectCaller, assertionExecuter, scriptExecuter)
     }
 
     @Bean

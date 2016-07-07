@@ -2,10 +2,11 @@ package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.Fixtures
 import io.pivotal.trilogy.isEven
-import io.pivotal.trilogy.mocks.AssertionExecutorStub
+import io.pivotal.trilogy.mocks.AssertionExecuterMock
 import io.pivotal.trilogy.mocks.ScriptExecuterSpy
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub
 import io.pivotal.trilogy.testcase.TestCaseHooks
+import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 import io.pivotal.trilogy.testproject.FixtureLibrary
 import org.amshove.kluent.`should contain`
@@ -17,28 +18,32 @@ import kotlin.test.expect
 class DatabaseTestCaseRunnerTests : Spek({
     // this sucks, is there a way to declare these as null ?
     var testSubjectCallerStub = TestSubjectCallerStub()
-    var assertionExecutorStub = AssertionExecutorStub()
-    var scriptExecutorSpy = ScriptExecuterSpy()
-    var testCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecutorStub, scriptExecutorSpy)
+    var scriptExecuterSpy = ScriptExecuterSpy()
+    var assertionExecuterSpy = AssertionExecuterMock(scriptExecuterSpy)
+    var testCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecuterSpy, scriptExecuterSpy)
     val testCaseHooks = TestCaseHooks()
-    val firstSetupScript = "Per guest prepare eight pounds of remoulade with heated turkey for dessert."
-    val secondSetupScript = "The collision course is an evil parasite."
-    val firstTeardownScript = "Nirvana of dogma will theosophically shape a closest body."
-    val secondTeardownScript = "C'mon, arrr."
+    val firstSetupScript = "First setup script"
+    val secondSetupScript = "Second setup script"
+    val thirdSetupScript = "Third setup script"
+    val firstTeardownScript = "First teardown script"
+    val secondTeardownScript = "Second teardown script"
+    val thirdTeardownScript = "Third teardown script"
     val fixtureLibrary = FixtureLibrary(mapOf(
             Pair("setup/set_client_balance", firstSetupScript),
             Pair("setup/update_client_messages", secondSetupScript),
+            Pair("setup/update_client_balance", thirdSetupScript),
             Pair("teardown/clear_client_balance", firstTeardownScript),
-            Pair("teardown/nowhere", secondTeardownScript)
+            Pair("teardown/nowhere", secondTeardownScript),
+            Pair("teardown/collision_course", thirdTeardownScript)
     ))
 
 
 
     beforeEach {
         testSubjectCallerStub = TestSubjectCallerStub()
-        scriptExecutorSpy = ScriptExecuterSpy()
-        assertionExecutorStub = AssertionExecutorStub()
-        testCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecutorStub, scriptExecutorSpy)
+        scriptExecuterSpy = ScriptExecuterSpy()
+        assertionExecuterSpy = AssertionExecuterMock(scriptExecuterSpy)
+        testCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecuterSpy, scriptExecuterSpy)
     }
     context("with before all specified") {
 
@@ -50,8 +55,8 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             testCaseRunner.run(testCase, fixtureLibrary)
 
-            expect(1) { scriptExecutorSpy.executeCalls }
-            scriptExecutorSpy.executeArgList `should contain` firstSetupScript
+            expect(1) { scriptExecuterSpy.executeCalls }
+            scriptExecuterSpy.executeArgList `should contain` firstSetupScript
         }
 
         it("runs the before all steps in order") {
@@ -61,9 +66,9 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             testCaseRunner.run(testCase, fixtureLibrary)
 
-            expect(beforeAll.count()) { scriptExecutorSpy.executeCalls }
-            scriptExecutorSpy.executeArgList[0] shouldEqual firstSetupScript
-            scriptExecutorSpy.executeArgList[1] shouldEqual secondSetupScript
+            expect(beforeAll.count()) { scriptExecuterSpy.executeCalls }
+            scriptExecuterSpy.executeArgList[0] shouldEqual firstSetupScript
+            scriptExecuterSpy.executeArgList[1] shouldEqual secondSetupScript
         }
     }
 
@@ -74,7 +79,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
-            expect(3) { scriptExecutorSpy.executeCalls }
+            expect(3) { scriptExecuterSpy.executeCalls }
         }
 
         it("should run the before each row scripts in sequence") {
@@ -83,8 +88,8 @@ class DatabaseTestCaseRunnerTests : Spek({
             val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
-            expect(6) { scriptExecutorSpy.executeCalls }
-            scriptExecutorSpy.executeArgList.forEachIndexed { index, script ->
+            expect(6) { scriptExecuterSpy.executeCalls }
+            scriptExecuterSpy.executeArgList.forEachIndexed { index, script ->
                 if (index.isEven)
                     script shouldEqual firstSetupScript
                 else
@@ -100,7 +105,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
-            expect(3) { scriptExecutorSpy.executeCalls }
+            expect(3) { scriptExecuterSpy.executeCalls }
         }
 
         it("should run the scripts in sequence") {
@@ -109,8 +114,8 @@ class DatabaseTestCaseRunnerTests : Spek({
             val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
-            expect(6) { scriptExecutorSpy.executeCalls }
-            scriptExecutorSpy.executeArgList.forEachIndexed { index, script ->
+            expect(6) { scriptExecuterSpy.executeCalls }
+            scriptExecuterSpy.executeArgList.forEachIndexed { index, script ->
                 if (index.isEven)
                     script shouldEqual firstTeardownScript
                 else
@@ -125,7 +130,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
-            expect(1) { scriptExecutorSpy.executeCalls }
+            expect(1) { scriptExecuterSpy.executeCalls }
         }
 
         it("should run each script in order") {
@@ -135,20 +140,20 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             testCaseRunner.run(testCase, fixtureLibrary)
 
-            expect(2) { scriptExecutorSpy.executeCalls }
-            scriptExecutorSpy.executeArgList.first() shouldEqual secondTeardownScript
-            scriptExecutorSpy.executeArgList.last() shouldEqual firstTeardownScript
+            expect(2) { scriptExecuterSpy.executeCalls }
+            scriptExecuterSpy.executeArgList.first() shouldEqual secondTeardownScript
+            scriptExecuterSpy.executeArgList.last() shouldEqual firstTeardownScript
         }
     }
 
     context("with after all") {
-        it ("should run after all") {
+        it("should run after all") {
             val afterAll = listOf("nowhere")
             val hooks = TestCaseHooks(afterAll = afterAll)
             val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
-            expect(1) { scriptExecutorSpy.executeCalls }
+            expect(1) { scriptExecuterSpy.executeCalls }
         }
 
         it("should run each script in order") {
@@ -158,9 +163,9 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             testCaseRunner.run(testCase, fixtureLibrary)
 
-            expect(2) { scriptExecutorSpy.executeCalls }
-            scriptExecutorSpy.executeArgList.first() shouldEqual secondTeardownScript
-            scriptExecutorSpy.executeArgList.last() shouldEqual firstTeardownScript
+            expect(2) { scriptExecuterSpy.executeCalls }
+            scriptExecuterSpy.executeArgList.first() shouldEqual secondTeardownScript
+            scriptExecuterSpy.executeArgList.last() shouldEqual firstTeardownScript
         }
 
     }
@@ -172,12 +177,71 @@ class DatabaseTestCaseRunnerTests : Spek({
             val testCase = TrilogyTestCase("boo", "far", listOf(Fixtures.testWithThreeRows, Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
-            expect(2) { scriptExecutorSpy.executeCalls }
+            expect(2) { scriptExecuterSpy.executeCalls }
         }
 
 
     }
-    // everything in sync 1
+
+    it("runs all the scripts in sync") {
+        val hooks = TestCaseHooks(
+                beforeAll = listOf("set client balance"),
+                beforeEachTest = listOf("update client messages"),
+                beforeEachRow = listOf("update client balance"),
+                afterEachRow = listOf("clear client balance"),
+                afterEachTest = listOf("nowhere"),
+                afterAll = listOf("collision course")
+        )
+        val firstTestAssertionScript = "First test assertion"
+        val secondTestAssertionScript = "Second test assertion"
+        val firstTest = Fixtures.testWithThreeRowsAndAssertions(listOf(TrilogyAssertion("", firstTestAssertionScript)))
+        val secondTest = Fixtures.testWithThreeRowsAndAssertions(listOf(TrilogyAssertion("", secondTestAssertionScript)))
+        val testCase = TrilogyTestCase("boo", "bar", listOf(firstTest, secondTest), hooks)
+
+        val beforeAllScript = firstSetupScript
+        val beforeEachTestScript = secondSetupScript
+        val beforeEachRowScript = thirdSetupScript
+        val afterEachRowScript = firstTeardownScript
+        val afterEachTestScript = secondTeardownScript
+        val afterAllScript = thirdTeardownScript
+
+        testCaseRunner.run(testCase, fixtureLibrary)
+        scriptExecuterSpy.executeArgList shouldEqual listOf(
+                beforeAllScript,
+                beforeEachTestScript,
+
+                beforeEachRowScript,
+                firstTestAssertionScript,
+                afterEachRowScript,
+
+                beforeEachRowScript,
+                firstTestAssertionScript,
+                afterEachRowScript,
+
+                beforeEachRowScript,
+                firstTestAssertionScript,
+                afterEachRowScript,
+
+                afterEachTestScript,
+
+                beforeEachTestScript,
+
+                beforeEachRowScript,
+                secondTestAssertionScript,
+                afterEachRowScript,
+
+                beforeEachRowScript,
+                secondTestAssertionScript,
+                afterEachRowScript,
+
+                beforeEachRowScript,
+                secondTestAssertionScript,
+                afterEachRowScript,
+
+                afterEachTestScript,
+                afterAllScript
+        )
+    }
 
     context("when the test case has no tests") {
         it("should run test case successfully") {
@@ -187,7 +251,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
     context("when the assertions pass and the output is the expected output") {
         beforeEach {
-            assertionExecutorStub.passAllExecutedAssertions = true
+            assertionExecuterSpy.passAllExecutedAssertions = true
             testSubjectCallerStub.resultToReturn = mapOf("OUT" to "1")
         }
 
@@ -214,7 +278,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
     context("when the output is expected but an assertion fails") {
         beforeEach {
-            assertionExecutorStub.passAllExecutedAssertions = false
+            assertionExecuterSpy.passAllExecutedAssertions = false
             testSubjectCallerStub.resultToReturn = mapOf("OUT" to "1")
         }
 
@@ -241,7 +305,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
     context("when the assertion passes but the output is not the expected output") {
         beforeEach {
-            assertionExecutorStub.passAllExecutedAssertions = true
+            assertionExecuterSpy.passAllExecutedAssertions = true
             testSubjectCallerStub.resultToReturn = mapOf("OUT" to "2")
         }
 

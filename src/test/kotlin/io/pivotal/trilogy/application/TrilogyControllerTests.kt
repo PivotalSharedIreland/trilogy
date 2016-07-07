@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.application
 
 import io.pivotal.trilogy.DatabaseHelper
-import io.pivotal.trilogy.testrunner.DatabaseAssertionExecutor
+import io.pivotal.trilogy.testrunner.DatabaseAssertionExecuter
 import io.pivotal.trilogy.testrunner.DatabaseScriptExecuter
 import io.pivotal.trilogy.testrunner.DatabaseTestCaseRunner
 import io.pivotal.trilogy.testrunner.DatabaseTestProjectRunner
@@ -16,10 +16,10 @@ class TrilogyControllerTests : Spek ({
         val controller = TrilogyController()
         val dataSource = DatabaseHelper.dataSource()
         val jdbcTemplate = JdbcTemplate(dataSource)
-        val assertionExecutor = DatabaseAssertionExecutor(jdbcTemplate)
         val testSubjectCaller = DatabaseTestSubjectCaller(dataSource)
         val scriptExecuter = DatabaseScriptExecuter(jdbcTemplate)
-        val testCaseRunner = DatabaseTestCaseRunner(testSubjectCaller, assertionExecutor, scriptExecuter)
+        val assertionExecuter = DatabaseAssertionExecuter(scriptExecuter)
+        val testCaseRunner = DatabaseTestCaseRunner(testSubjectCaller, assertionExecuter, scriptExecuter)
         controller.testProjectRunner = DatabaseTestProjectRunner(testCaseRunner, scriptExecuter)
         return controller
     }
