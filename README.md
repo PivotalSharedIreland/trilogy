@@ -3,19 +3,25 @@
 Trilogy is a tool for testing SQL stored procedures and functions. Test cases are represented by plain text files utilizing markdown format, which makes them easily readable and editable.
 
 ## Command-line options
-Single test case run
-```
-$ ./trilogy <filename> --db-url=<jdbc url>
-```
+- Single test case run:
+    ```
+    $ ./trilogy <filename> [--db_url=<JDBC url>] [--db_user=<username>] [--db_password=<password>]
+    ```
+    where `filename` is path to the `.stt` test file
 
-Project run
-```
-$ ./trilogy --project=<path-to-project> --db-url=<jdbc url>
-```
+- Project run:
+    ```
+    $ ./trilogy --project=<path to project> [--db_url=<JDBC url>] [--db_user=<username>] [--db_password=<password>] [--skip_schema_load]
+    ```
+    add the `skip_schema_load` flag to indicate that the `tests/fixtures/schema.sql` should not be loaded if it is present in the project.
+
+The `db_url` should point to the database under test. Make sure that the appropriate JDBC driver is available on the classpath.
+Also, the `db_url`, `db_user` and `db_password` can be specified as environment variables.
+
 
 
 ## Standalone test case file format
-
+Standalone test cases are good for small ad-hoc tests that do not require loading of the schema, procedure code or fixtures.
 ```
 # TEST CASE <procedure/function name>
 <test case description>
@@ -34,7 +40,9 @@ $ ./trilogy --project=<path-to-project> --db-url=<jdbc url>
 
 The `TEST` and `SQL` sections can be repeated multiple times. The `SQL` assertion can span multiple lines.
 
-## Project structure
+## Test projects
+Test projects are more powerful, they consist of a number of files that have to be organized in a structure outlined below. A project must have at least one test case. Additionally it can have a database schema, any number SQL procedure scripts and fixtures.
+### Project structure
     [project root]
     ┝[src]┐
     │      ├ 001.$get_user.sql
@@ -42,16 +50,16 @@ The `TEST` and `SQL` sections can be repeated multiple times. The `SQL` assertio
     │      └ 003.send_message.sql
     ┕[tests]┐
              ┝[fixtures]┐
-             │           ├ [setup]┐
-             │           │        ├ [balance]┐
-             │           │        │              ├ prepay_user_with_low_balance.sql
-             │           │        │              └ user_with_low_balance.sql
-             │           │        └ messages.sql
-             │           ├ [teardown]┐
-             │           │           ├ messages.sql
-             │           │           ├ transactions.sql
-             │           │           └ users.sql
-             │           └ schema.sql
+             │          ├ [setup]┐
+             │          │        ├ [balance]┐
+             │          │        │          ├ prepay_user_with_low_balance.sql
+             │          │        │          └ user_with_low_balance.sql
+             │          │        └ messages.sql
+             │          ├ [teardown]┐
+             │          │           ├ messages.sql
+             │          │           ├ transactions.sql
+             │          │           └ users.sql
+             │          └ schema.sql
              ├ [messaging]┐
              │            ├ online.stt
              │            └ offline.stt
@@ -100,7 +108,7 @@ For example:
 - Messages
 - Balance / Prepay user with low balance
 ```
-will instruct the framework to load the `tests/fixtures/setup/messages.sql` and `tests/fixtures/setup/balance/prepay_user_with_low_balance.sql` in the order specified before running the test case.
+will instruct the framework to load the `tests/fixtures/setup/messages.sql` and `tests/fixtures/setup/balance/prepay_user_with_low_balance.sql` before running the test case in the order specified.
 When a referenced fixture is not found, the whole test suite fails.
 
 ### Automatic schema load

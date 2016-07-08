@@ -2,9 +2,9 @@ spring:
     application:
         name: Trilogy
     datasource:
-        url: ${db-url}
-        username: app_user
-        password: secret
+        url: ${db_url}
+        username: ${db_user}
+        password: ${db_password}
 flyway:
   enabled: false
 logging:

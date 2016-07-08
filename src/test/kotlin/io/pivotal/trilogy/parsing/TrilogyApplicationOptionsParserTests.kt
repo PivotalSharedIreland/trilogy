@@ -25,4 +25,19 @@ class TrilogyApplicationOptionsParserTests : Spek({
         expect("") { options.testProjectPath }
     }
 
+    it("only processes the application-related arguments") {
+        val options = TrilogyApplicationOptionsParser.parse(arrayOf("--db_url=funny_bunny", "--project=project", "--foo=bar"))
+        expect("project") { options.testProjectPath }
+    }
+
+    it("sets the skip schema load to false by default") {
+        val options = TrilogyApplicationOptionsParser.parse(arrayOf("--db_url=funny_bunny", "--project=project", "--foo=bar"))
+        expect(false) { options.shouldSkipSchema }
+    }
+
+    it("fetches the skip schema load option") {
+        val options = TrilogyApplicationOptionsParser.parse(arrayOf("--skip_schema_load"))
+        expect(true) { options.shouldSkipSchema }
+    }
+
 })

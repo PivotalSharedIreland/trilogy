@@ -2,6 +2,7 @@ package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.mocks.ScriptExecuterSpy
 import io.pivotal.trilogy.mocks.TestCaseRunnerSpy
+import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.shouldStartWith
 import io.pivotal.trilogy.testproject.TestProjectBuilder
@@ -17,7 +18,9 @@ class DatabaseTestProjectRunnerTests : Spek({
 
     fun projectNamed(name: String) : TrilogyTestProject {
         val projectUrl = File("$projectRoot$name").toURI().toURL()
-        return TestProjectBuilder.build(UrlTestProjectResourceLocator(projectUrl))
+        val options = TrilogyApplicationOptionsStub()
+        options.locator = UrlTestProjectResourceLocator(projectUrl)
+        return TestProjectBuilder.build(options)
     }
 
     it("runs the tests for a simple project") {

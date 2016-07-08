@@ -1,6 +1,7 @@
 package io.pivotal.trilogy.testproject
 
 import io.pivotal.trilogy.ResourceHelper
+import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
 import io.pivotal.trilogy.shouldStartWith
 import io.pivotal.trilogy.shouldThrow
 import io.pivotal.trilogy.testcase.TestCaseHooks
@@ -10,21 +11,26 @@ import org.jetbrains.spek.api.Spek
 import kotlin.test.expect
 
 class TestProjectBuilderTests : Spek({
-    it("should throw exception when building project from an empty directory") {
-        val projectUrl = ResourceHelper.getResourceUrl("/projects/blank/");
+    val options = TrilogyApplicationOptionsStub()
 
-        { TestProjectBuilder.build(UrlTestProjectResourceLocator(projectUrl)) } shouldThrow AnyException
+    it("should throw exception when building project from an empty directory") {
+        val projectUrl = ResourceHelper.getResourceUrl("/projects/blank/")
+        options.locator = UrlTestProjectResourceLocator(projectUrl);
+
+        { TestProjectBuilder.build(options) } shouldThrow AnyException
     }
 
     it("should throw an exception when building a project with no tests") {
-        val projectUrl = ResourceHelper.getResourceUrl("/projects/no_tests/");
+        val projectUrl = ResourceHelper.getResourceUrl("/projects/no_tests/")
+        options.locator = UrlTestProjectResourceLocator(projectUrl);
 
-        { TestProjectBuilder.build(UrlTestProjectResourceLocator(projectUrl)) } shouldThrow AnyException
+        { TestProjectBuilder.build(options) } shouldThrow AnyException
     }
 
     it("should create a project with a single test case") {
         val projectUrl = ResourceHelper.getResourceUrl("/projects/single_testcase/")
-        val project = TestProjectBuilder.build(UrlTestProjectResourceLocator(projectUrl))
+        options.locator = UrlTestProjectResourceLocator(projectUrl)
+        val project = TestProjectBuilder.build(options)
 
         expect(1) { project.testCases.count() }
         project.testCases.first().apply {
@@ -50,7 +56,8 @@ class TestProjectBuilderTests : Spek({
 
     it("should create a project with source scripts") {
         val projectUrl = ResourceHelper.getResourceUrl("/projects/simple/")
-        val project = TestProjectBuilder.build(UrlTestProjectResourceLocator(projectUrl))
+        options.locator = UrlTestProjectResourceLocator(projectUrl)
+        val project = TestProjectBuilder.build(options)
 
         expect(2) { project.sourceScripts.count() }
         project.sourceScripts[0] shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE$"
@@ -59,18 +66,30 @@ class TestProjectBuilderTests : Spek({
 
     it("should create a project with a schema") {
         val projectUrl = ResourceHelper.getResourceUrl("/projects/schema/")
-        val project = TestProjectBuilder.build(UrlTestProjectResourceLocator(projectUrl))
+        options.locator = UrlTestProjectResourceLocator(projectUrl)
+        val project = TestProjectBuilder.build(options)
 
         project.schema!!.shouldStartWith("CREATE TABLE CLIENTS")
     }
 
     it("should create a project with fixtures") {
         val projectUrl = ResourceHelper.getResourceUrl("/projects/setup_teardown/")
-        val project = TestProjectBuilder.build(UrlTestProjectResourceLocator(projectUrl))
+        options.locator = UrlTestProjectResourceLocator(projectUrl)
+        val project = TestProjectBuilder.build(options)
 
         val fixtures = project.fixtures
         fixtures.getSetupFixtureByName("Reset client balance") shouldStartWith "UPDATE CLIENTS SET BALANCE=0 WHERE ID=66778899"
         fixtures.getTeardownFixtureByName("Remove transactions") shouldStartWith "DELETE FROM TRANSACTIONS"
+    }
+
+    it("should omit the schema when the options flag is set") {
+        val projectUrl = ResourceHelper.getResourceUrl("/projects/schema/")
+        val schemalessOptions = TrilogyApplicationOptionsStub(shouldSkipSchema = true)
+                .apply { locator = UrlTestProjectResourceLocator(projectUrl) }
+        val project = TestProjectBuilder.build(schemalessOptions)
+
+        expect(null) { project.schema }
+
     }
 })
 
