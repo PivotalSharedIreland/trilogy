@@ -47,10 +47,10 @@ class StringTestParser(val testBody: String) : TestParser {
     private fun parseAssertions(): List<TrilogyAssertion> {
         val assertionsSection = assertionHeaderRegex.find(testBody)?.groups?.get(1)?.value ?: return emptyList()
 
-        val assertionComponents = Regex("#### SQL\\s+(.+?)\n(.+)\\Z", RegexOption.DOT_MATCHES_ALL)
-                .find(assertionsSection)!!
-                .groups
-        return listOf(TrilogyAssertion(assertionComponents[1]!!.value.trim(), assertionComponents[2]!!.value.trim()))
+        return Regex("#### SQL\\s*\\n(.+?)```(.+?)```", RegexOption.DOT_MATCHES_ALL)
+                .findAll(assertionsSection)
+                .map { match -> TrilogyAssertion(match.groupValues[1].trim(), match.groupValues[2].trim()) }
+                .toList()
     }
 
     private fun validate() {

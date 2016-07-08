@@ -52,6 +52,16 @@ class StringTestParserTests : Spek({
 
     context("with SQL assertion") {
         val testString = ResourceHelper.getTestByName("sqlAssertion")
+        val sqlStatement = "DECLARE\n" +
+                "    l_count NUMBER;\n" +
+                "    wrong_count EXCEPTION;\n" +
+                "BEGIN\n" +
+                "    SELECT count(*) INTO l_count FROM dual;\n" +
+                "    IF l_count = 0\n" +
+                "    THEN\n" +
+                "        RAISE wrong_count;\n" +
+                "    END IF;\n" +
+                "END;"
 
         it("reads assertion description") {
             expect("Assertion description") { StringTestParser(testString).getTest().assertions[0].description }
@@ -62,17 +72,18 @@ class StringTestParserTests : Spek({
         }
 
         it("reads assertion body") {
-            val sqlStatement = "DECLARE\n" +
-                    "    l_count NUMBER;\n" +
-                    "    wrong_count EXCEPTION;\n" +
-                    "BEGIN\n" +
-                    "    SELECT count(*) INTO l_count FROM dual;\n" +
-                    "    IF l_count = 0\n" +
-                    "    THEN\n" +
-                    "        RAISE wrong_count;\n" +
-                    "    END IF;\n" +
-                    "END;"
             expect(sqlStatement) { StringTestParser(testString).getTest().assertions[0].body }
+        }
+
+        context("multiple assertions") {
+            val secondSqlStatement = sqlStatement.replace("l_count", "alt_count")
+            val assertions = StringTestParser(ResourceHelper.getTestByName("multipleSqlAssertions")).getTest().assertions
+
+            it("reads all assertions") {
+                expect(2) { assertions.count() }
+                expect(sqlStatement) { assertions.first().body }
+                expect(secondSqlStatement) { assertions.last().body }
+            }
         }
     }
 

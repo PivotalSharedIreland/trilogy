@@ -24,3 +24,17 @@ BEGIN
     END IF;
 END;
 ```
+#### SQL
+Assertion description
+```
+DECLARE
+    alt_count NUMBER;
+    wrong_count EXCEPTION;
+BEGIN
+    SELECT count(*) INTO alt_count FROM dual;
+    IF alt_count = 0
+    THEN
+        RAISE wrong_count;
+    END IF;
+END;
+```

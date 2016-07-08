@@ -8,7 +8,10 @@ Example passing test
     |1   |1     |         |
     |0   |0     |         |
 ### ASSERTIONS
-#### SQL Assertion description
-    BEGIN
-        NULL;
-    END;
+#### SQL
+Assertion description
+```
+BEGIN
+    NULL;
+END;
+```

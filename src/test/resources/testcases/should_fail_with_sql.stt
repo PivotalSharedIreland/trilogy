@@ -8,10 +8,12 @@ Example passing test
 |1   |1     |         |
 |0   |0     |         |
 ### ASSERTIONS
-#### SQL Assertion description
-
-    DECLARE
-        wrong_count EXCEPTION;
-    BEGIN
-        RAISE wrong_count;
-    END;
+#### SQL
+Assertion description
+```
+DECLARE
+    wrong_count EXCEPTION;
+BEGIN
+    RAISE wrong_count;
+END;
+```
