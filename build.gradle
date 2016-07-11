@@ -22,7 +22,11 @@ apply plugin: 'application'
 
 jar {
     baseName = 'trilogy'
-    version = '0.0.1-SNAPSHOT'
+    version = '0.1-pre'
+    manifest {
+        attributes('Implementation-Title': baseName, 'Implementation-Version': version)
+
+    }
 }
 
 sourceCompatibility = 1.7
@@ -33,7 +37,6 @@ repositories {
     mavenCentral()
     jcenter()
     maven { url "http://repository.jetbrains.com/all" }
-    flatDir { dirs 'lib' }
 }
 
 dependencies {
@@ -41,7 +44,6 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter:${springBootVersion}")
     compile("org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}")
     compile("commons-cli:commons-cli:1.3.1")
-    compile(name: "ojdbc7")
     compile("org.flywaydb:flyway-core:4.0.3")
 
     testCompile('org.springframework.boot:spring-boot-starter-test')

@@ -13,5 +13,11 @@ BEGIN
 END DEGENERATE;
 ```
 
-# Packaging executable
-`./gradlew distShadowZip`
+# Creating a release
+
+When creating a release, the following steps should be followed:
+- Update `build.gradle` with the version number
+- Update `README.md` with the version number
+- When committing those changes, tag the commit with the version number, and push the tag to repository
+- Build the JAR by running `./gralew bootRepackage`
+- Upload the resulting JAR to Github release associated with the version tag

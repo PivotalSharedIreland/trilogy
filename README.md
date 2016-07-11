@@ -1,24 +1,28 @@
 # Trilogy
 
 Trilogy is a tool for testing SQL stored procedures and functions. Test cases are represented by plain text files utilizing markdown format, which makes them easily readable and editable.
+## Requirements
+- JRE 1.7 or later installed
+- JDBC driver for the database under test available on the classpath.
+
+##Latest version
+0.1-pre
 
 ## Command-line options
 - Single test case run:
     ```
-    $ ./trilogy <filename> [--db_url=<JDBC url>] [--db_user=<username>] [--db_password=<password>]
+    $ java -jar trilogy.jar <filename> [--db_url=<JDBC url>] [--db_user=<username>] [--db_password=<password>]
     ```
     where `filename` is path to the `.stt` test file
 
 - Project run:
     ```
-    $ ./trilogy --project=<path to project> [--db_url=<JDBC url>] [--db_user=<username>] [--db_password=<password>] [--skip_schema_load]
+    $ java -jar trilogy.jar --project=<path to project> [--db_url=<JDBC url>] [--db_user=<username>] [--db_password=<password>] [--skip_schema_load]
     ```
     add the `skip_schema_load` flag to indicate that the `tests/fixtures/schema.sql` should not be loaded if it is present in the project.
 
 The `db_url` should point to the database under test. Make sure that the appropriate JDBC driver is available on the classpath.
 Also, the `db_url`, `db_user` and `db_password` can be specified as environment variables.
-
-
 
 ## Standalone test case file format
 Standalone test cases are good for small ad-hoc tests that do not require loading of the schema, procedure code or fixtures.

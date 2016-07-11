@@ -7,4 +7,4 @@ ${AnsiColor.BRIGHT_RED} |"-.._____${AnsiColor.GREEN}_______..-"${AnsiColor.WHITE
 ${AnsiColor.BRIGHT_RED} |        ${AnsiColor.GREEN}           |${AnsiColor.WHITE}     |___|  |___|  |_||___||_______||_______||_______|  |___|
 ${AnsiColor.BRIGHT_RED} |"-.._${AnsiColor.GREEN}___________..-"${AnsiColor.WHITE}
 ${AnsiColor.BRIGHT_RED} |    ${AnsiColor.GREEN}               |${AnsiColor.WHITE}   [==   Database Logic Testing Framework by ${AnsiColor.CYAN}Pivotal Labs${AnsiColor.WHITE}   ==]
-${AnsiColor.BRIGHT_RED}  "${AnsiColor.GREEN}-..____________..-"${AnsiColor.WHITE}   ${AnsiStyle.BOLD}Everyone just loves the fierceness of chicken cheesecake flavored with cumin.${AnsiStyle.NORMAL}
+${AnsiColor.BRIGHT_RED}  "${AnsiColor.GREEN}-..____________..-"${AnsiColor.WHITE}   Version: ${application.version}
