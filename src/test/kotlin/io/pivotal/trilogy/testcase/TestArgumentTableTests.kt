@@ -29,12 +29,12 @@ class TestArgumentTableTests : Spek ({
         expect(listOf("FOO", "BAR")) { TestArgumentTable(listOf("FOO$", "BAR$"), emptyList()).outputArgumentNames }
     }
 
-    it("excludes input argument names and the error label") {
-        expect(listOf("FOO", "BAR")) { TestArgumentTable(listOf("FOO$", "BAR$", "BAZ", "=ERROR="), emptyList()).outputArgumentNames }
+    it("excludes input argument names") {
+        expect(listOf("FOO", "BAR", "=ERROR=")) { TestArgumentTable(listOf("FOO$", "BAR$", "BAZ", "=ERROR="), emptyList()).outputArgumentNames }
     }
 
     it("produces a list of matching output values") {
         val outputValues = listOf(listOf("1", "2", "3", ""), listOf("5", "6", "7", ""))
-        expect(listOf(listOf("2", "3"), listOf("6", "7"))) { TestArgumentTable(listOf("ANIM", "FOO$", "BAR$", "=ERROR="), outputValues).outputArgumentValues}
+        expect(listOf(listOf("2", "3", ""), listOf("6", "7", ""))) { TestArgumentTable(listOf("ANIM", "FOO$", "BAR$", "=ERROR="), outputValues).outputArgumentValues}
     }
 })

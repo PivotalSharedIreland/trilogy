@@ -41,10 +41,10 @@ class TestProjectBuilderTests : Spek({
             tests.first().apply {
                 description shouldEqual "Output should echo the input"
                 argumentTable.inputArgumentNames shouldEqual listOf("V_IN")
-                argumentTable.outputArgumentNames shouldEqual listOf("V_OUT")
+                argumentTable.outputArgumentNames shouldEqual listOf("V_OUT", "=ERROR=")
                 argumentTable.inputArgumentValues.count() shouldEqual 3
                 argumentTable.inputArgumentValues.first() shouldEqual listOf("1243")
-                argumentTable.outputArgumentValues.first() shouldEqual listOf("1243")
+                argumentTable.outputArgumentValues.first() shouldEqual listOf("1243", "")
             }
         }
 

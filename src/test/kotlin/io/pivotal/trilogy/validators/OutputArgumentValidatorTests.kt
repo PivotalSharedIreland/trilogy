@@ -4,7 +4,7 @@ import org.jetbrains.spek.api.Spek
 import java.math.BigDecimal
 import kotlin.test.expect
 
-class OutputArgumentValidatorTests : Spek ({
+class OutputArgumentValidatorTests : Spek({
 
     it("passes validation with no parameters") {
         expect(true) { OutputArgumentValidator(emptyList()).validate(emptyList(), emptyMap()) }
@@ -32,5 +32,39 @@ class OutputArgumentValidatorTests : Spek ({
         val actualValues = mapOf(Pair("FOO", null), Pair("BAR", BigDecimal.TEN))
         expect(true) { OutputArgumentValidator(listOf("FOO", "BAR")).validate(listOf("__NULL__", "10"), actualValues) }
     }
+
+    context("Error validation") {
+        val subject = OutputArgumentValidator(listOf("=ERROR="))
+        val actualValues = mapOf(Pair("=ERROR=", "ORA-06512: at line 1"))
+
+        it("passes validation when no error is raised") {
+            expect(true) { subject.validate(listOf(""), emptyMap()) }
+        }
+
+        it("fails validation when an unexpected error is raised") {
+            expect(false) { subject.validate(listOf(""), mapOf(Pair("=ERROR=", "Something"))) }
+        }
+
+        it("passes validation for error wildcard") {
+            expect(true) { subject.validate(listOf("ANY"), actualValues) }
+        }
+
+        it("fails if an error is expected but not thrown") {
+            expect(false) { subject.validate(listOf("any"), emptyMap()) }
+        }
+
+        it("fails when a different error is expected") {
+            expect(false) { subject.validate(listOf("Bunny"), actualValues) }
+        }
+
+        context("with output arguments") {
+            val subjectWithOutput = OutputArgumentValidator(listOf("V_OUT", "=ERROR="))
+
+            it("ignores the output values when an error is thrown") {
+                expect(true) { subjectWithOutput.validate(listOf("Jam", "ANY"), mapOf(Pair("=ERROR=", "Ouch!"))) }
+            }
+        }
+    }
+
 
 })

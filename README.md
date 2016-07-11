@@ -111,6 +111,9 @@ For example:
 will instruct the framework to load the `tests/fixtures/setup/messages.sql` and `tests/fixtures/setup/balance/prepay_user_with_low_balance.sql` before running the test case in the order specified.
 When a referenced fixture is not found, the whole test suite fails.
 
+### Testing for errors
+An optional special column `=ERROR=` can be used in the test `DATA` section for testing error conditions. Leave it blank in order to specify that no error is expected during the call. Alternatively, an error substring or a wildcard keyword `ANY` can be used. For example, when a database throws an error with text `ORA-20111: User specified error is thrown`, any of the following values will ensure that the test will pass: `ANY`, `aNy`, `ORA-20111`, `user`, `Error`, `Error is thrown`.
+
 ### Automatic schema load
 When a `schema.sql` is placed into the `tests/fixtures` directory, it would be automatically executed before the project runs.
 

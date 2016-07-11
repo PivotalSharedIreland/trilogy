@@ -28,9 +28,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     }
 
     private fun runAssertions(assertions: List<TrilogyAssertion>): Boolean {
-        return assertions.all { assertion ->
-            assertionExecuter execute assertion
-        }
+        return assertions.all { assertion -> assertionExecuter execute assertion }
     }
 
     private fun TrilogyTest.runData(testCase: TrilogyTestCase, library: FixtureLibrary): Boolean {
@@ -42,10 +40,10 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             val inputRow = inputRowWithIndex.value
             val index = inputRowWithIndex.index
 
-            val assertionSuccess = runAssertions(assertions)
-
             val output = testSubjectCaller.call(testCase.procedureName, argumentTable.inputArgumentNames, inputRow)
+
             val outputSuccess = outputValidator.validate(argumentTable.outputArgumentValues[index], output)
+            val assertionSuccess = runAssertions(assertions)
             testCase.hooks.afterEachRow.runTeardownScripts(library)
             outputSuccess && assertionSuccess
         }.all { it }
