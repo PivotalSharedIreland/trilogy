@@ -6,7 +6,7 @@ Trilogy is a tool for testing SQL stored procedures and functions. Test cases ar
 - JDBC driver for the database under test available on the classpath.
 
 ##Latest version
-0.1-pre
+0.1-pre ([download](https://github.com/PivotalSharedIreland/trilogy/releases/download/0.1-pre/trilogy-0.1-pre.jar))
 
 ## Command-line options
 - Single test case run:

@@ -5,7 +5,7 @@ import io.pivotal.trilogy.testrunner.DatabaseAssertionExecuter
 import io.pivotal.trilogy.testrunner.DatabaseScriptExecuter
 import io.pivotal.trilogy.testrunner.DatabaseTestCaseRunner
 import io.pivotal.trilogy.testrunner.DatabaseTestProjectRunner
-import io.pivotal.trilogy.testrunner.DatabaseTestSubjectCaller
+import io.pivotal.trilogy.testrunner.DatabaseProcedureCaller
 import io.pivotal.trilogy.testrunner.ScriptExecuter
 import io.pivotal.trilogy.testrunner.TestCaseRunner
 import io.pivotal.trilogy.testrunner.TestProjectRunner
@@ -19,7 +19,7 @@ import javax.sql.DataSource
 open class TrilogyApplicationConfiguration {
     @Bean
     open fun testSubjectCaller(dataSource: DataSource): TestSubjectCaller {
-        return DatabaseTestSubjectCaller(dataSource)
+        return DatabaseProcedureCaller(dataSource)
     }
 
     @Bean

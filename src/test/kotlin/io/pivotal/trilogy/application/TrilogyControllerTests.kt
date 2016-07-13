@@ -5,27 +5,16 @@ import io.pivotal.trilogy.testrunner.DatabaseAssertionExecuter
 import io.pivotal.trilogy.testrunner.DatabaseScriptExecuter
 import io.pivotal.trilogy.testrunner.DatabaseTestCaseRunner
 import io.pivotal.trilogy.testrunner.DatabaseTestProjectRunner
-import io.pivotal.trilogy.testrunner.DatabaseTestSubjectCaller
+import io.pivotal.trilogy.testrunner.DatabaseProcedureCaller
 import org.jetbrains.spek.api.Spek
 import org.springframework.jdbc.core.JdbcTemplate
+import javax.sql.DataSource
 import kotlin.test.expect
 
-class TrilogyControllerTests : Spek ({
+class TrilogyControllerTests : Spek({
 
-    fun bootTrilogyController(): TrilogyController {
-        val controller = TrilogyController()
-        val dataSource = DatabaseHelper.dataSource()
-        val jdbcTemplate = JdbcTemplate(dataSource)
-        val testSubjectCaller = DatabaseTestSubjectCaller(dataSource)
-        val scriptExecuter = DatabaseScriptExecuter(jdbcTemplate)
-        val assertionExecuter = DatabaseAssertionExecuter(scriptExecuter)
-        val testCaseRunner = DatabaseTestCaseRunner(testSubjectCaller, assertionExecuter, scriptExecuter)
-        controller.testProjectRunner = DatabaseTestProjectRunner(testCaseRunner, scriptExecuter)
-        return controller
-    }
-
-    describe("execution") {
-        val controller = bootTrilogyController()
+    describe("Oracle execution") {
+        val controller = trilogyController(DatabaseHelper.oracleDataSource())
 
         describe("simple cases") {
             it("succeeds for a simple case") {
@@ -103,9 +92,41 @@ class TrilogyControllerTests : Spek ({
                 }
             }
 
+            describe("stored function") {
+                val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/function")
+                it("succeeds when results match") {
+                    val testCaseResult = controller.run(options)
+                }
+            }
+
 
         }
 
+
+    }
+
+    describe("Postgres execution") {
+        val controller = trilogyController(DatabaseHelper.pgDataSource())
+
+        describe("simple function") {
+            val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/pg/example")
+
+            it("succeeds") {
+                val testCaseResult = controller.run(options)
+                expect(true) { testCaseResult.didPass }
+            }
+        }
     }
 
 })
+
+private fun trilogyController(dataSource: DataSource): TrilogyController {
+    val controller = TrilogyController()
+    val jdbcTemplate = JdbcTemplate(dataSource)
+    val testSubjectCaller = DatabaseProcedureCaller(dataSource)
+    val scriptExecuter = DatabaseScriptExecuter(jdbcTemplate)
+    val assertionExecuter = DatabaseAssertionExecuter(scriptExecuter)
+    val testCaseRunner = DatabaseTestCaseRunner(testSubjectCaller, assertionExecuter, scriptExecuter)
+    controller.testProjectRunner = DatabaseTestProjectRunner(testCaseRunner, scriptExecuter)
+    return controller
+}

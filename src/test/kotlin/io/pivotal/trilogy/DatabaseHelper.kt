@@ -6,23 +6,33 @@ import javax.sql.DataSource
 
 object DatabaseHelper {
 
-    val jdbcUrl = "jdbc:oracle:thin:@192.168.99.100:32769:xe"
+    val oracleJdbcUrl = "jdbc:oracle:thin:@192.168.99.100:32769:xe"
+    val pgJdbcUrl = "jdbc:postgresql://localhost:5432/pivotal"
 
-    fun dataSource(): DataSource {
+    fun oracleDataSource(): DataSource {
         return DriverManagerDataSource().apply {
             setDriverClassName("oracle.jdbc.driver.OracleDriver")
-            url = jdbcUrl
+            url = oracleJdbcUrl
             username = "app_user"
             password = "secret"
         }
     }
 
     fun jdbcTemplate(): JdbcTemplate {
-        return JdbcTemplate(dataSource())
+        return JdbcTemplate(oracleDataSource())
     }
 
     fun executeScript(scriptName: String) {
         jdbcTemplate().execute(ResourceHelper.getScriptByName(scriptName))
+    }
+
+    fun pgDataSource(): DataSource {
+        return DriverManagerDataSource().apply {
+            setDriverClassName("org.postgresql.Driver")
+            url = pgJdbcUrl
+            username = "pivotal"
+            password = ""
+        }
     }
 
 }

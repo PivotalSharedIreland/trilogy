@@ -1,0 +1,10 @@
+# TEST CASE EXAMPLE
+Example for a postgres stored function
+## TEST
+It should multiply the number by two
+### DATA
+|V_IN|V_OUT$| =ERROR= |
+|---:|-----:|---------|
+|  2 |    4 |         |
+| 22 |   44 |         |
+| 92 |  184 |         |

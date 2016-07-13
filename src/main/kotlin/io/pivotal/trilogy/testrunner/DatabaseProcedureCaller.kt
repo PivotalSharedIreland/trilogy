@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall
 import java.util.*
 import javax.sql.DataSource
 
-class DatabaseTestSubjectCaller(@Autowired val dataSource: DataSource) : TestSubjectCaller {
+class DatabaseProcedureCaller(@Autowired val dataSource: DataSource) : TestSubjectCaller {
 
     override fun call(procedureName: String, parameterNames: List<String>, parameterValues: List<String>): Map<String, Any?> {
         val jdbcCall = jdbcCall(procedureName)
