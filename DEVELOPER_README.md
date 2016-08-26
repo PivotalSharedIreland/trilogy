@@ -16,7 +16,7 @@ END DEGENERATE;
 # Creating a release
 
 When creating a release, the following steps should be followed:
-- Update `build.gradle` with the version number
+- Update `build.gradle.kts` with the version number
 - Update `README.md` with the version number
 - When committing those changes, tag the commit with the version number, and push the tag to repository
 - Build the JAR by running `./gralew bootRepackage`
