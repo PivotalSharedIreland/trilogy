@@ -1,3 +1,6 @@
+import org.gradle.api.plugins.*
+import org.gradle.script.lang.kotlin.*
+
 buildscript {
     repositories {
         gradleScriptKotlin()
@@ -5,7 +8,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.0.RELEASE")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.2")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.0.4")
     }
 }
 
@@ -33,10 +36,10 @@ configure<JavaPluginConvention> {
 
 
 dependencies {
-    compile(kotlinModule("stdlib"))
+    compile(kotlinModule("stdlib", version = "1.0.4"))
     compile("org.springframework.boot:spring-boot-starter-jdbc")
     compile("org.springframework.boot:spring-boot-starter:1.4.0.RELEASE")
-    compile("org.jetbrains.kotlin:kotlin-stdlib:1.0.2")
+    compile("org.jetbrains.kotlin:kotlin-stdlib:1.0.4")
     compile("commons-cli:commons-cli:1.3.1")
     compile("org.flywaydb:flyway-core:4.0.3")
 
