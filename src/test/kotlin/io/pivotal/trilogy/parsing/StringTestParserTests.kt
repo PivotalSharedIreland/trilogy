@@ -1,6 +1,7 @@
 package io.pivotal.trilogy.parsing
 
 import io.pivotal.trilogy.ResourceHelper
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect
@@ -32,11 +33,11 @@ class StringTestParserTests : Spek({
         }
 
         it("reads the execution table headers") {
-            expect(listOf("PARAM1", "PARAM2")) { StringTestParser(testString).getTest().argumentTable.inputArgumentNames }
+            expect(listOf("PARAM1", "PARAM2")) { (StringTestParser(testString).getTest() as ProcedureTrilogyTest).argumentTable.inputArgumentNames }
         }
 
         it("reads the execution table values") {
-            val parsedTest = StringTestParser(testString).getTest()
+            val parsedTest = StringTestParser(testString).getTest() as ProcedureTrilogyTest
             expect(inputTable) { parsedTest.argumentTable.inputArgumentValues }
             expect(listOf(emptyList(), emptyList(), emptyList(), emptyList())) { parsedTest.argumentTable.outputArgumentValues }
         }
@@ -68,7 +69,7 @@ class StringTestParserTests : Spek({
         }
 
         it("maintains the argument table size") {
-            expect(4) { StringTestParser(testString).getTest().argumentTable.inputArgumentValues.count() }
+            expect(4) { (StringTestParser(testString).getTest() as ProcedureTrilogyTest).argumentTable.inputArgumentValues.count() }
         }
 
         it("reads assertion body") {

@@ -33,7 +33,7 @@ class StringTestCaseParserTests : Spek({
                     listOf("", "12", "")
             )
             val arguments = TestArgumentTable(header, values)
-            val test = TrilogyTest("Test description", arguments, emptyList())
+            val test = ProcedureTrilogyTest("Test description", arguments, emptyList())
 
             expect(test) { StringTestCaseParser(validTestCase).getTestCase().tests.first() }
         }

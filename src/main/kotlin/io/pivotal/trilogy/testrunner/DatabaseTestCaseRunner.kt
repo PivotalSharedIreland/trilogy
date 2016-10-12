@@ -3,7 +3,7 @@ package io.pivotal.trilogy.testrunner
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TrilogyAssertion
-import io.pivotal.trilogy.testcase.TrilogyTest
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 import io.pivotal.trilogy.testproject.FixtureLibrary
 import io.pivotal.trilogy.validators.OutputArgumentValidator
@@ -33,7 +33,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         return assertions.all { assertion -> assertionExecuter execute assertion }
     }
 
-    private fun TrilogyTest.runData(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): Boolean {
+    private fun ProcedureTrilogyTest.runData(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): Boolean {
         val outputValidator = OutputArgumentValidator(argumentTable.outputArgumentNames)
 
         return argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->

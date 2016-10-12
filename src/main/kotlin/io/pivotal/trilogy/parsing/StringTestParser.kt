@@ -2,6 +2,7 @@ package io.pivotal.trilogy.parsing
 
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.TrilogyTest
 
 class StringTestParser(val testBody: String) : TestParser {
@@ -25,8 +26,8 @@ class StringTestParser(val testBody: String) : TestParser {
         validate()
     }
 
-    private fun parse(): TrilogyTest {
-        return TrilogyTest(parseDescription(), parseArgumentTable(), parseAssertions())
+    private fun parse(): ProcedureTrilogyTest {
+        return ProcedureTrilogyTest(parseDescription(), parseArgumentTable(), parseAssertions())
     }
 
     private fun parseArgumentTable(): TestArgumentTable {

@@ -3,18 +3,18 @@ package io.pivotal.trilogy
 import io.pivotal.trilogy.testcase.StringTestCaseParser
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
-import io.pivotal.trilogy.testcase.TrilogyTest
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 
 object Fixtures {
     val argumentTable = TestArgumentTable(listOf("IN", "OUT$"), listOf(listOf("1", "1")))
     val assertions = listOf(TrilogyAssertion("some description", "some SQL"))
-    val testWithThreeRows: TrilogyTest by lazy {
-        TrilogyTest("", argumentTableWithThreeRows, emptyList())
+    val testWithThreeRows: ProcedureTrilogyTest by lazy {
+        ProcedureTrilogyTest("", argumentTableWithThreeRows, emptyList())
     }
 
-    fun testWithThreeRowsAndAssertions(assertions: List<TrilogyAssertion>): TrilogyTest {
-        return TrilogyTest("", argumentTableWithThreeRows, assertions)
+    fun testWithThreeRowsAndAssertions(assertions: List<TrilogyAssertion>): ProcedureTrilogyTest {
+        return ProcedureTrilogyTest("", argumentTableWithThreeRows, assertions)
     }
 
     private val argumentTableWithThreeRows: TestArgumentTable
@@ -29,11 +29,11 @@ object Fixtures {
         return StringTestCaseParser(ResourceHelper.getTestCaseByName(testCaseName)).getTestCase()
     }
 
-    fun buildSingleTest(): List<TrilogyTest> = listOf(TrilogyTest("I am a test", argumentTable, assertions))
+    fun buildSingleTest(): List<ProcedureTrilogyTest> = listOf(ProcedureTrilogyTest("I am a test", argumentTable, assertions))
 
-    fun buildMultipleTests(): List<TrilogyTest> = listOf(
-            TrilogyTest("I am a test", argumentTable, assertions),
-            TrilogyTest("I am also a test", argumentTable, assertions),
-            TrilogyTest("Me three", argumentTable, assertions)
+    fun buildMultipleTests(): List<ProcedureTrilogyTest> = listOf(
+            ProcedureTrilogyTest("I am a test", argumentTable, assertions),
+            ProcedureTrilogyTest("I am also a test", argumentTable, assertions),
+            ProcedureTrilogyTest("Me three", argumentTable, assertions)
     )
 }
