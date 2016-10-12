@@ -5,6 +5,7 @@ import io.pivotal.trilogy.mocks.TestCaseRunnerSpy
 import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.shouldStartWith
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testproject.TestProjectBuilder
 import io.pivotal.trilogy.testproject.TrilogyTestProject
 import io.pivotal.trilogy.testproject.UrlTestProjectResourceLocator
@@ -16,7 +17,7 @@ class DatabaseTestProjectRunnerTests : Spek({
 
     val projectRoot = "src/test/resources/projects/"
 
-    fun projectNamed(name: String) : TrilogyTestProject {
+    fun projectNamed(name: String): TrilogyTestProject {
         val projectUrl = File("$projectRoot$name").toURI().toURL()
         val options = TrilogyApplicationOptionsStub()
         options.locator = UrlTestProjectResourceLocator(projectUrl)
@@ -28,7 +29,9 @@ class DatabaseTestProjectRunnerTests : Spek({
         val project = projectNamed("simple")
         DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterSpy()).run(project)
         expect(1) { mockTestCaseRunner.runCount }
-        expect("EXAMPLE_PROCEDURE") { mockTestCaseRunner.runArgument?.procedureName }
+        expect("EXAMPLE_PROCEDURE") {
+            (mockTestCaseRunner.runArgument as? ProcedureTrilogyTestCase)?.procedureName
+        }
         expect("Example") { mockTestCaseRunner.runArgument?.description }
         expect(2) { mockTestCaseRunner.runArgument?.tests?.count() }
     }

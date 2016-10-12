@@ -24,7 +24,7 @@ class StringTestCaseParser(val testCaseBody: String) : TestCaseParser {
     }
 
     private fun parse(): TrilogyTestCase {
-        return TrilogyTestCase(parseFunctionName(), parseDescription(), parseTests(), parseHooks())
+        return ProcedureTrilogyTestCase(parseFunctionName(), parseDescription(), parseTests(), parseHooks())
     }
 
     private fun parseDescription(): String {

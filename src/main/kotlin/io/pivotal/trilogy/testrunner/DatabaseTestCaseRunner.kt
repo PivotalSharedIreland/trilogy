@@ -1,6 +1,7 @@
 package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.reporting.TestCaseResult
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testcase.TrilogyTest
 import io.pivotal.trilogy.testcase.TrilogyTestCase
@@ -15,7 +16,8 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
 
         val stats = trilogyTestCase.tests.map { test ->
             trilogyTestCase.hooks.beforeEachTest.runSetupScripts(library)
-            val success = test.runData(trilogyTestCase, library)
+            val success = if ((trilogyTestCase is ProcedureTrilogyTestCase) && (test is ProcedureTrilogyTest))
+                test.runData(trilogyTestCase, library) else false
             trilogyTestCase.hooks.afterEachTest.runTeardownScripts(library)
             success
         }
@@ -31,7 +33,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         return assertions.all { assertion -> assertionExecuter execute assertion }
     }
 
-    private fun TrilogyTest.runData(testCase: TrilogyTestCase, library: FixtureLibrary): Boolean {
+    private fun TrilogyTest.runData(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): Boolean {
         val outputValidator = OutputArgumentValidator(argumentTable.outputArgumentNames)
 
         return argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->

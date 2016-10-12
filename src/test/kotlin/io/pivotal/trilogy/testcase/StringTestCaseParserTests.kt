@@ -5,7 +5,7 @@ import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect
 
-class StringTestCaseParserTests : Spek ({
+class StringTestCaseParserTests : Spek({
 
     describe("degenerate") {
         val validTestCase = ResourceHelper.getTestCaseByName("degenerate")
@@ -16,7 +16,7 @@ class StringTestCaseParserTests : Spek ({
 
         it("gets a valid test case name") {
             val testCaseParser = StringTestCaseParser(validTestCase)
-            expect("DEGENERATE") { testCaseParser.getTestCase().procedureName }
+            expect("DEGENERATE") { (testCaseParser.getTestCase() as ProcedureTrilogyTestCase).procedureName }
         }
 
         it("gets the test case description") {

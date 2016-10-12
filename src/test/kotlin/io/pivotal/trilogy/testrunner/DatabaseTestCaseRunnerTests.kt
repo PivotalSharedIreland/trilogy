@@ -5,9 +5,9 @@ import io.pivotal.trilogy.isEven
 import io.pivotal.trilogy.mocks.AssertionExecuterMock
 import io.pivotal.trilogy.mocks.ScriptExecuterSpy
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyAssertion
-import io.pivotal.trilogy.testcase.TrilogyTestCase
 import io.pivotal.trilogy.testproject.FixtureLibrary
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.shouldEqual
@@ -51,7 +51,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run the setup script once") {
             val beforeAll = listOf("Set client balance")
             val hooks = TestCaseHooks(beforeAll = beforeAll)
-            val testCase = TrilogyTestCase("someProcedure", "someDescription", emptyList(), hooks)
+            val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", emptyList(), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
 
@@ -62,7 +62,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("runs the before all steps in order") {
             val beforeAll = listOf("Set client balance", "UpdAte client Messages")
             val hooks = TestCaseHooks(beforeAll = beforeAll)
-            val testCase = TrilogyTestCase("someProcedure", "someDescription", emptyList(), hooks)
+            val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", emptyList(), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
 
@@ -76,7 +76,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run the before each row script once for each row") {
             val beforeEachRow = listOf("Set client balance")
             val hooks = TestCaseHooks(beforeEachRow = beforeEachRow)
-            val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
             expect(3) { scriptExecuterSpy.executeCalls }
@@ -85,7 +85,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run the before each row scripts in sequence") {
             val beforeEachRow = listOf("Set client balance", "upDate client messages")
             val hooks = TestCaseHooks(beforeEachRow = beforeEachRow)
-            val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
             expect(6) { scriptExecuterSpy.executeCalls }
@@ -102,7 +102,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run the script once for each row") {
             val afterEachRow = listOf("Clear client balance")
             val hooks = TestCaseHooks(afterEachRow = afterEachRow)
-            val testCase = TrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
             expect(3) { scriptExecuterSpy.executeCalls }
@@ -111,7 +111,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run the scripts in sequence") {
             val afterEachRow = listOf("Clear Client BalaNce", "NOwhere")
             val hooks = TestCaseHooks(afterEachRow = afterEachRow)
-            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
             expect(6) { scriptExecuterSpy.executeCalls }
@@ -127,7 +127,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run after each test") {
             val afterEachTest = listOf("nowhere")
             val hooks = TestCaseHooks(afterEachTest = afterEachTest)
-            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
             expect(1) { scriptExecuterSpy.executeCalls }
@@ -136,7 +136,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run each script in order") {
             val afterEachTest = listOf("nowhere", "CLEAR client BALANCE")
             val hooks = TestCaseHooks(afterEachTest = afterEachTest)
-            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
 
@@ -150,7 +150,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run after all") {
             val afterAll = listOf("nowhere")
             val hooks = TestCaseHooks(afterAll = afterAll)
-            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
             expect(1) { scriptExecuterSpy.executeCalls }
@@ -159,7 +159,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run each script in order") {
             val afterAll = listOf("nowhere", "CLEAR client BALANCE")
             val hooks = TestCaseHooks(afterAll = afterAll)
-            val testCase = TrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("foo", "bar", listOf(Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
 
@@ -174,7 +174,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("should run the script once for each test") {
             val beforeEachTest = listOf("set client balance")
             val hooks = TestCaseHooks(beforeEachTest = beforeEachTest)
-            val testCase = TrilogyTestCase("boo", "far", listOf(Fixtures.testWithThreeRows, Fixtures.testWithThreeRows), hooks)
+            val testCase = ProcedureTrilogyTestCase("boo", "far", listOf(Fixtures.testWithThreeRows, Fixtures.testWithThreeRows), hooks)
 
             testCaseRunner.run(testCase, fixtureLibrary)
             expect(2) { scriptExecuterSpy.executeCalls }
@@ -196,7 +196,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         val secondTestAssertionScript = "Second test assertion"
         val firstTest = Fixtures.testWithThreeRowsAndAssertions(listOf(TrilogyAssertion("", firstTestAssertionScript)))
         val secondTest = Fixtures.testWithThreeRowsAndAssertions(listOf(TrilogyAssertion("", secondTestAssertionScript)))
-        val testCase = TrilogyTestCase("boo", "bar", listOf(firstTest, secondTest), hooks)
+        val testCase = ProcedureTrilogyTestCase("boo", "bar", listOf(firstTest, secondTest), hooks)
 
         val beforeAllScript = firstSetupScript
         val beforeEachTestScript = secondSetupScript
@@ -245,7 +245,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
     context("when the test case has no tests") {
         it("should run test case successfully") {
-            expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", emptyList(), testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
+            expect(true) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", emptyList(), testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
         }
     }
 
@@ -259,11 +259,11 @@ class DatabaseTestCaseRunnerTests : Spek({
             val singleTest = Fixtures.buildSingleTest()
 
             it("then the test case should pass") {
-                expect(true) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
+                expect(true) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
             }
 
             it("then the number of successful tests should be reported on") {
-                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).passed }
+                expect(1) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).passed }
             }
         }
 
@@ -271,7 +271,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val multipleTests = Fixtures.buildMultipleTests()
 
             it("then the number of successful tests should be reported on") {
-                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks), FixtureLibrary.emptyLibrary()).passed }
+                expect(3) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks), FixtureLibrary.emptyLibrary()).passed }
             }
         }
     }
@@ -286,11 +286,11 @@ class DatabaseTestCaseRunnerTests : Spek({
             val singleTest = Fixtures.buildSingleTest()
 
             it("then the test case should fail") {
-                expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
+                expect(false) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
             }
 
             it("then a single failure should be reported on") {
-                expect(1) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).failed }
+                expect(1) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).failed }
             }
         }
 
@@ -298,7 +298,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val multipleTests = Fixtures.buildMultipleTests()
 
             it("then multiple failures should be reported on") {
-                expect(3) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks), FixtureLibrary.emptyLibrary()).failed }
+                expect(3) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", multipleTests, testCaseHooks), FixtureLibrary.emptyLibrary()).failed }
             }
         }
     }
@@ -311,7 +311,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         it("then the test case should fail") {
             val singleTest = Fixtures.buildSingleTest()
-            expect(false) { testCaseRunner.run(TrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
+            expect(false) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
         }
     }
 })

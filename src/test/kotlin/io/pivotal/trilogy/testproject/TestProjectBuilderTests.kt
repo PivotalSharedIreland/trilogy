@@ -4,6 +4,7 @@ import io.pivotal.trilogy.ResourceHelper
 import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
 import io.pivotal.trilogy.shouldStartWith
 import io.pivotal.trilogy.shouldThrow
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import org.amshove.kluent.AnyException
 import org.amshove.kluent.shouldEqual
@@ -33,7 +34,7 @@ class TestProjectBuilderTests : Spek({
         val project = TestProjectBuilder.build(options)
 
         expect(1) { project.testCases.count() }
-        project.testCases.first().apply {
+        (project.testCases.first() as ProcedureTrilogyTestCase).apply {
             procedureName shouldEqual "EXAMPLE_PROCEDURE"
             description shouldEqual "Example"
             hooks shouldEqual TestCaseHooks(emptyList(), emptyList(), emptyList(), emptyList())
