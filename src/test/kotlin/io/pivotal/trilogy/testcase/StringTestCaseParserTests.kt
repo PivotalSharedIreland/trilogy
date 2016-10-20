@@ -38,6 +38,10 @@ class StringTestCaseParserTests : Spek({
             expect(test) { StringTestCaseParser(validTestCase).getTestCase().tests.first() }
         }
 
+        it("should parse as a procedure test case") {
+            expect(true) { StringTestCaseParser(validTestCase).getTestCase() is ProcedureTrilogyTestCase }
+        }
+
     }
 
     describe("multiple tests") {
