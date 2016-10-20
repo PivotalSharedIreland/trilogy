@@ -36,7 +36,7 @@ class DatabaseTestSubjectCaller(@Autowired val dataSource: DataSource) : TestSub
         try {
             result = this.execute(parameters)
         } catch (e: DataAccessException) {
-            result = mapOf(Pair(TestArgumentTableTokens.errorColumnName, e.cause?.message ?: e.message))
+            return mapOf(Pair(TestArgumentTableTokens.errorColumnName, e.cause?.message ?: e.message))
         }
         return result
     }

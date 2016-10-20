@@ -25,7 +25,6 @@ configure<ApplicationPluginConvention> {
 
 repositories {
     gradleScriptKotlin()
-    mavenCentral()
     jcenter()
 }
 
