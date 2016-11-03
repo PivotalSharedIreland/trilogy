@@ -7,49 +7,6 @@ import kotlin.test.assertFails
 import kotlin.test.expect
 
 class StringTestParserTests : Spek({
-    context("minimal") {
-        val testString = ResourceHelper.getTestByName("minimal")
-        val firstRow = listOf("FOO", "12", "")
-        val secondRow = listOf("__NULL__", "0", "")
-        val thirdRow = listOf("BAR", "-18", "")
-        val fourthRow = listOf("", "12", "")
-        val dataTable = listOf(firstRow, secondRow, thirdRow, fourthRow)
-        val inputTable = dataTable.map { row -> listOf(row[0], row[1]) }
-
-        it("can be read") {
-            StringTestParser(testString)
-        }
-
-        it("ignores leading whitespace") {
-            StringTestParser("     \n\n  \n$testString")
-        }
-
-        it("fails if the test header is not the first") {
-            assertFails { StringTestParser("foo\n\n\n    \n$testString") }
-        }
-
-        it("reads the test description") {
-            expect("Test description") { StringTestParser(testString).getTest().description }
-        }
-
-        it("reads the execution table headers") {
-            expect(listOf("PARAM1", "PARAM2")) { (StringTestParser(testString).getTest() as ProcedureTrilogyTest).argumentTable.inputArgumentNames }
-        }
-
-        it("reads the execution table values") {
-            val parsedTest = StringTestParser(testString).getTest() as ProcedureTrilogyTest
-            expect(inputTable) { parsedTest.argumentTable.inputArgumentValues }
-            expect(listOf(emptyList(), emptyList(), emptyList(), emptyList())) { parsedTest.argumentTable.outputArgumentValues }
-        }
-
-        it("ignores leading spaces in table definition") {
-            StringTestParser(testString.replace(Regex("^\\|"), "   |"))
-        }
-
-        it("returns a test with an empty assertion list when it is absent") {
-            expect(emptyList()) { StringTestParser(testString).getTest().assertions }
-        }
-    }
 
     context("with SQL assertion") {
         val testString = ResourceHelper.getTestByName("sqlAssertion")
@@ -89,11 +46,11 @@ class StringTestParserTests : Spek({
     }
 
     it("fails for an empty string") {
-        assertFails { StringTestParser("") }
+        assertFails { StringTestParser("").getTest() }
     }
 
-    it("fails for a test without a data section") {
-        assertFails { StringTestParser("## TEST\nAll sea-dogs hail cold, coal-black reefs.") }
+    it("fails for a test without a body") {
+        assertFails { StringTestParser("## TEST\nAll sea-dogs hail cold, coal-black reefs.").getTest() }
     }
 
     it("fails for empty test description") {
