@@ -1,13 +1,13 @@
 package io.pivotal.trilogy.testproject
 
 import io.pivotal.trilogy.application.TrilogyOptions
-import io.pivotal.trilogy.testcase.StringTestCaseParser
+import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
 
 object TestProjectBuilder {
     fun build(options: TrilogyOptions): TrilogyTestProject {
         if (options.resourceLocator.testsAbsent) throw UnsupportedOperationException()
         return TrilogyTestProject(
-                options.resourceLocator.testCases.map { StringTestCaseParser(it).getTestCase() },
+                options.resourceLocator.testCases.map { ProcedureStringTestCaseParser(it).getTestCase() },
                 sourceScripts = options.resourceLocator.sourceScripts,
                 fixtures = options.resourceLocator.fixtures(),
                 schema = if (options.shouldSkipSchema) null else options.resourceLocator.schema

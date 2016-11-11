@@ -30,7 +30,7 @@ class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBod
 
     private fun parseDescription(): String {
         val description = testBody.replace(testHeaderRegex, "").replace(Regex("\\s*### DATA.*", RegexOption.DOT_MATCHES_ALL), "").trim()
-        if (description.isEmpty()) throw StringTestParser.MissingDescription("Every test should have a description")
+        if (description.isEmpty()) throw MissingDescription("Every test should have a description")
         return description
     }
 

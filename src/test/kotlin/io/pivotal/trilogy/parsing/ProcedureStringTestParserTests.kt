@@ -34,11 +34,11 @@ class ProcedureStringTestParserTests : Spek({
         }
 
         it("reads the execution table headers") {
-            expect(listOf("PARAM1", "PARAM2")) { (ProcedureStringTestParser(testString).getTest() as ProcedureTrilogyTest).argumentTable.inputArgumentNames }
+            expect(listOf("PARAM1", "PARAM2")) { (ProcedureStringTestParser(testString).getTest()).argumentTable.inputArgumentNames }
         }
 
         it("reads the execution table values") {
-            val parsedTest = ProcedureStringTestParser(testString).getTest() as ProcedureTrilogyTest
+            val parsedTest = ProcedureStringTestParser(testString).getTest()
             expect(inputTable) { parsedTest.argumentTable.inputArgumentValues }
             expect(listOf(emptyList(), emptyList(), emptyList(), emptyList())) { parsedTest.argumentTable.outputArgumentValues }
         }
@@ -50,5 +50,54 @@ class ProcedureStringTestParserTests : Spek({
         it("returns a test with an empty assertion list when it is absent") {
             expect(emptyList()) { ProcedureStringTestParser(testString).getTest().assertions }
         }
+    }
+
+    context("with SQL assertion") {
+        val testString = ResourceHelper.getTestByName("sqlAssertion")
+        val sqlStatement = "DECLARE\n" +
+                "    l_count NUMBER;\n" +
+                "    wrong_count EXCEPTION;\n" +
+                "BEGIN\n" +
+                "    SELECT count(*) INTO l_count FROM dual;\n" +
+                "    IF l_count = 0\n" +
+                "    THEN\n" +
+                "        RAISE wrong_count;\n" +
+                "    END IF;\n" +
+                "END;"
+
+        it("reads assertion description") {
+            expect("Assertion description") { ProcedureStringTestParser(testString).getTest().assertions[0].description }
+        }
+
+        it("maintains the argument table size") {
+            expect(4) { (ProcedureStringTestParser(testString).getTest()).argumentTable.inputArgumentValues.count() }
+        }
+
+        it("reads assertion body") {
+            expect(sqlStatement) { ProcedureStringTestParser(testString).getTest().assertions[0].body }
+        }
+
+        context("multiple assertions") {
+            val secondSqlStatement = sqlStatement.replace("l_count", "alt_count")
+            val assertions = ProcedureStringTestParser(ResourceHelper.getTestByName("multipleSqlAssertions")).getTest().assertions
+
+            it("reads all assertions") {
+                expect(2) { assertions.count() }
+                expect(sqlStatement) { assertions.first().body }
+                expect(secondSqlStatement) { assertions.last().body }
+            }
+        }
+    }
+
+    it("fails for an empty string") {
+        assertFails { ProcedureStringTestParser("").getTest() }
+    }
+
+    it("fails for a test without a body") {
+        assertFails { ProcedureStringTestParser("## TEST\nAll sea-dogs hail cold, coal-black reefs.").getTest() }
+    }
+
+    it("fails for empty test description") {
+        assertFails { ProcedureStringTestParser(ResourceHelper.getTestByName("emptyDescription")).getTest() }
     }
 })

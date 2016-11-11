@@ -30,7 +30,7 @@ class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody)
     override fun validate() {
         super.validate()
         if (test == null) throw MissingTestBody("Test body not provided")
-        if (description == null) throw StringTestParser.MissingDescription("Every test should have a description")
+        if (description == null) throw MissingDescription("Every test should have a description")
     }
 
 }

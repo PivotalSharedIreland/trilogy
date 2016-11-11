@@ -1,26 +1,27 @@
 package io.pivotal.trilogy.testcase
 
 import io.pivotal.trilogy.ResourceHelper
+import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect
 
-class StringTestCaseParserTests : Spek({
+class ProcedureStringTestCaseParserTests : Spek({
 
     describe("degenerate") {
         val validTestCase = ResourceHelper.getTestCaseByName("degenerate")
 
         it("succeeds with a valid test case") {
-            StringTestCaseParser(validTestCase)
+            ProcedureStringTestCaseParser(validTestCase)
         }
 
         it("gets a valid test case name") {
-            val testCaseParser = StringTestCaseParser(validTestCase)
+            val testCaseParser = ProcedureStringTestCaseParser(validTestCase)
             expect("DEGENERATE") { (testCaseParser.getTestCase() as ProcedureTrilogyTestCase).procedureName }
         }
 
         it("gets the test case description") {
-            val testCaseParser = StringTestCaseParser(validTestCase)
+            val testCaseParser = ProcedureStringTestCaseParser(validTestCase)
             expect("Test case description") { testCaseParser.getTestCase().description }
         }
 
@@ -35,18 +36,18 @@ class StringTestCaseParserTests : Spek({
             val arguments = TestArgumentTable(header, values)
             val test = ProcedureTrilogyTest("Test description", arguments, emptyList())
 
-            expect(test) { StringTestCaseParser(validTestCase).getTestCase().tests.first() }
+            expect(test) { ProcedureStringTestCaseParser(validTestCase).getTestCase().tests.first() }
         }
 
         it("should parse as a procedure test case") {
-            expect(true) { StringTestCaseParser(validTestCase).getTestCase() is ProcedureTrilogyTestCase }
+            expect(true) { ProcedureStringTestCaseParser(validTestCase).getTestCase() is ProcedureTrilogyTestCase }
         }
 
     }
 
     describe("multiple tests") {
         val validTestCase = ResourceHelper.getTestCaseByName("multiple/shouldPass")
-        val testCase = StringTestCaseParser(validTestCase).getTestCase()
+        val testCase = ProcedureStringTestCaseParser(validTestCase).getTestCase()
 
         it("should return two tests") {
             expect(2) { testCase.tests.count() }
@@ -64,7 +65,7 @@ class StringTestCaseParserTests : Spek({
 
     describe("fixture hooks") {
         val testCase = ResourceHelper.getTestCaseByName("projectBased/setupTeardown")
-        val testCaseHooks = StringTestCaseParser(testCase).getTestCase().hooks
+        val testCaseHooks = ProcedureStringTestCaseParser(testCase).getTestCase().hooks
 
         it("should extract before all hook names") {
             val beforeAllHooks = testCaseHooks.beforeAll
@@ -112,7 +113,7 @@ class StringTestCaseParserTests : Spek({
 
     describe("Empty fixture hook sections") {
         val validTestCase = ResourceHelper.getTestCaseByName("projectBased/blankSetupTeardown")
-        val testCaseHooks = StringTestCaseParser(validTestCase).getTestCase().hooks
+        val testCaseHooks = ProcedureStringTestCaseParser(validTestCase).getTestCase().hooks
 
         it("should return empty fixture hook lists") {
             expect(true) { testCaseHooks.beforeAll.isEmpty() }
@@ -126,15 +127,15 @@ class StringTestCaseParserTests : Spek({
     }
 
     it("fails with invalid test case") {
-        assertFails { StringTestCaseParser("") }
+        assertFails { ProcedureStringTestCaseParser("") }
     }
 
     it("fails with empty test case description") {
-        assertFails { StringTestCaseParser(ResourceHelper.getTestCaseByName("emptyDescription")).getTestCase() }
+        assertFails { ProcedureStringTestCaseParser(ResourceHelper.getTestCaseByName("emptyDescription")).getTestCase() }
     }
 
     it("fails with empty function name") {
-        assertFails { StringTestCaseParser(ResourceHelper.getTestCaseByName("emptyFunctionName")).getTestCase() }
+        assertFails { ProcedureStringTestCaseParser(ResourceHelper.getTestCaseByName("emptyFunctionName")).getTestCase() }
     }
 
 

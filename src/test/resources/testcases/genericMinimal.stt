@@ -1,0 +1,7 @@
+# TEST CASE
+Minimal generic test
+## TEST
+This isn't really a test
+```
+SELECT * FROM DUAL;
+```

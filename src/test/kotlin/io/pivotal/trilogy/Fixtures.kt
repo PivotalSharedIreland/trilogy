@@ -1,6 +1,6 @@
 package io.pivotal.trilogy
 
-import io.pivotal.trilogy.testcase.StringTestCaseParser
+import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
@@ -26,7 +26,7 @@ object Fixtures {
         }
 
     fun getTestCase(testCaseName: String): TrilogyTestCase {
-        return StringTestCaseParser(ResourceHelper.getTestCaseByName(testCaseName)).getTestCase()
+        return ProcedureStringTestCaseParser(ResourceHelper.getTestCaseByName(testCaseName)).getTestCase()
     }
 
     fun buildSingleTest(): List<ProcedureTrilogyTest> = listOf(ProcedureTrilogyTest("I am a test", argumentTable, assertions))

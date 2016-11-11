@@ -2,6 +2,7 @@ package io.pivotal.trilogy.testcase
 
 import io.pivotal.trilogy.Fixtures
 import io.pivotal.trilogy.ResourceHelper
+import io.pivotal.trilogy.parsing.UrlTestCaseParser
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect

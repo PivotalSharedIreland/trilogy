@@ -1,10 +1,10 @@
 spring:
-    application:
-        name: Trilogy
-    datasource:
-        url: ${db_url}
-        username: ${db_user}
-        password: ${db_password}
+  application:
+    name: Trilogy
+  datasource:
+    url: ${db_url}
+    username: ${db_user}
+    password: ${db_password}
 flyway:
   enabled: false
 logging:
