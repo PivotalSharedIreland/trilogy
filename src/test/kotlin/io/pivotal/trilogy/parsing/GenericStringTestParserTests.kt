@@ -49,7 +49,10 @@ class GenericStringTestParserTests : Spek({
     }
 
     it("requires a test body") {
-        { GenericStringTestParser("## TEST\nStigma at the alpha quadrant") } shouldThrow AnyException
+        { GenericStringTestParser("## TEST\nStigma at the alpha quadrant") } shouldThrow GenericStringTestParser.MissingTestBody::class
     }
 
+    it("cannot contain a data section") {
+        { GenericStringTestParser("## TEST\nBlah\n### DATA\n| P1 |\n|----|\n| 12 |\n") } shouldThrow AnyException
+    }
 })
