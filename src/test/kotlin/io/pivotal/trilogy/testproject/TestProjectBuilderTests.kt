@@ -2,13 +2,17 @@ package io.pivotal.trilogy.testproject
 
 import io.pivotal.trilogy.ResourceHelper
 import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
+import io.pivotal.trilogy.shouldContain
+import io.pivotal.trilogy.shouldNotThrow
 import io.pivotal.trilogy.shouldStartWith
 import io.pivotal.trilogy.shouldThrow
+import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import org.amshove.kluent.AnyException
 import org.amshove.kluent.shouldEqual
 import org.jetbrains.spek.api.Spek
+import kotlin.test.assertTrue
 import kotlin.test.expect
 
 class TestProjectBuilderTests : Spek({
@@ -27,6 +31,54 @@ class TestProjectBuilderTests : Spek({
 
         { TestProjectBuilder.build(options) } shouldThrow AnyException
     }
+
+    context("mixed generic and procedural test cases") {
+        val projectUrl = ResourceHelper.getResourceUrl("/projects/procedural_and_generic/")
+
+        beforeEach {
+            options.locator = UrlTestProjectResourceLocator(projectUrl)
+        }
+
+        it("should create the project") {
+            { TestProjectBuilder.build(options) } shouldNotThrow AnyException
+        }
+
+        it("should read the generic test case") {
+            val project = TestProjectBuilder.build(options)
+            val testCase = project.testCases[0]
+
+            if (testCase is GenericTrilogyTestCase) {
+                expect(1) { testCase.hooks.beforeAll.size }
+                expect(1) { testCase.hooks.beforeEachTest.size }
+                expect(1) { testCase.hooks.afterAll.size }
+                expect(1) { testCase.hooks.afterEachTest.size }
+                expect(1) { testCase.tests.size }
+                expect("Generic test case example") { testCase.description }
+                testCase.tests[0].body shouldContain "RAISE_APPLICATION_ERROR(-20112, "
+            } else {
+                assertTrue(false, "The first test case is expected to be generic")
+            }
+        }
+
+        it("should read the procedural test case") {
+            val project = TestProjectBuilder.build(options)
+            val testCase = project.testCases[1]
+
+            if (testCase is ProcedureTrilogyTestCase) {
+                expect(1) { testCase.hooks.beforeAll.size }
+                expect(0) { testCase.hooks.beforeEachTest.size }
+                expect(1) { testCase.hooks.afterAll.size }
+                expect(1) { testCase.hooks.afterEachTest.size }
+                expect(0) { testCase.hooks.beforeEachRow.size }
+                expect(0) { testCase.hooks.afterEachRow.size }
+                expect(2) { testCase.tests.size }
+                expect("Example") { testCase.description }
+            } else {
+                assertTrue(false, "The second test case is expected to be procedural")
+            }
+        }
+    }
+
 
     it("should create a project with a single test case") {
         val projectUrl = ResourceHelper.getResourceUrl("/projects/single_testcase/")

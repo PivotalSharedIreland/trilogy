@@ -1,17 +1,31 @@
 package io.pivotal.trilogy.testproject
 
 import io.pivotal.trilogy.application.TrilogyOptions
+import io.pivotal.trilogy.parsing.GenericStringTestCaseParser
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
+import io.pivotal.trilogy.testcase.TrilogyTestCase
 
 object TestProjectBuilder {
     fun build(options: TrilogyOptions): TrilogyTestProject {
-        if (options.resourceLocator.testsAbsent) throw UnsupportedOperationException()
+        if (options.resourceLocator.testsAbsent) throw UnsupportedOperationException("No tests were found")
         return TrilogyTestProject(
-                options.resourceLocator.testCases.map { ProcedureStringTestCaseParser(it).getTestCase() },
+                extractTestCases(options),
                 sourceScripts = options.resourceLocator.sourceScripts,
                 fixtures = options.resourceLocator.fixtures(),
                 schema = if (options.shouldSkipSchema) null else options.resourceLocator.schema
         )
+    }
+
+    private fun extractTestCases(options: TrilogyOptions): List<TrilogyTestCase> {
+        return options.resourceLocator.testCases.map { extractTestCase(it) }
+    }
+
+    private fun extractTestCase(testCase: String): TrilogyTestCase {
+        try {
+            return ProcedureStringTestCaseParser(testCase).getTestCase()
+        } catch (e: RuntimeException) {
+            return GenericStringTestCaseParser(testCase).getTestCase()
+        }
     }
 
     private fun TestProjectResourceLocator.fixtures(): FixtureLibrary {

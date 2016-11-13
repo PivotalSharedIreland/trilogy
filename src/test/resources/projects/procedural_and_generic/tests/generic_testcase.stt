@@ -1,0 +1,19 @@
+# TEST CASE
+Generic test case example
+## BEFORE ALL
+- Setup client
+## BEFORE EACH TEST
+- Set client balance
+## AFTER EACH TEST
+- Remove transactions
+## AFTER ALL
+- Remove clients
+## TEST
+The client balance should be valid
+```
+BEGIN
+  IF (1 <> 2) THEN
+    RAISE_APPLICATION_ERROR(-20112, 'This should never have happened');
+  END IF;
+END;
+```
