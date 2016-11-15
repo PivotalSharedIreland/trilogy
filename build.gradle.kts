@@ -15,7 +15,7 @@ buildscript {
 apply {
     plugin("kotlin")
     plugin("java")
-    plugin("spring-boot")
+    plugin("org.springframework.boot")
     plugin<ApplicationPlugin>()
 }
 
