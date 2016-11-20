@@ -8,7 +8,7 @@ object DatabaseHelper {
 
     val jdbcUrl = "jdbc:oracle:thin:@192.168.99.100:32769:xe"
 
-    fun dataSource(): DataSource {
+    fun oracleDataSource(): DataSource {
         return DriverManagerDataSource().apply {
             setDriverClassName("oracle.jdbc.driver.OracleDriver")
             url = jdbcUrl
@@ -18,7 +18,7 @@ object DatabaseHelper {
     }
 
     fun jdbcTemplate(): JdbcTemplate {
-        return JdbcTemplate(dataSource())
+        return JdbcTemplate(oracleDataSource())
     }
 
     fun executeScript(scriptName: String) {

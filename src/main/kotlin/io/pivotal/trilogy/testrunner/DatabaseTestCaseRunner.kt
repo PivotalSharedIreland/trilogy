@@ -1,9 +1,10 @@
 package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.reporting.TestCaseResult
+import io.pivotal.trilogy.testcase.GenericTrilogyTest
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TrilogyAssertion
-import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 import io.pivotal.trilogy.testproject.FixtureLibrary
 import io.pivotal.trilogy.validators.OutputArgumentValidator
@@ -16,8 +17,11 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
 
         val stats = trilogyTestCase.tests.map { test ->
             trilogyTestCase.hooks.beforeEachTest.runSetupScripts(library)
-            val success = if ((trilogyTestCase is ProcedureTrilogyTestCase) && (test is ProcedureTrilogyTest))
-                test.runData(trilogyTestCase, library) else false
+            val success = if (test is ProcedureTrilogyTest)
+                test.runTest(trilogyTestCase as ProcedureTrilogyTestCase, library) else
+                if (test is GenericTrilogyTest)
+                    test.runTest()
+                else false
             trilogyTestCase.hooks.afterEachTest.runTeardownScripts(library)
             success
         }
@@ -33,7 +37,16 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         return assertions.all { assertion -> assertionExecuter execute assertion }
     }
 
-    private fun ProcedureTrilogyTest.runData(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): Boolean {
+    private fun GenericTrilogyTest.runTest(): Boolean {
+        try {
+            scriptExecuter.execute(this.body)
+        } catch(e: RuntimeException) {
+            return false
+        }
+        return runAssertions(this.assertions)
+    }
+
+    private fun ProcedureTrilogyTest.runTest(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): Boolean {
         val outputValidator = OutputArgumentValidator(argumentTable.outputArgumentNames)
 
         return argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->

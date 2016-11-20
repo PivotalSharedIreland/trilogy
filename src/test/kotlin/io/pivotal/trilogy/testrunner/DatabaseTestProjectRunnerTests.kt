@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.testrunner
 
-import io.pivotal.trilogy.mocks.ScriptExecuterSpy
+import io.pivotal.trilogy.mocks.ScriptExecuterMock
 import io.pivotal.trilogy.mocks.TestCaseRunnerSpy
 import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
 import io.pivotal.trilogy.reporting.TestCaseResult
@@ -27,7 +27,7 @@ class DatabaseTestProjectRunnerTests : Spek({
     it("runs the tests for a simple project") {
         val mockTestCaseRunner = TestCaseRunnerSpy()
         val project = projectNamed("simple")
-        DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterSpy()).run(project)
+        DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterMock()).run(project)
         expect(1) { mockTestCaseRunner.runCount }
         expect("EXAMPLE_PROCEDURE") {
             (mockTestCaseRunner.runArgument as? ProcedureTrilogyTestCase)?.procedureName
@@ -41,27 +41,27 @@ class DatabaseTestProjectRunnerTests : Spek({
 
         it("runs all test cases") {
             val mockTestCaseRunner = TestCaseRunnerSpy()
-            DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterSpy()).run(project)
+            DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterMock()).run(project)
             expect(2) { mockTestCaseRunner.runCount }
         }
 
         it("summarizes the results") {
             val mockTestCaseRunner = TestCaseRunnerSpy().apply { runResult = TestCaseResult(2, 3) }
-            val testProjectResult = DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterSpy()).run(project)
+            val testProjectResult = DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterMock()).run(project)
             expect(TestCaseResult(4, 6)) { testProjectResult }
         }
 
         it("executes scripts from the src directory") {
-            val scriptExecuterSpy = ScriptExecuterSpy()
-            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterSpy).run(project)
-            expect(2) { scriptExecuterSpy.executeCalls }
+            val scriptExecuterMock = ScriptExecuterMock()
+            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterMock).run(project)
+            expect(2) { scriptExecuterMock.executeCalls }
         }
 
         it("executes scripts in the right order") {
-            val scriptExecuterSpy = ScriptExecuterSpy()
-            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterSpy).run(project)
-            scriptExecuterSpy.executeArgList.first() shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE$"
-            scriptExecuterSpy.executeArgList.last() shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE_PROCEDURE"
+            val scriptExecuterMock = ScriptExecuterMock()
+            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterMock).run(project)
+            scriptExecuterMock.executeArgList.first() shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE$"
+            scriptExecuterMock.executeArgList.last() shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE_PROCEDURE"
         }
     }
 
@@ -70,14 +70,14 @@ class DatabaseTestProjectRunnerTests : Spek({
 
         it("excludes fixtures from test case file list") {
             val testCaseRunner = TestCaseRunnerSpy()
-            DatabaseTestProjectRunner(testCaseRunner, ScriptExecuterSpy()).run(project)
+            DatabaseTestProjectRunner(testCaseRunner, ScriptExecuterMock()).run(project)
             expect(1) { testCaseRunner.runCount }
         }
 
         it("loads schema before tests") {
-            val scriptExecuterSpy = ScriptExecuterSpy()
-            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterSpy).run(project)
-            scriptExecuterSpy.executeArgList.first() shouldStartWith "CREATE TABLE CLIENTS"
+            val scriptExecuterMock = ScriptExecuterMock()
+            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterMock).run(project)
+            scriptExecuterMock.executeArgList.first() shouldStartWith "CREATE TABLE CLIENTS"
         }
     }
 

@@ -9,11 +9,25 @@ Generic test case example
 ## AFTER ALL
 - Remove clients
 ## TEST
-The client balance should be valid
+This test should fail
 ```
 BEGIN
   IF (1 <> 2) THEN
     RAISE_APPLICATION_ERROR(-20112, 'This should never have happened');
   END IF;
+END;
+```
+## TEST
+This test should pass
+```
+BEGIN
+  NULL;
+END;
+```
+## TEST
+And this test should pass
+```
+BEGIN
+  NULL;
 END;
 ```

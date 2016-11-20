@@ -52,9 +52,10 @@ class TestProjectBuilderTests : Spek({
                 expect(1) { testCase.hooks.beforeEachTest.size }
                 expect(1) { testCase.hooks.afterAll.size }
                 expect(1) { testCase.hooks.afterEachTest.size }
-                expect(1) { testCase.tests.size }
+                expect(3) { testCase.tests.size }
                 expect("Generic test case example") { testCase.description }
                 testCase.tests[0].body shouldContain "RAISE_APPLICATION_ERROR(-20112, "
+                testCase.tests[1].body shouldContain "NULL;"
             } else {
                 assertTrue(false, "The first test case is expected to be generic")
             }

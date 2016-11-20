@@ -14,7 +14,7 @@ class TrilogyControllerTests : Spek ({
 
     fun bootTrilogyController(): TrilogyController {
         val controller = TrilogyController()
-        val dataSource = DatabaseHelper.dataSource()
+        val dataSource = DatabaseHelper.oracleDataSource()
         val jdbcTemplate = JdbcTemplate(dataSource)
         val testSubjectCaller = DatabaseTestSubjectCaller(dataSource)
         val scriptExecuter = DatabaseScriptExecuter(jdbcTemplate)

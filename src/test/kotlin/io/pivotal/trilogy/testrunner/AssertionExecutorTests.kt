@@ -10,7 +10,7 @@ class AssertionExecuterTests : Spek ({
 
     describe("executing assertions") {
 
-        val jdbcTemplate = JdbcTemplate(DatabaseHelper.dataSource())
+        val jdbcTemplate = JdbcTemplate(DatabaseHelper.oracleDataSource())
         val scriptExecuter = DatabaseScriptExecuter(jdbcTemplate)
 
         it("returns true when the assertion does not raise an error") {
