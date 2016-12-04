@@ -6,7 +6,7 @@ import javax.sql.DataSource
 
 object DatabaseHelper {
 
-    val jdbcUrl = "jdbc:oracle:thin:@192.168.99.100:32769:xe"
+    val jdbcUrl = System.getenv("DB_URL") ?: "jdbc:oracle:thin:@192.168.99.100:32769:xe"
 
     fun oracleDataSource(): DataSource {
         return DriverManagerDataSource().apply {
