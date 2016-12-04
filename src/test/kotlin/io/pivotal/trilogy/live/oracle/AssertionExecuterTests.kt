@@ -1,12 +1,14 @@
-package io.pivotal.trilogy.testrunner
+package io.pivotal.trilogy.live.oracle
 
 import io.pivotal.trilogy.DatabaseHelper
 import io.pivotal.trilogy.testcase.TrilogyAssertion
+import io.pivotal.trilogy.testrunner.DatabaseAssertionExecuter
+import io.pivotal.trilogy.testrunner.DatabaseScriptExecuter
 import org.jetbrains.spek.api.Spek
 import org.springframework.jdbc.core.JdbcTemplate
 import kotlin.test.expect
 
-class AssertionExecuterTests : Spek ({
+class AssertionExecuterTests : Spek({
 
     describe("executing assertions") {
 

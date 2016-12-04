@@ -1,14 +1,14 @@
-package io.pivotal.trilogy.testrunner
+package io.pivotal.trilogy.live.oracle
 
 
 import io.pivotal.trilogy.DatabaseHelper
+import io.pivotal.trilogy.testrunner.DatabaseTestSubjectCaller
 import org.jetbrains.spek.api.Spek
 import java.math.BigDecimal
 import kotlin.test.expect
 
 class TestSubjectCallerTests : Spek({
     context("degenerate") {
-        DatabaseHelper.executeScript("degenerate")
 
         it("returns the result of the execution") {
             val returnValue = mapOf(Pair("V_OUT", BigDecimal.ONE))

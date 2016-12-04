@@ -1,4 +1,5 @@
 import org.gradle.api.plugins.*
+import org.gradle.api.tasks.testing.Test
 import org.gradle.script.lang.kotlin.*
 
 buildscript {
@@ -28,6 +29,28 @@ repositories {
     jcenter()
 }
 
+
+val oracleBootstrapClasses = "io/pivotal/trilogy/live/oracle/bootstrap/**"
+val oracleBootstrap = task<Test>("oracleBootstrap") {
+    include(oracleBootstrapClasses)
+}
+
+val oracleTests = task<Test>("oracleTests") {
+    dependsOn(oracleBootstrap)
+    include("io/pivotal/trilogy/live/oracle/**")
+    exclude(oracleBootstrapClasses)
+}
+
+val test = tasks.getByName("test") as Test
+test.apply {
+    exclude("io/pivotal/trilogy/live/**")
+}
+
+task<Test>("testAll") {
+    dependsOn(oracleTests, test)
+}
+
+
 configure<JavaPluginConvention> {
     setSourceCompatibility(1.7)
     setTargetCompatibility(1.7)
@@ -38,7 +61,6 @@ dependencies {
     compile(kotlinModule("stdlib", version = "1.0.4"))
     compile("org.springframework.boot:spring-boot-starter-jdbc")
     compile("org.springframework.boot:spring-boot-starter:1.4.2.RELEASE")
-    compile("org.jetbrains.kotlin:kotlin-stdlib:1.0.4")
     compile("commons-cli:commons-cli:1.3.1")
     compile("org.flywaydb:flyway-core:4.0.3")
 

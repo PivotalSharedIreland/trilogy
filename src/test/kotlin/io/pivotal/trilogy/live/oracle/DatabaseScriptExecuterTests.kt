@@ -1,6 +1,7 @@
-package io.pivotal.trilogy.testrunner
+package io.pivotal.trilogy.live.oracle
 
 import io.pivotal.trilogy.DatabaseHelper
+import io.pivotal.trilogy.testrunner.DatabaseScriptExecuter
 import org.amshove.kluent.AnyException
 import org.amshove.kluent.shouldThrow
 import org.jetbrains.spek.api.Spek
