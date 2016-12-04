@@ -1,0 +1,11 @@
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: sath89/oracle-12c
+
+inputs:
+- name: trilogy
+
+run:
+  path: ./trilogy/ci/test.sh
