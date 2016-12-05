@@ -1,0 +1,14 @@
+---
+resources:
+- name: trilogy
+  type: git
+  source:
+    uri: https://github.com/PivotalSharedIreland/trilogy.git
+    branch: master
+
+jobs:
+- name: trilogy-tests
+  plan:
+  - get: trilogy
+  - task: tests
+    file: trilogy/ci/test.yml
