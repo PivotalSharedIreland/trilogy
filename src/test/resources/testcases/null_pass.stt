@@ -1,0 +1,9 @@
+# TEST CASE DEGENERATE
+Successful null check
+## TEST
+Input is echoed into output
+### DATA
+|V_IN    |V_OUT$  |=ERROR=|
+|--------|--------|-------|
+|__NULL__|__NULL__|       |
+|1       |1       |       |

@@ -1,0 +1,14 @@
+# TEST CASE DEGENERATE
+Failing null check
+## TEST
+1 as input should not yield NULL as output
+### DATA
+|V_IN    |V_OUT$  |=ERROR=|
+|--------|--------|-------|
+|1       |__NULL__|       |
+## TEST
+NULL as input should not yield 1 as output
+### DATA
+|V_IN    |V_OUT$  |=ERROR=|
+|--------|--------|-------|
+|__NULL__|1       |       |
