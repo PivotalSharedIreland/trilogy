@@ -15,4 +15,3 @@ ${AnsiColor.BRIGHT_WHITE}
         |_|  |_|  \_\_____|______\____/ \_____|  |_|
 
 ${AnsiColor.WHITE}[==   Database Logic Testing Framework by ${AnsiColor.CYAN}Pivotal Labs${AnsiColor.WHITE}   ==]
-Version: ${application.version}
