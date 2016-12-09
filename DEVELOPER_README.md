@@ -24,5 +24,6 @@ via the environment variables `DB_URL`, `DB_USER` and `DB_PASSWORD` respectively
 Example projects and test cases for acceptance can be found in the `src/test/resources` directory. 
 Generally, the required test case could be found there, but a new one can be added when needed.
 
-If the test cases refer to existing procedures, and do not create them, run `./gradlew oracleBootstrap`
-before running those test cases to make sure that the procedures they refer to will be created.
+A `DEGENERATE` stored procedure is available for Oracle and can be loaded by running 
+`./gradlew oracleBootstrap`. It has two arguments, `V_IN IN INTEGER` and `V_OUT OUT INTEGER`, and 
+ simply loops whatever in receives in `V_IN` back into `V_OUT`.
