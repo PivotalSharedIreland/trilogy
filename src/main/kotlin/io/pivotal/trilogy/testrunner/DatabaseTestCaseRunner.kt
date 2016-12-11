@@ -36,7 +36,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         try {
             scriptExecuter.execute(this.body)
         } catch(e: RuntimeException) {
-            return e.localizedMessage
+            return e.message ?: "Unknown error"
         }
         return if (runAssertions(this.assertions)) null else "assertion error"
     }
