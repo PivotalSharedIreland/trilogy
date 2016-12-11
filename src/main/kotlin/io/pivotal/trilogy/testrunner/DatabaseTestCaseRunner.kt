@@ -26,7 +26,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         }
         trilogyTestCase.hooks.afterAll.runTeardownScripts(library)
 
-        return TestCaseResult(testResults)
+        return TestCaseResult(trilogyTestCase.description, testResults)
     }
 
     private fun runAssertions(assertions: List<TrilogyAssertion>): Boolean {

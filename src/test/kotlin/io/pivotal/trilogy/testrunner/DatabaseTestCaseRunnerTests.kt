@@ -1,10 +1,10 @@
 package io.pivotal.trilogy.testrunner
 
-import io.pivotal.trilogy.test_helpers.Fixtures
-import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.mocks.AssertionExecuterMock
 import io.pivotal.trilogy.mocks.ScriptExecuterMock
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub
+import io.pivotal.trilogy.test_helpers.Fixtures
+import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
@@ -54,6 +54,13 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             expect(0) { result.failed }
             expect(0) { result.passed }
+        }
+
+        it("includes the test case name in the result") {
+            val testCase = GenericTrilogyTestCase("Flying teapot", emptyList(), TestCaseHooks())
+            val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+            expect("Flying teapot") { result.testCaseName }
         }
 
         it("evaluates the body of the test") {
@@ -301,6 +308,10 @@ class DatabaseTestCaseRunnerTests : Spek({
                     afterEachTestScript,
                     afterAllScript
             )
+        }
+
+        it("includes the test case name in the result") {
+            expect("Jolly Roger!") { testCaseRunner.run(ProcedureTrilogyTestCase("procName", "Jolly Roger!", emptyList(), testCaseHooks), FixtureLibrary.emptyLibrary()).testCaseName }
         }
 
         context("when the test case has no tests") {

@@ -7,7 +7,7 @@ import io.pivotal.trilogy.testrunner.TestCaseRunner
 
 class TestCaseRunnerMock : TestCaseRunner {
     var runCount = 0
-    var runResult = TestCaseResult()
+    var runResult = TestCaseResult("Mock test case")
     var runArgument: TrilogyTestCase? = null
 
     override fun run(trilogyTestCase: TrilogyTestCase, library: FixtureLibrary): TestCaseResult {
