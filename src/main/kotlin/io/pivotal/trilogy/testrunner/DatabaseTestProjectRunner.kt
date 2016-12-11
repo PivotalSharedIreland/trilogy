@@ -5,11 +5,11 @@ import io.pivotal.trilogy.testproject.TrilogyTestProject
 
 class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptExecuter: ScriptExecuter) : TestProjectRunner {
 
-    override fun run(project: TrilogyTestProject): TestCaseResult {
+    override fun run(project: TrilogyTestProject): List<TestCaseResult> {
         return project.runTests()
     }
 
-    private fun TrilogyTestProject.runTests(): TestCaseResult {
+    private fun TrilogyTestProject.runTests(): List<TestCaseResult> {
         applySchema()
         runSourceScripts()
         return runTestCases()
@@ -19,10 +19,8 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
         sourceScripts.forEach { script -> scriptExecuter.execute(script) }
     }
 
-    private fun TrilogyTestProject.runTestCases(): TestCaseResult {
-        return this.testCases.fold(TestCaseResult()) { result, testCase ->
-            result + testCaseRunner.run(testCase, this.fixtures)
-        }
+    private fun TrilogyTestProject.runTestCases(): List<TestCaseResult> {
+        return this.testCases.map { testCaseRunner.run(it, this.fixtures) }
     }
 
     private fun TrilogyTestProject.applySchema() {

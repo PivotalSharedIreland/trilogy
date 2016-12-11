@@ -17,7 +17,8 @@ open class TrilogyApplicationRunner : ApplicationRunner {
         if (args != null) {
             try {
                 val applicationOptions = TrilogyApplicationOptionsParser.parse(args.sourceArgs)
-                val output = TestCaseReporter.generateReport(trilogyController.run(applicationOptions))
+                val testResults = trilogyController.run(applicationOptions)
+                val output = TestCaseReporter.generateReport(testResults)
                 System.out.println(output)
             } catch (e: RuntimeException) {
                 printFailure(e.stackTrace)

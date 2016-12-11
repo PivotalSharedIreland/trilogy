@@ -51,7 +51,7 @@ class DatabaseTestProjectRunnerTests : Spek({
             val passedTestResult = TestResult("Passed")
             val failedTestResult = TestResult("Failed", "Failure message")
             val singleRunResult = 2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult }
-            val expectedResult = TestCaseResult(singleRunResult + singleRunResult)
+            val expectedResult = 2.timesRepeat { TestCaseResult(singleRunResult) }
             val mockTestCaseRunner = TestCaseRunnerMock().apply {
                 runResult = TestCaseResult(singleRunResult)
             }

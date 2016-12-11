@@ -12,7 +12,7 @@ open class TrilogyController {
     @Autowired
     lateinit var testProjectRunner: TestProjectRunner
 
-    fun run(options: TrilogyApplicationOptions): TestCaseResult {
+    fun run(options: TrilogyApplicationOptions): List<TestCaseResult> {
         val testProject = TestProjectBuilder.build(options)
         return testProjectRunner.run(testProject)
     }

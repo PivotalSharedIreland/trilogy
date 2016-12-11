@@ -10,7 +10,7 @@ class TestCaseReporterTests : Spek({
     val passedTestResult = TestResult("Passed")
     val failedTestResult = TestResult("Failed", "Error message")
     describe("no failures") {
-        val report = TestCaseResult(3.timesRepeat { passedTestResult })
+        val report = listOf(TestCaseResult(3.timesRepeat { passedTestResult }))
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report success") {
@@ -31,7 +31,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("passed and failed") {
-        val report = TestCaseResult(2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult })
+        val report = listOf(TestCaseResult(2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult }))
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report the number of failed tests, as well as passed tests") {
@@ -46,7 +46,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("all failures") {
-        val report = TestCaseResult(3.timesRepeat { failedTestResult })
+        val report = listOf(TestCaseResult(3.timesRepeat { failedTestResult }))
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report failure") {
