@@ -1,11 +1,11 @@
 package io.pivotal.trilogy.testproject
 
-import io.pivotal.trilogy.ResourceHelper
+import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
-import io.pivotal.trilogy.shouldContain
-import io.pivotal.trilogy.shouldNotThrow
-import io.pivotal.trilogy.shouldStartWith
-import io.pivotal.trilogy.shouldThrow
+import io.pivotal.trilogy.test_helpers.shouldContain
+import io.pivotal.trilogy.test_helpers.shouldNotThrow
+import io.pivotal.trilogy.test_helpers.shouldStartWith
+import io.pivotal.trilogy.test_helpers.shouldThrow
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks

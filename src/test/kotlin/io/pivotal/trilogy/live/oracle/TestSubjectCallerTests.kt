@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.live.oracle
 
 
-import io.pivotal.trilogy.DatabaseHelper
+import io.pivotal.trilogy.test_helpers.DatabaseHelper
 import io.pivotal.trilogy.testrunner.DatabaseTestSubjectCaller
 import org.jetbrains.spek.api.Spek
 import java.math.BigDecimal

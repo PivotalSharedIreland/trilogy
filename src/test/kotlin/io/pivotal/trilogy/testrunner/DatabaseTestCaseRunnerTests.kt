@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.testrunner
 
-import io.pivotal.trilogy.Fixtures
-import io.pivotal.trilogy.isEven
+import io.pivotal.trilogy.test_helpers.Fixtures
+import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.mocks.AssertionExecuterMock
 import io.pivotal.trilogy.mocks.ScriptExecuterMock
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub

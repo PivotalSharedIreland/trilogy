@@ -1,4 +1,4 @@
-package io.pivotal.trilogy
+package io.pivotal.trilogy.test_helpers
 
 import org.amshove.kluent.`should not throw`
 import org.amshove.kluent.`should throw`

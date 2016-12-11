@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.live.oracle
 
-import io.pivotal.trilogy.DatabaseHelper
+import io.pivotal.trilogy.test_helpers.DatabaseHelper
 import io.pivotal.trilogy.testrunner.DatabaseScriptExecuter
 import org.amshove.kluent.AnyException
 import org.amshove.kluent.shouldThrow

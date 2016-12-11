@@ -1,13 +1,16 @@
 package io.pivotal.trilogy.reporting
 
-import io.pivotal.trilogy.shouldContain
-import io.pivotal.trilogy.shouldStartWith
+import io.pivotal.trilogy.test_helpers.shouldContain
+import io.pivotal.trilogy.test_helpers.shouldStartWith
+import io.pivotal.trilogy.test_helpers.timesRepeat
 import org.jetbrains.spek.api.Spek
 
 class TestCaseReporterTests : Spek({
 
+    val passedTestResult = TestResult("Passed")
+    val failedTestResult = TestResult("Failed", "Error message")
     describe("no failures") {
-        val report = TestCaseResult(passed = 3)
+        val report = TestCaseResult(3.timesRepeat { passedTestResult })
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report success") {
@@ -28,7 +31,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("passed and failed") {
-        val report = TestCaseResult(passed = 2, failed = 3)
+        val report = TestCaseResult(2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult })
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report the number of failed tests, as well as passed tests") {
@@ -43,7 +46,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("all failures") {
-        val report = TestCaseResult(failed = 3)
+        val report = TestCaseResult(3.timesRepeat { failedTestResult })
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report failure") {

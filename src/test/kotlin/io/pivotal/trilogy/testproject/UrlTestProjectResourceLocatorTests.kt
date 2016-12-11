@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.testproject
 
-import io.pivotal.trilogy.ResourceHelper
-import io.pivotal.trilogy.shouldStartWith
+import io.pivotal.trilogy.test_helpers.ResourceHelper
+import io.pivotal.trilogy.test_helpers.shouldStartWith
 import org.amshove.kluent.shouldEqual
 import org.jetbrains.spek.api.Spek
 import kotlin.test.expect

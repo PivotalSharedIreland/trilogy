@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.testcase
 
-import io.pivotal.trilogy.ResourceHelper
+import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails

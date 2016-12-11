@@ -1,4 +1,4 @@
-package io.pivotal.trilogy
+package io.pivotal.trilogy.test_helpers
 
 import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.jdbc.datasource.DriverManagerDataSource

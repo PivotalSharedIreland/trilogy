@@ -1,10 +1,12 @@
 package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.mocks.ScriptExecuterMock
-import io.pivotal.trilogy.mocks.TestCaseRunnerSpy
+import io.pivotal.trilogy.mocks.TestCaseRunnerMock
 import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
 import io.pivotal.trilogy.reporting.TestCaseResult
-import io.pivotal.trilogy.shouldStartWith
+import io.pivotal.trilogy.reporting.TestResult
+import io.pivotal.trilogy.test_helpers.shouldStartWith
+import io.pivotal.trilogy.test_helpers.timesRepeat
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testproject.TestProjectBuilder
 import io.pivotal.trilogy.testproject.TrilogyTestProject
@@ -25,7 +27,7 @@ class DatabaseTestProjectRunnerTests : Spek({
     }
 
     it("runs the tests for a simple project") {
-        val mockTestCaseRunner = TestCaseRunnerSpy()
+        val mockTestCaseRunner = TestCaseRunnerMock()
         val project = projectNamed("simple")
         DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterMock()).run(project)
         expect(1) { mockTestCaseRunner.runCount }
@@ -40,26 +42,32 @@ class DatabaseTestProjectRunnerTests : Spek({
         val project = projectNamed("multiple_testcases")
 
         it("runs all test cases") {
-            val mockTestCaseRunner = TestCaseRunnerSpy()
+            val mockTestCaseRunner = TestCaseRunnerMock()
             DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterMock()).run(project)
             expect(2) { mockTestCaseRunner.runCount }
         }
 
         it("summarizes the results") {
-            val mockTestCaseRunner = TestCaseRunnerSpy().apply { runResult = TestCaseResult(2, 3) }
+            val passedTestResult = TestResult("Passed")
+            val failedTestResult = TestResult("Failed", "Failure message")
+            val singleRunResult = 2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult }
+            val expectedResult = TestCaseResult(singleRunResult + singleRunResult)
+            val mockTestCaseRunner = TestCaseRunnerMock().apply {
+                runResult = TestCaseResult(singleRunResult)
+            }
             val testProjectResult = DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterMock()).run(project)
-            expect(TestCaseResult(4, 6)) { testProjectResult }
+            expect(expectedResult) { testProjectResult }
         }
 
         it("executes scripts from the src directory") {
             val scriptExecuterMock = ScriptExecuterMock()
-            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterMock).run(project)
+            DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecuterMock).run(project)
             expect(2) { scriptExecuterMock.executeCalls }
         }
 
         it("executes scripts in the right order") {
             val scriptExecuterMock = ScriptExecuterMock()
-            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterMock).run(project)
+            DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecuterMock).run(project)
             scriptExecuterMock.executeArgList.first() shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE$"
             scriptExecuterMock.executeArgList.last() shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE_PROCEDURE"
         }
@@ -69,14 +77,14 @@ class DatabaseTestProjectRunnerTests : Spek({
         val project = projectNamed("schema")
 
         it("excludes fixtures from test case file list") {
-            val testCaseRunner = TestCaseRunnerSpy()
+            val testCaseRunner = TestCaseRunnerMock()
             DatabaseTestProjectRunner(testCaseRunner, ScriptExecuterMock()).run(project)
             expect(1) { testCaseRunner.runCount }
         }
 
         it("loads schema before tests") {
             val scriptExecuterMock = ScriptExecuterMock()
-            DatabaseTestProjectRunner(TestCaseRunnerSpy(), scriptExecuterMock).run(project)
+            DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecuterMock).run(project)
             scriptExecuterMock.executeArgList.first() shouldStartWith "CREATE TABLE CLIENTS"
         }
     }

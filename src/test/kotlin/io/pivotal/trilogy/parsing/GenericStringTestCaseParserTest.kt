@@ -1,8 +1,8 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.ResourceHelper
-import io.pivotal.trilogy.shouldNotThrow
-import io.pivotal.trilogy.shouldThrow
+import io.pivotal.trilogy.test_helpers.ResourceHelper
+import io.pivotal.trilogy.test_helpers.shouldNotThrow
+import io.pivotal.trilogy.test_helpers.shouldThrow
 import org.amshove.kluent.AnyException
 import org.jetbrains.spek.api.Spek
 import kotlin.test.expect

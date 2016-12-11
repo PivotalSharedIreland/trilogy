@@ -1,4 +1,4 @@
-package io.pivotal.trilogy
+package io.pivotal.trilogy.test_helpers
 
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
 import io.pivotal.trilogy.testcase.TestArgumentTable

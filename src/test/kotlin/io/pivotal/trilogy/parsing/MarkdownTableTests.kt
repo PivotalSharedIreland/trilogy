@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.ResourceHelper
+import io.pivotal.trilogy.test_helpers.ResourceHelper
 import org.jetbrains.spek.api.Spek
 import kotlin.test.expect
 

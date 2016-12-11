@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.live.oracle.bootstrap
 
-import io.pivotal.trilogy.DatabaseHelper
+import io.pivotal.trilogy.test_helpers.DatabaseHelper
 import org.jetbrains.spek.api.Spek
 
 class BootstrapTests : Spek({
