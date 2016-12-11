@@ -15,6 +15,7 @@ object TestCaseReporter {
     private val List<TestCaseResult>.failures: String get() = this.map { it.failureDigest }.joinToString("\n")
 
     private val TestCaseResult.failureDigest: String get() {
-        return this.failedTests.map { "[FAIL] ${this.testCaseName} - ${it.testName}: ${it.errorMessage}" }.joinToString("\n")
+        return this.failedTests.map { "[FAIL] ${this.testCaseName} - ${it.testName}:\n${it.displayMessage}" }.joinToString("\n")
     }
+    private val TestResult.displayMessage: String get() = this.errorMessage!!.split("\n").map { "    $it" }.joinToString("\n")
 }

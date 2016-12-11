@@ -8,7 +8,7 @@ import org.jetbrains.spek.api.Spek
 class TestCaseReporterTests : Spek({
 
     val passedTestResult = TestResult("Passed")
-    val failedTestResult = TestResult("Failed test name", "Error message")
+    val failedTestResult = TestResult("Failed test name", "Multi\nline\nerror\nmessage")
     describe("no failures") {
         val report = listOf(TestCaseResult("", 3.timesRepeat { passedTestResult }))
         val generatedReport = TestCaseReporter.generateReport(report)
@@ -44,7 +44,7 @@ class TestCaseReporterTests : Spek({
         }
 
         it("should report every test failure") {
-            generatedReport shouldContain "[FAIL] Nirvana or zion - Failed test name: Error message"
+            generatedReport shouldContain "[FAIL] Nirvana or zion - Failed test name:\n    Multi\n    line\n    error\n    message"
         }
 
     }
