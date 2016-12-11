@@ -63,6 +63,14 @@ class DatabaseTestCaseRunnerTests : Spek({
             expect("Flying teapot") { result.testCaseName }
         }
 
+        it("includes test names in the result") {
+            val tests = listOf(GenericTrilogyTest("Mashing the pork butts", "test body", emptyList()))
+            val testCase = GenericTrilogyTestCase("", tests, TestCaseHooks())
+            val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+            expect("Mashing the pork butts") { result.tests.first().testName }
+        }
+
         it("evaluates the body of the test") {
             val testCase = GenericTrilogyTestCase("foo", listOf(GenericTrilogyTest("", "O, jolly desolation!", emptyList())), TestCaseHooks())
             testCaseRunner.run(testCase, fixtureLibrary)
@@ -86,6 +94,14 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             expect(0) { result.passed }
             expect(1) { result.failed }
+        }
+
+        it("includes the error message int the test report") {
+            val testCase = GenericTrilogyTestCase("Why does the ship yell?..", listOf(GenericTrilogyTest("Caniss ire!", "oops!", emptyList())), TestCaseHooks())
+            scriptExecuterMock.shouldFailExecution = true
+            val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+            expect("SQL Script exception") { result.failedTests.first().errorMessage }
         }
 
         it("reports a failing test on the assertion failure") {

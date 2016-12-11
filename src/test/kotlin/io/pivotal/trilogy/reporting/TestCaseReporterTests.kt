@@ -8,7 +8,7 @@ import org.jetbrains.spek.api.Spek
 class TestCaseReporterTests : Spek({
 
     val passedTestResult = TestResult("Passed")
-    val failedTestResult = TestResult("Failed", "Error message")
+    val failedTestResult = TestResult("Failed test name", "Error message")
     describe("no failures") {
         val report = listOf(TestCaseResult("", 3.timesRepeat { passedTestResult }))
         val generatedReport = TestCaseReporter.generateReport(report)
@@ -31,7 +31,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("passed and failed") {
-        val report = listOf(TestCaseResult("", 2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult }))
+        val report = listOf(TestCaseResult("Nirvana or zion", 2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult }))
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report the number of failed tests, as well as passed tests") {
@@ -43,6 +43,10 @@ class TestCaseReporterTests : Spek({
             generatedReport shouldContain "Total: 5"
         }
 
+        it("should report every test failure") {
+            generatedReport shouldContain "[FAIL] Nirvana or zion - Failed test name: Error message"
+        }
+
     }
 
     describe("all failures") {
@@ -50,7 +54,7 @@ class TestCaseReporterTests : Spek({
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report failure") {
-            generatedReport shouldStartWith "FAILED"
+            generatedReport shouldContain "FAILED"
         }
 
         it("should report the number of failed tests") {

@@ -19,10 +19,9 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
 
         val testResults = trilogyTestCase.tests.map { test ->
             trilogyTestCase.hooks.beforeEachTest.runSetupScripts(library)
-            val success = test.tryProcedural(library, trilogyTestCase) ?: test.tryGeneric() ?: false
-            val errorMessage = if (success) null else "error"
+            val testResult = test.tryProceduralTest(library, trilogyTestCase) ?: test.tryGenericTest() ?: TestResult(test.description, "Unknown test type")
             trilogyTestCase.hooks.afterEachTest.runTeardownScripts(library)
-            TestResult(test.description, errorMessage)
+            testResult
         }
         trilogyTestCase.hooks.afterAll.runTeardownScripts(library)
 
@@ -33,19 +32,19 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         return assertions.all { assertion -> assertionExecuter execute assertion }
     }
 
-    private fun GenericTrilogyTest.runTest(): Boolean {
+    private fun GenericTrilogyTest.runTestReturningError(): String? {
         try {
             scriptExecuter.execute(this.body)
         } catch(e: RuntimeException) {
-            return false
+            return e.localizedMessage
         }
-        return runAssertions(this.assertions)
+        return if (runAssertions(this.assertions)) null else "assertion error"
     }
 
-    private fun ProcedureTrilogyTest.runTest(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): Boolean {
+    private fun ProcedureTrilogyTest.runTestReturningError(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): String? {
         val outputValidator = OutputArgumentValidator(argumentTable.outputArgumentNames)
 
-        return argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->
+        val testSuccess = argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->
 
             testCase.hooks.beforeEachRow.runSetupScripts(library)
             val inputRow = inputRowWithIndex.value
@@ -58,17 +57,21 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             testCase.hooks.afterEachRow.runTeardownScripts(library)
             outputSuccess && assertionSuccess
         }.all { it }
+        return if (testSuccess) null else "test error"
     }
 
     private fun List<String>.runSetupScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecuter.execute(library.getSetupFixtureByName(name)) }
     private fun List<String>.runTeardownScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecuter.execute(library.getTeardownFixtureByName(name)) }
 
-    private fun TrilogyTest.tryProcedural(library: FixtureLibrary, trilogyTestCase: TrilogyTestCase): Boolean? {
-        return (this as? ProcedureTrilogyTest)?.runTest(trilogyTestCase as ProcedureTrilogyTestCase, library)
+    private fun TrilogyTest.tryProceduralTest(library: FixtureLibrary, trilogyTestCase: TrilogyTestCase): TestResult? {
+        if (this !is ProcedureTrilogyTest) return null
+        val errorMessage = this.runTestReturningError(trilogyTestCase as ProcedureTrilogyTestCase, library)
+        return TestResult(this.description, errorMessage)
     }
 
-    private fun TrilogyTest.tryGeneric(): Boolean? {
-        return (this as? GenericTrilogyTest)?.runTest()
+    private fun TrilogyTest.tryGenericTest(): TestResult? {
+        if (this !is GenericTrilogyTest) return null
+        return TestResult(this.description, this.runTestReturningError())
     }
 }
 
