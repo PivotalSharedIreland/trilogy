@@ -50,11 +50,15 @@ class OutputArgumentValidatorTests : Spek({
         }
 
         it("fails if an error is expected but not thrown") {
-            expect("...") { subject.validate(listOf("any"), emptyMap()) }
+            expect("Expected any error to occur, but no errors were triggered") { subject.validate(listOf("any"), emptyMap()) }
         }
 
-        xit("fails when a different error is expected") {
-            expect("error mismatch") { subject.validate(listOf("Bunny"), actualValues) }
+        it("fails when a different error is expected") {
+            expect("Expected an error with text 'Bunny' to occur, but the error was:\nORA-06512: at line 1") { subject.validate(listOf("Bunny"), actualValues) }
+        }
+
+        it("fails when a specific error is expected, but no error is thrown") {
+            expect("Expected an error with text 'FOO' to occur, but no errors were triggered") { subject.validate(listOf("FOO"), emptyMap()) }
         }
 
         context("with output arguments") {

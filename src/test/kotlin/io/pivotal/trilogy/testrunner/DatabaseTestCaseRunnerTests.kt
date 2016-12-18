@@ -405,13 +405,27 @@ class DatabaseTestCaseRunnerTests : Spek({
             }
         }
 
-        context("when an error is expected") {
+        context("when a specific error is expected") {
             val argumentTable = TestArgumentTable(listOf("=ERROR="), listOf(listOf("ERROR")))
 
             it("should report an error when no error is thrown") {
                 val singleTest = ProcedureTrilogyTest("foo", argumentTable, emptyList())
                 testSubjectCallerStub.resultToReturn = emptyMap()
-                expect("Expected an error with text 'ERROR' to occur, but no errors were triggered") { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(singleTest), testCaseHooks), FixtureLibrary.emptyLibrary()).tests.first().errorMessage }
+                val expectedError = "Expected an error with text 'ERROR' to occur, but no errors were triggered"
+                val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(singleTest), testCaseHooks)
+                expect(expectedError) { testCaseRunner.run(testCase, FixtureLibrary.emptyLibrary()).tests.first().errorMessage }
+            }
+        }
+
+        context("when any error is expected") {
+            val argumentTable = TestArgumentTable(listOf("=ERROR="), listOf(listOf("ANY")))
+
+            it("should report when no error is thrown") {
+                val singleTest = ProcedureTrilogyTest("bar", argumentTable, emptyList())
+                testSubjectCallerStub.resultToReturn = emptyMap()
+                val expectedError = "Expected any error to occur, but no errors were triggered"
+                val testCase = ProcedureTrilogyTestCase("someOtherProcedure", "d.e.s.c.r.i.p.t.i.o.n", listOf(singleTest), testCaseHooks)
+                expect(expectedError) { testCaseRunner.run(testCase, FixtureLibrary.emptyLibrary()).tests.first().errorMessage }
             }
         }
     }

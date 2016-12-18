@@ -19,12 +19,19 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
     private fun errorMismatchMessage(expectedRow: List<String>, actualValues: Map<String, Any?>): String? {
         if (!parameterNames.contains(TestArgumentTableTokens.errorColumnName)) return null
         val expectedError = expectedError(expectedRow)
+
         if (expectedError.isBlank() && actualValues.hasNoError) return null
         if (expectedError.isBlank()) return "unexpected error"
         if (expectedError.toUpperCase() == TestArgumentTableTokens.errorWildcard) return actualValues.wildcardErrorMessage
-        val actualError = actualValues[TestArgumentTableTokens.errorColumnName].toString().toUpperCase()
-        if (actualValues.containsError && actualError.contains(expectedError.toUpperCase())) return null
-        return createErrorMessage("assertions.errors.absent.specific", listOf(expectedError))
+
+        val actualError = actualValues[TestArgumentTableTokens.errorColumnName]
+
+        if (actualError == null) {
+            return createErrorMessage("assertions.errors.absent.specific", listOf(expectedError))
+        } else {
+            if (actualValues.containsError && actualError.toString().toUpperCase().contains(expectedError.toUpperCase())) return null
+            return createErrorMessage("assertions.errors.mismatch", listOf(expectedError, actualError))
+        }
     }
 
 
@@ -48,7 +55,7 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
     private fun <V> Map<String, V>.withoutErrors(): Map<String, V> = this.filterKeys { it != TestArgumentTableTokens.errorColumnName }
     private val Map<String, Any?>.containsError: Boolean get() = this.containsKey(TestArgumentTableTokens.errorColumnName)
     private val Map<String, Any?>.hasNoError: Boolean get() = !this.containsError
-    private val Map<String, Any?>.wildcardErrorMessage: String? get() = if (this.containsError) null else "..."
+    private val Map<String, Any?>.wildcardErrorMessage: String? get() = if (this.containsError) null else createErrorMessage("assertions.errors.absent.any", emptyList())
 
     private fun createErrorMessage(messagePath: String, messageArguments: List<Any>) = MessageFormat(getI18nMessage(messagePath)).format(messageArguments.toTypedArray())
     private fun getI18nMessage(name: String): String = ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString(name)
