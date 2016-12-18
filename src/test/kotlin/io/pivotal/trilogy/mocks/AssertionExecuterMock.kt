@@ -5,11 +5,11 @@ import io.pivotal.trilogy.testrunner.AssertionExecuter
 import io.pivotal.trilogy.testrunner.ScriptExecuter
 
 class AssertionExecuterMock(val scriptExecuter: ScriptExecuter) : AssertionExecuter {
-    var passAllExecutedAssertions = false
+    var assertionExecutionErrorMessage: String? = null
     var assertions = mutableListOf<TrilogyAssertion>()
 
-    override fun execute(assertion: TrilogyAssertion): Boolean {
+    override fun executeReturningFailureMessage(assertion: TrilogyAssertion): String? {
         scriptExecuter.execute(assertion.body)
-        return passAllExecutedAssertions
+        return assertionExecutionErrorMessage
     }
 }

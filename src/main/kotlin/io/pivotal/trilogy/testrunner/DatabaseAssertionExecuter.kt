@@ -6,16 +6,16 @@ import java.sql.SQLException
 
 class DatabaseAssertionExecuter(val scriptExecuter: ScriptExecuter) : AssertionExecuter {
 
-    override infix fun execute(assertion: TrilogyAssertion): Boolean {
+    override infix fun executeReturningFailureMessage(assertion: TrilogyAssertion): String? {
         try {
             scriptExecuter.execute(assertion.body)
         } catch(e: NestedRuntimeException) {
             if (e.contains(SQLException::class.java)) {
-                return false
+                return "failure message"
             }
         }
 
-        return true
+        return null
     }
 
 }

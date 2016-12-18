@@ -7,7 +7,9 @@ import io.pivotal.trilogy.test_helpers.Fixtures
 import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
+import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testproject.FixtureLibrary
@@ -106,6 +108,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         it("reports a failing test on the assertion failure") {
             val testWithAssertions = GenericTrilogyTest("", "", listOf(TrilogyAssertion("", "")))
+            assertionExecuterMock.assertionExecutionErrorMessage = "an assertion failure"
             val testCase = GenericTrilogyTestCase("o", listOf(testWithAssertions), TestCaseHooks())
             val result = testCaseRunner.run(testCase, fixtureLibrary)
 
@@ -116,7 +119,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         it("reports a passing test on successful assertion") {
             val testWithAssertions = GenericTrilogyTest("", "", listOf(TrilogyAssertion("", "")))
             val testCase = GenericTrilogyTestCase("o", listOf(testWithAssertions), TestCaseHooks())
-            assertionExecuterMock.passAllExecutedAssertions = true
+            assertionExecuterMock.assertionExecutionErrorMessage = null
             val result = testCaseRunner.run(testCase, fixtureLibrary)
 
             expect(1) { result.passed }
@@ -338,7 +341,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         context("when the assertions pass and the output is the expected output") {
             beforeEach {
-                assertionExecuterMock.passAllExecutedAssertions = true
+                assertionExecuterMock.assertionExecutionErrorMessage = null
                 testSubjectCallerStub.resultToReturn = mapOf("OUT" to "1")
             }
 
@@ -365,7 +368,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         context("when the output is expected but an assertion fails") {
             beforeEach {
-                assertionExecuterMock.passAllExecutedAssertions = false
+                assertionExecuterMock.assertionExecutionErrorMessage = "some error message"
                 testSubjectCallerStub.resultToReturn = mapOf("OUT" to "1")
             }
 
@@ -392,13 +395,23 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         context("when the assertion passes but the output is not the expected output") {
             beforeEach {
-                assertionExecuterMock.passAllExecutedAssertions = true
+                assertionExecuterMock.assertionExecutionErrorMessage = null
                 testSubjectCallerStub.resultToReturn = mapOf("OUT" to "2")
             }
 
             it("then the test case should fail") {
                 val singleTest = Fixtures.buildSingleTest()
                 expect(false) { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", singleTest, testCaseHooks), FixtureLibrary.emptyLibrary()).didPass }
+            }
+        }
+
+        context("when an error is expected") {
+            val argumentTable = TestArgumentTable(listOf("=ERROR="), listOf(listOf("ERROR")))
+
+            it("should report an error when no error is thrown") {
+                val singleTest = ProcedureTrilogyTest("foo", argumentTable, emptyList())
+                testSubjectCallerStub.resultToReturn = emptyMap()
+                expect("Expected an error with text 'ERROR' to occur, but no errors were triggered") { testCaseRunner.run(ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(singleTest), testCaseHooks), FixtureLibrary.emptyLibrary()).tests.first().errorMessage }
             }
         }
     }

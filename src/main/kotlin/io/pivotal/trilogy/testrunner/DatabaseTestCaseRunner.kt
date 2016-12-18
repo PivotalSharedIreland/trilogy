@@ -28,8 +28,8 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         return TestCaseResult(trilogyTestCase.description, testResults)
     }
 
-    private fun runAssertions(assertions: List<TrilogyAssertion>): Boolean {
-        return assertions.all { assertion -> assertionExecuter execute assertion }
+    private fun runAssertionsReturningError(assertions: List<TrilogyAssertion>): String? {
+        return assertions.map { assertion -> assertionExecuter executeReturningFailureMessage assertion }.asErrorString()
     }
 
     private fun GenericTrilogyTest.runTestReturningError(): String? {
@@ -38,13 +38,13 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         } catch(e: RuntimeException) {
             return e.message ?: "Unknown error"
         }
-        return if (runAssertions(this.assertions)) null else "assertion error"
+        return runAssertionsReturningError(this.assertions)
     }
 
     private fun ProcedureTrilogyTest.runTestReturningError(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): String? {
         val outputValidator = OutputArgumentValidator(argumentTable.outputArgumentNames)
 
-        val testSuccess = argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->
+        return argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->
 
             testCase.hooks.beforeEachRow.runSetupScripts(library)
             val inputRow = inputRowWithIndex.value
@@ -53,11 +53,10 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             val output = testSubjectCaller.call(testCase.procedureName, argumentTable.inputArgumentNames, inputRow)
 
             val outputSuccess = outputValidator.validate(argumentTable.outputArgumentValues[index], output)
-            val assertionSuccess = runAssertions(assertions)
+            val assertionSuccess = runAssertionsReturningError(assertions)
             testCase.hooks.afterEachRow.runTeardownScripts(library)
-            outputSuccess && assertionSuccess
-        }.all { it }
-        return if (testSuccess) null else "test error"
+            listOf(outputSuccess, assertionSuccess).asErrorString()
+        }.asErrorString()
     }
 
     private fun List<String>.runSetupScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecuter.execute(library.getSetupFixtureByName(name)) }
@@ -72,6 +71,11 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     private fun TrilogyTest.tryGenericTest(): TestResult? {
         if (this !is GenericTrilogyTest) return null
         return TestResult(this.description, this.runTestReturningError())
+    }
+
+    private fun Iterable<String?>.asErrorString(): String? {
+        val nonNullList = this.filterNotNull()
+        return if (nonNullList.isNotEmpty()) nonNullList.joinToString("\n") else null
     }
 }
 
