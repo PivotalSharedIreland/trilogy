@@ -21,16 +21,15 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
         val expectedError = expectedError(expectedRow)
 
         if (expectedError.isBlank() && actualValues.hasNoError) return null
-        if (expectedError.isBlank()) return "unexpected error"
         if (expectedError.toUpperCase() == TestArgumentTableTokens.errorWildcard) return actualValues.wildcardErrorMessage
 
         val actualError = actualValues[TestArgumentTableTokens.errorColumnName]
-
-        if (actualError == null) {
-            return createErrorMessage("assertions.errors.absent.specific", listOf(expectedError))
-        } else {
+        if (actualError != null) {
+            if (expectedError.isBlank()) return createErrorMessage("assertions.errors.unexpected", listOf(actualError))
             if (actualValues.containsError && actualError.toString().toUpperCase().contains(expectedError.toUpperCase())) return null
             return createErrorMessage("assertions.errors.mismatch", listOf(expectedError, actualError))
+        } else {
+            return createErrorMessage("assertions.errors.absent.specific", listOf(expectedError))
         }
     }
 

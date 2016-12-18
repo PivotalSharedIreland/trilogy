@@ -42,7 +42,7 @@ class OutputArgumentValidatorTests : Spek({
         }
 
         it("fails validation when an unexpected error is raised") {
-            expect("unexpected error") { subject.validate(listOf(""), mapOf("=ERROR=" to "Something")) }
+            expect("Expected no error to occur, but the error was:\nSomething") { subject.validate(listOf(""), mapOf("=ERROR=" to "Something")) }
         }
 
         it("passes validation for error wildcard") {
@@ -69,6 +69,4 @@ class OutputArgumentValidatorTests : Spek({
             }
         }
     }
-
-
 })
