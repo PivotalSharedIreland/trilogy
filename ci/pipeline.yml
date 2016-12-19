@@ -10,5 +10,6 @@ jobs:
 - name: trilogy-tests
   plan:
   - get: trilogy
+    trigger: true
   - task: tests
     file: trilogy/ci/test.yml
