@@ -8,8 +8,8 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.2.RELEASE")
-        classpath(kotlinModule("gradle-plugin", version = "1.0.5"))
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
+        classpath(kotlinModule("gradle-plugin", version = "1.0.+"))
     }
 }
 
@@ -58,9 +58,9 @@ configure<JavaPluginConvention> {
 
 
 dependencies {
-    compile(kotlinModule("stdlib", version = "1.0.5"))
+    compile(kotlinModule("stdlib", version = "1.0.+"))
     compile("org.springframework.boot:spring-boot-starter-jdbc")
-    compile("org.springframework.boot:spring-boot-starter:1.4.2.RELEASE")
+    compile("org.springframework.boot:spring-boot-starter:1.4.3.RELEASE")
     compile("commons-cli:commons-cli:1.3.1")
     compile("org.flywaydb:flyway-core:4.0.3")
 
