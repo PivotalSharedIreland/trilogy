@@ -1,7 +1,6 @@
 package io.pivotal.trilogy.parsing
 
 import io.pivotal.trilogy.application.TrilogyApplicationOptions
-import org.apache.commons.cli.CommandLine
 import org.apache.commons.cli.DefaultParser
 import org.apache.commons.cli.Options
 import org.apache.commons.cli.ParseException
@@ -13,9 +12,8 @@ object TrilogyApplicationOptionsParser {
             addOption("", "project", true, "Path to the test project directory")
             addOption("", "skip_schema_load", false, "Use this flag to skip loading schema from the project")
         }
-        val command: CommandLine
-        try {
-            command = DefaultParser().parse(options, arguments.filter { it.isValidOption }.toTypedArray())
+        val command = try {
+            DefaultParser().parse(options, arguments.filter { it.isValidOption }.toTypedArray())
         } catch (e: ParseException) {
             System.out.println(e.message)
             throw e

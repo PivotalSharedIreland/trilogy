@@ -32,13 +32,11 @@ class DatabaseTestSubjectCaller(@Autowired val dataSource: DataSource) : TestSub
     private fun String.isValuePresent() = !isNullValue()
 
     private fun SimpleJdbcCall.safeExecute(parameters: Map<String, String?>): Map<String, Any?> {
-        val result: Map<String, Any?>
-        try {
-            result = this.execute(parameters)
+        return try {
+            this.execute(parameters)
         } catch (e: DataAccessException) {
-            return mapOf(Pair(TestArgumentTableTokens.errorColumnName, e.cause?.message ?: e.message))
+            mapOf(Pair(TestArgumentTableTokens.errorColumnName, e.cause?.message ?: e.message))
         }
-        return result
     }
 
 }

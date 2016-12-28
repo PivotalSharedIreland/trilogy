@@ -21,10 +21,10 @@ object TestProjectBuilder {
     }
 
     private fun extractTestCase(testCase: String): TrilogyTestCase {
-        try {
-            return ProcedureStringTestCaseParser(testCase).getTestCase()
+        return try {
+            ProcedureStringTestCaseParser(testCase).getTestCase()
         } catch (e: RuntimeException) {
-            return GenericStringTestCaseParser(testCase).getTestCase()
+            GenericStringTestCaseParser(testCase).getTestCase()
         }
     }
 
