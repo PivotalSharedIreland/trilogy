@@ -70,6 +70,33 @@ class TestSubjectCallerTests : Spek({
             }
         }
 
+        context("date mismatch") {
+            beforeEach { values[2] = "ouch" }
+
+            it("throws an error") {
+                { DatabaseTestSubjectCaller(dataSource).call("ALL_IN_PARAM_TYPES", fields, values) } shouldThrow InputArgumentException::class
+            }
+
+            it("provides the error message") {
+                val error = try {
+                    DatabaseTestSubjectCaller(dataSource).call("ALL_IN_PARAM_TYPES", fields, values)
+                    InputArgumentException("", RuntimeException(""))
+                } catch (e: InputArgumentException) {
+                    e
+                }
+                val expectedMessageHeader = "Attempted to pass an incompatible value as a date/time parameter. " +
+                        "Please review your inputs:\n"
+                val actualMessage: String = error.message!!
+                actualMessage shouldStartWith expectedMessageHeader
+                actualMessage shouldContain "    V_INT => 12345"
+                actualMessage shouldContain "    V_NUMBER => 12345.67"
+                actualMessage shouldContain "    V_TIMESTAMP => ouch"
+                actualMessage shouldContain "    V_DATE => 2007-05-12 22:33:44"
+                actualMessage shouldContain "Original error message: Timestamp format must be yyyy-mm-dd hh:mm:ss[.fffffffff]"
+
+            }
+        }
+
     }
 
     context("errors") {

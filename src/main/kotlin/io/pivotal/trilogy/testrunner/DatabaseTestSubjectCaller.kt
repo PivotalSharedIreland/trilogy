@@ -38,7 +38,9 @@ class DatabaseTestSubjectCaller(@Autowired val dataSource: DataSource) : TestSub
         } catch (e: DataAccessException) {
             mapOf(Pair(TestArgumentTableTokens.errorColumnName, e.cause?.message ?: e.message))
         } catch (e: NumberFormatException) {
-            throw InputArgumentException(createErrorMessage("testSubjectCaller.errors.mismatch.input", listOf(parameters.dumpInput)), e)
+            throw InputArgumentException(createErrorMessage("testSubjectCaller.errors.mismatch.input.numeric", listOf(parameters.dumpInput)), e)
+        } catch (e: IllegalArgumentException) {
+            throw InputArgumentException(createErrorMessage("testSubjectCaller.errors.mismatch.input.datetime", listOf(parameters.dumpInput, e.localizedMessage)), e)
         }
     }
 

@@ -1,0 +1,32 @@
+# TEST CASE ALL_IN_PARAM_TYPES
+Parameter mismatch test
+## TEST
+This test should succeed
+### DATA
+  | V_INT | V_NUMBER | V_DATE              | V_TIMESTAMP                | =ERROR= |
+  |-------|----------|---------------------|----------------------------|---------|
+  | 1     | 1.2      | 2011-12-01 02:03:04 | 1901-02-03 04:05:06.070809 |         |
+## TEST
+This test should fail on an incorrect integer
+### DATA
+  | V_INT | V_NUMBER | V_DATE     | V_TIMESTAMP                | =ERROR= | 
+  |-------|----------|------------|----------------------------|---------|
+  | doh   | 1.2      | __NULL__   | __NULL__                   |         |
+## TEST
+This test should fail on a incorrect number
+### DATA
+  | V_INT | V_NUMBER | V_DATE     | V_TIMESTAMP                | =ERROR= | 
+  |-------|----------|------------|----------------------------|---------|
+  | 1     | 1s.2     | __NULL__   | __NULL__                   |         |
+## TEST
+This test should fail on a incorrect date
+### DATA
+  | V_INT | V_NUMBER | V_DATE     | V_TIMESTAMP                | =ERROR= | 
+  |-------|----------|------------|----------------------------|---------|
+  | 1     | 1.2      | NULL       | __NULL__                   |         |
+## TEST
+This test should fail on a incorrect timestamp
+### DATA
+  | V_INT | V_NUMBER | V_DATE     | V_TIMESTAMP                | =ERROR= | 
+  |-------|----------|------------|----------------------------|---------|
+  | 1     | 1.2      | __NULL__   |   NULL                     |         |
