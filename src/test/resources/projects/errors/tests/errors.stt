@@ -20,3 +20,10 @@ No error specified, but an error is thrown
 | V_IN |  =ERROR=  |
 |-----:|:---------:|
 |  101 |           |
+## TEST
+An error is specified, but no error occurs
+### DATA
+| V_IN |  =ERROR=  |
+|-----:|:---------:|
+|    0 |     ANY   |
+|    0 |     YNA   |
