@@ -1,9 +1,7 @@
 package io.pivotal.trilogy.validators
 
+import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
 import io.pivotal.trilogy.testcase.TestArgumentTableTokens
-import org.springframework.context.i18n.LocaleContextHolder
-import java.text.MessageFormat
-import java.util.ResourceBundle
 
 class OutputArgumentValidator(val parameterNames: List<String>) {
 
@@ -55,7 +53,4 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
     private val Map<String, Any?>.containsError: Boolean get() = this.containsKey(TestArgumentTableTokens.errorColumnName)
     private val Map<String, Any?>.hasNoError: Boolean get() = !this.containsError
     private val Map<String, Any?>.wildcardErrorMessage: String? get() = if (this.containsError) null else createErrorMessage("assertions.errors.absent.any", emptyList())
-
-    private fun createErrorMessage(messagePath: String, messageArguments: List<Any>) = MessageFormat(getI18nMessage(messagePath)).format(messageArguments.toTypedArray())
-    private fun getI18nMessage(name: String): String = ResourceBundle.getBundle("messages", LocaleContextHolder.getLocale()).getString(name)
 }
