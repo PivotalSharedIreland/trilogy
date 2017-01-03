@@ -1,10 +1,11 @@
 package io.pivotal.trilogy.testrunner
 
+import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
 import io.pivotal.trilogy.testcase.TestArgumentTableTokens
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataAccessException
 import org.springframework.jdbc.core.simple.SimpleJdbcCall
-import java.util.*
+import java.util.HashMap
 import javax.sql.DataSource
 
 class DatabaseTestSubjectCaller(@Autowired val dataSource: DataSource) : TestSubjectCaller {
@@ -36,7 +37,11 @@ class DatabaseTestSubjectCaller(@Autowired val dataSource: DataSource) : TestSub
             this.execute(parameters)
         } catch (e: DataAccessException) {
             mapOf(Pair(TestArgumentTableTokens.errorColumnName, e.cause?.message ?: e.message))
+        } catch (e: NumberFormatException) {
+            throw InputArgumentException(createErrorMessage("testSubjectCaller.errors.mismatch.input", listOf(parameters.dumpInput)), e)
         }
     }
 
+    val Map<String, String?>.dumpInput: String
+        get() = this.filterKeys { !it.endsWith("$") }.map { (k, v) -> "    $k => $v"  }.joinToString("\n")
 }

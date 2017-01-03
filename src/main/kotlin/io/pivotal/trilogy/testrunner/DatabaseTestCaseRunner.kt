@@ -50,12 +50,18 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             val inputRow = inputRowWithIndex.value
             val index = inputRowWithIndex.index
 
-            val output = testSubjectCaller.call(testCase.procedureName, argumentTable.inputArgumentNames, inputRow)
+            val output = try {
+                testSubjectCaller.call(testCase.procedureName, argumentTable.inputArgumentNames, inputRow)
+            } catch (e: InputArgumentException) {
+                mapOf("=FAIL=" to e.localizedMessage)
+            }
 
-            val outputSuccess = outputValidator.validate(argumentTable.outputArgumentValues[index], output)
-            val assertionSuccess = runAssertionsReturningError(assertions)
+            val callError = output["=FAIL="].rowCallError(inputRowWithIndex.index + 1, argumentTable.inputArgumentValues.count())
+
+            val outputError = if (callError == null) outputValidator.validate(argumentTable.outputArgumentValues[index], output) else null
+            val assertionError = if (callError == null) runAssertionsReturningError(assertions) else null
             testCase.hooks.afterEachRow.runTeardownScripts(library)
-            listOf(outputSuccess, assertionSuccess).asErrorString()
+            listOf(callError, outputError, assertionError).asErrorString()
         }.asErrorString()
     }
 
@@ -76,6 +82,10 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     private fun Iterable<String?>.asErrorString(): String? {
         val nonNullList = this.filterNotNull()
         return if (nonNullList.isNotEmpty()) nonNullList.joinToString("\n") else null
+    }
+
+    private fun Any?.rowCallError(rowNumber: Int, rowCount: Int): String? {
+        return if (this != null) "$rowNumber/$rowCount $this" else null
     }
 }
 

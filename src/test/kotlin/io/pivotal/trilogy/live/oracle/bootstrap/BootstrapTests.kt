@@ -5,5 +5,6 @@ import org.jetbrains.spek.api.Spek
 
 class BootstrapTests : Spek({
     DatabaseHelper.executeScript("degenerate")
+    DatabaseHelper.executeScript("allInParamTypes")
     it("loads") {}
 })

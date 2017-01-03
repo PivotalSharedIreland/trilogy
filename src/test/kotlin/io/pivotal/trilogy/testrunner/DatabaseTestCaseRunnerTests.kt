@@ -5,6 +5,7 @@ import io.pivotal.trilogy.mocks.ScriptExecuterMock
 import io.pivotal.trilogy.mocks.TestSubjectCallerStub
 import io.pivotal.trilogy.test_helpers.Fixtures
 import io.pivotal.trilogy.test_helpers.isEven
+import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
@@ -426,6 +427,23 @@ class DatabaseTestCaseRunnerTests : Spek({
                 val expectedError = "Expected any error to occur, but no errors were triggered"
                 val testCase = ProcedureTrilogyTestCase("someOtherProcedure", "d.e.s.c.r.i.p.t.i.o.n", listOf(singleTest), testCaseHooks)
                 expect(expectedError) { testCaseRunner.run(testCase, FixtureLibrary.emptyLibrary()).tests.first().errorMessage }
+            }
+        }
+
+        context("when an error is thrown during execution") {
+            val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", Fixtures.buildSingleTest(), testCaseHooks)
+            beforeEach { testSubjectCallerStub.exceptionToThrow = InputArgumentException("boo", RuntimeException("boom!")) }
+
+            it("should fail to run the test case") {
+                expect(false) { testCaseRunner.run(testCase, fixtureLibrary).didPass }
+            }
+
+            it("should include the error message in the test case result") {
+                testCaseRunner.run(testCase, fixtureLibrary).failedTests.first().errorMessage!! shouldContain "boo"
+            }
+
+            it("should include the table row number, and total number of rows in the error message") {
+                testCaseRunner.run(testCase, fixtureLibrary).failedTests.first().errorMessage!! shouldContain "1/1"
             }
         }
     }

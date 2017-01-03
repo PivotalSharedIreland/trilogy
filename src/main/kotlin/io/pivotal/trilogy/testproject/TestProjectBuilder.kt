@@ -30,7 +30,7 @@ object TestProjectBuilder {
 
     private fun TestProjectResourceLocator.fixtures(): FixtureLibrary {
         fun foldIntoMapWithPrefix(prefix: String): (Map<String, String>, NamedStringResource) -> Map<String, String> {
-            return { map, fixture -> map + mapOf(Pair(prefix + fixture.name, fixture.content)) }
+            return { map, (name, content) -> map + mapOf(Pair(prefix + name, content)) }
         }
 
         val setupFixtureMap = this.setupFixtures.fold(emptyMap<String, String>(), foldIntoMapWithPrefix("setup/"))

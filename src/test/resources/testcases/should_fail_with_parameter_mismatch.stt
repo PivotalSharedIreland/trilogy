@@ -1,0 +1,14 @@
+# TEST CASE ALL_IN_PARAM_TYPES
+Parameter mismatch test
+## TEST
+This test should succeed
+### DATA
+  | V_INT | V_NUMBER | V_DATE     | V_TIMESTAMP                | =ERROR= |
+  |-------|----------|------------|----------------------------|---------|
+  | 1     | 1.2      | __NULL__   | __NULL__                   |         |
+## TEST
+This test should fail on an incorrect integer
+### DATA
+  | V_INT | V_NUMBER | V_DATE     | V_TIMESTAMP                | =ERROR= | 
+  |-------|----------|------------|----------------------------|---------|
+  | doh   | 1.2      | __NULL__   | __NULL__                   |         |
