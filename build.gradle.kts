@@ -9,7 +9,7 @@ buildscript {
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:1.4.3.RELEASE")
-        classpath(kotlinModule("gradle-plugin", version = "1.0.+"))
+        classpath(kotlinModule("gradle-plugin", version = "1.1.+"))
     }
 }
 
@@ -58,7 +58,7 @@ configure<JavaPluginConvention> {
 
 
 dependencies {
-    compile(kotlinModule("stdlib", version = "1.0.+"))
+    compile(kotlinModule("stdlib", version = "1.1.+"))
     compile("org.springframework.boot:spring-boot-starter-jdbc")
     compile("org.springframework.boot:spring-boot-starter:1.4.3.RELEASE")
     compile("commons-cli:commons-cli:1.3.1")

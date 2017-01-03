@@ -34,7 +34,7 @@ data class TestArgumentTable(private val labels: List<String>, private val value
 
     private fun valuesAtIndexes(indexes: Set<Int>): List<List<String>> {
         return values.map { row ->
-            row.filterIndexed { index, s -> indexes.contains(index) }
+            row.filterIndexed { index, _ -> indexes.contains(index) }
         }
     }
 
