@@ -1,5 +1,6 @@
 package io.pivotal.trilogy.testrunner
 
+import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.reporting.TestResult
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
@@ -28,7 +29,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         return TestCaseResult(trilogyTestCase.description, testResults)
     }
 
-    private fun runAssertionsReturningError(assertions: List<TrilogyAssertion>): String? {
+    private fun getAssertionError(assertions: List<TrilogyAssertion>): String? {
         return assertions.map { assertion -> assertionExecuter executeReturningFailureMessage assertion }.asErrorString()
     }
 
@@ -38,7 +39,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         } catch(e: RuntimeException) {
             return e.message ?: "Unknown error"
         }
-        return runAssertionsReturningError(this.assertions)
+        return getAssertionError(this.assertions)
     }
 
     private fun ProcedureTrilogyTest.runTestReturningError(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): String? {
@@ -56,10 +57,13 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
                 mapOf("=FAIL=" to e.localizedMessage)
             }
 
-            val callError = output["=FAIL="].rowCallError(inputRowWithIndex.index + 1, argumentTable.inputArgumentValues.count())
+            val currentRow = inputRowWithIndex.index + 1
+            val rowCount = argumentTable.inputArgumentValues.count()
 
-            val outputError = if (callError == null) outputValidator.validate(argumentTable.outputArgumentValues[index], output) else null
-            val assertionError = if (callError == null) runAssertionsReturningError(assertions) else null
+            val callError = output["=FAIL="].rowCallError(currentRow, rowCount)
+
+            val outputError = if (callError == null) outputValidator.validate(argumentTable.outputArgumentValues[index], output).rowCallError(currentRow, rowCount) else null
+            val assertionError = if (callError == null) getAssertionError(assertions) else null
             testCase.hooks.afterEachRow.runTeardownScripts(library)
             listOf(callError, outputError, assertionError).asErrorString()
         }.asErrorString()
@@ -85,7 +89,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     }
 
     private fun Any?.rowCallError(rowNumber: Int, rowCount: Int): String? {
-        return if (this != null) "$rowNumber/$rowCount $this" else null
+        return if (this != null) createErrorMessage("output.errors.forRow", listOf(rowNumber, rowCount, this)) else null
     }
 }
 

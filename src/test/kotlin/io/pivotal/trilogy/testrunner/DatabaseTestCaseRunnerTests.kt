@@ -412,7 +412,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             it("should report an error when no error is thrown") {
                 val singleTest = ProcedureTrilogyTest("foo", argumentTable, emptyList())
                 testSubjectCallerStub.resultToReturn = emptyMap()
-                val expectedError = "Expected an error with text 'ERROR' to occur, but no errors were triggered"
+                val expectedError = "Row 1 of 1: Expected an error with text 'ERROR' to occur, but no errors were triggered"
                 val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(singleTest), testCaseHooks)
                 expect(expectedError) { testCaseRunner.run(testCase, FixtureLibrary.emptyLibrary()).tests.first().errorMessage }
             }
@@ -424,7 +424,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             it("should report when no error is thrown") {
                 val singleTest = ProcedureTrilogyTest("bar", argumentTable, emptyList())
                 testSubjectCallerStub.resultToReturn = emptyMap()
-                val expectedError = "Expected any error to occur, but no errors were triggered"
+                val expectedError = "Row 1 of 1: Expected any error to occur, but no errors were triggered"
                 val testCase = ProcedureTrilogyTestCase("someOtherProcedure", "d.e.s.c.r.i.p.t.i.o.n", listOf(singleTest), testCaseHooks)
                 expect(expectedError) { testCaseRunner.run(testCase, FixtureLibrary.emptyLibrary()).tests.first().errorMessage }
             }
@@ -443,7 +443,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             }
 
             it("should include the table row number, and total number of rows in the error message") {
-                testCaseRunner.run(testCase, fixtureLibrary).failedTests.first().errorMessage!! shouldContain "1/1"
+                testCaseRunner.run(testCase, fixtureLibrary).failedTests.first().errorMessage!! shouldContain "Row 1 of 1: "
             }
         }
     }

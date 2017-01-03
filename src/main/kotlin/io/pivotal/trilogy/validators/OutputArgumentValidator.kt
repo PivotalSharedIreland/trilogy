@@ -37,7 +37,13 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
     }
 
     private fun matchValues(actualValues: Map<String, Any?>, expectedRow: List<String>): String? {
-        return if (expectedMap(expectedRow) == actualMap(actualValues)) null else "value mismatch"
+        val expectedRowMap = expectedMap(expectedRow)
+        val actualRowMap = actualMap(actualValues)
+        return if (expectedRowMap == actualRowMap) null else describeDifference(expectedRowMap, actualRowMap)
+    }
+
+    private fun describeDifference(expectedRow: Map<String, String>, actualRow: Map<String, String>): String? {
+        return actualRow.filterNot { (k, v) -> v == expectedRow[k] }.map { (k, v) -> createErrorMessage("output.errors.mismatch", listOf(expectedRow[k] as String, k, v))  }.joinToString("\n")
     }
 
 
@@ -54,3 +60,4 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
     private val Map<String, Any?>.hasNoError: Boolean get() = !this.containsError
     private val Map<String, Any?>.wildcardErrorMessage: String? get() = if (this.containsError) null else createErrorMessage("assertions.errors.absent.any", emptyList())
 }
+

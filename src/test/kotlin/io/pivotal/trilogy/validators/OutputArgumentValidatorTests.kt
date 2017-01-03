@@ -1,5 +1,6 @@
 package io.pivotal.trilogy.validators
 
+import io.pivotal.trilogy.test_helpers.shouldContain
 import org.jetbrains.spek.api.Spek
 import java.math.BigDecimal
 import kotlin.test.expect
@@ -15,21 +16,24 @@ class OutputArgumentValidatorTests : Spek({
     }
 
     it("fails validation with one parameter") {
-        expect("value mismatch") { OutputArgumentValidator(listOf("FOO")).validate(listOf("1"), mapOf("FOO" to BigDecimal.TEN)) }
+        val expectedMessage = "Expected value '1' in the FOO out parameter, but received '10'"
+        expect(expectedMessage) { OutputArgumentValidator(listOf("FOO")).validate(listOf("1"), mapOf("FOO" to BigDecimal.TEN)) }
     }
 
     it("passes validation with multiple parameters") {
-        val actualValues = mapOf(Pair("FOO", BigDecimal.ONE), Pair("BAR", BigDecimal.TEN))
+        val actualValues = mapOf("FOO" to BigDecimal.ONE, "BAR" to BigDecimal.TEN)
         expect(null) { OutputArgumentValidator(listOf("FOO", "BAR")).validate(listOf("1", "10"), actualValues) }
     }
 
     it("fails validation with multiple parameters") {
-        val actualValues = mapOf(Pair("FOO", BigDecimal.ONE), Pair("BAR", BigDecimal.TEN))
-        expect("value mismatch") { OutputArgumentValidator(listOf("FOO", "BAR")).validate(listOf("10", "1"), actualValues) }
+        val actualValues = mapOf("FOO" to BigDecimal.ONE, "BAR" to BigDecimal.TEN)
+        val errorMessage = OutputArgumentValidator(listOf("FOO", "BAR")).validate(listOf("10", "1"), actualValues) as String
+        errorMessage shouldContain "Expected value '10' in the FOO out parameter, but received '1'"
+        errorMessage shouldContain "Expected value '1' in the BAR out parameter, but received '10'"
     }
 
     it("passes validation with a null value") {
-        val actualValues = mapOf(Pair("FOO", null), Pair("BAR", BigDecimal.TEN))
+        val actualValues = mapOf("FOO" to null, "BAR" to BigDecimal.TEN)
         expect(null) { OutputArgumentValidator(listOf("FOO", "BAR")).validate(listOf("__NULL__", "10"), actualValues) }
     }
 
