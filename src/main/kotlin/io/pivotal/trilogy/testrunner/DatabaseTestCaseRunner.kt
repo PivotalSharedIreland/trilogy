@@ -54,7 +54,9 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             val output = try {
                 testSubjectCaller.call(testCase.procedureName, argumentTable.inputArgumentNames, inputRow)
             } catch (e: InputArgumentException) {
-                mapOf("=FAIL=" to e.localizedMessage)
+                failureWithException(e)
+            } catch (e: UnexpectedArgumentException) {
+                failureWithException(e)
             }
 
             val currentRow = inputRowWithIndex.index + 1
@@ -68,6 +70,8 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             listOf(callError, outputError, assertionError).asErrorString()
         }.asErrorString()
     }
+
+    private fun failureWithException(e: RuntimeException) = mapOf("=FAIL=" to e.localizedMessage)
 
     private fun List<String>.runSetupScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecuter.execute(library.getSetupFixtureByName(name)) }
     private fun List<String>.runTeardownScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecuter.execute(library.getTeardownFixtureByName(name)) }

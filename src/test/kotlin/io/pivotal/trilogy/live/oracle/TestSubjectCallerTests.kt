@@ -8,7 +8,10 @@ import io.pivotal.trilogy.test_helpers.shouldStartWith
 import io.pivotal.trilogy.test_helpers.shouldThrow
 import io.pivotal.trilogy.testrunner.DatabaseTestSubjectCaller
 import io.pivotal.trilogy.testrunner.InputArgumentException
+import io.pivotal.trilogy.testrunner.MissingArgumentException
+import io.pivotal.trilogy.testrunner.UnexpectedArgumentException
 import org.amshove.kluent.AnyException
+import org.amshove.kluent.`should equal`
 import org.jetbrains.spek.api.Spek
 import java.math.BigDecimal
 import kotlin.test.expect
@@ -80,13 +83,13 @@ class TestSubjectCallerTests : Spek({
             it("provides the error message") {
                 val error = try {
                     DatabaseTestSubjectCaller(dataSource).call("ALL_IN_PARAM_TYPES", fields, values)
-                    InputArgumentException("", RuntimeException(""))
+                    InputArgumentException("fluctuis potus!", RuntimeException("drink crême fraîche."))
                 } catch (e: InputArgumentException) {
                     e
                 }
                 val expectedMessageHeader = "Attempted to pass an incompatible value as a date/time parameter. " +
                         "Please review your inputs:\n"
-                val actualMessage: String = error.message!!
+                val actualMessage = error.localizedMessage!!
                 actualMessage shouldStartWith expectedMessageHeader
                 actualMessage shouldContain "    V_INT => 12345"
                 actualMessage shouldContain "    V_NUMBER => 12345.67"
@@ -97,6 +100,30 @@ class TestSubjectCallerTests : Spek({
             }
         }
 
+    }
+
+    context("incorrect arity") {
+        DatabaseHelper.executeScript("degenerate")
+
+        it("complains when missing arguments") {
+            val error = try {
+                DatabaseTestSubjectCaller(dataSource).call("DEGENERATE", emptyList(), emptyList())
+                MissingArgumentException("All simple doers believe each other", RuntimeException("sonic shower"))
+            } catch (e: MissingArgumentException) {
+                e
+            }
+            error.localizedMessage!! `should equal` "Required input parameter 'V_IN' is missing"
+        }
+
+        it("complains when unexpected arguments are passed in") {
+            val error = try {
+                DatabaseTestSubjectCaller(dataSource).call("DEGENERATE", listOf("V_IN", "V_PLUS"), listOf("1", "2"))
+                UnexpectedArgumentException("Bilge rats", RuntimeException("Ordinary nanomachine"))
+            } catch (e: UnexpectedArgumentException) {
+                e
+            }
+            error.localizedMessage!! shouldContain "Unknown parameter(s) 'V_PLUS'"
+        }
     }
 
     context("errors") {
