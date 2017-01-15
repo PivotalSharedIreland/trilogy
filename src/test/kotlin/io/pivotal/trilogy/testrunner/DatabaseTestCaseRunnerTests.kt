@@ -6,6 +6,7 @@ import io.pivotal.trilogy.mocks.TestSubjectCallerStub
 import io.pivotal.trilogy.test_helpers.Fixtures
 import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.test_helpers.shouldContain
+import io.pivotal.trilogy.test_helpers.shouldMatch
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
@@ -266,6 +267,118 @@ class DatabaseTestCaseRunnerTests : Spek({
             }
 
 
+        }
+
+        context("error handling") {
+            val tests = listOf(ProcedureTrilogyTest("some test", TestArgumentTable(emptyList(), emptyList()), emptyList()))
+
+            it("fails when a non-existing 'before all' fixture is specified") {
+                val missingFixtureName = "I influence this beauty, it's called neutral vision."
+                val hooks = TestCaseHooks(beforeAll = listOf(missingFixtureName))
+                val testCase = ProcedureTrilogyTestCase("some_procedure", "some description", tests, hooks)
+
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+                expect(0) { scriptExecuterMock.executeCalls }
+                expect("Unable to find fixture '$missingFixtureName'") { result.errorMessage }
+                expect(0) { result.passed }
+            }
+
+            it("joins multiple fixture errors with newlines") {
+                val fixture1 = "Jolly rogers scream with hunger at the golden tubbataha reef!"
+                val fixture2 = "http://imgs.xkcd.com/comics/gnome_ann_2x.png"
+
+                val hooks = TestCaseHooks(beforeAll = listOf(fixture1, fixture2))
+                val testCase = ProcedureTrilogyTestCase("SOME_PROCEDURE", "Some description", tests, hooks)
+
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+                expect(0) { scriptExecuterMock.executeCalls }
+                expect("Unable to find fixture '$fixture1'\nUnable to find fixture '$fixture2'") { result.errorMessage }
+                expect(0) { result.passed }
+            }
+
+            it("fails when a non-existing 'before each test' fixture is specified") {
+                val missingFixtureName = "When the individual of politics believes the stigmas of the scholar, the sainthood will know self."
+                val hooks = TestCaseHooks(beforeEachTest = listOf(missingFixtureName))
+                val testCase = ProcedureTrilogyTestCase("some_procedure", "some description", tests, hooks)
+
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+                expect(0) { scriptExecuterMock.executeCalls }
+                expect(0) { result.passed }
+                expect("Unable to find fixture '$missingFixtureName'") { result.errorMessage }
+            }
+
+            it("fails when a non-existing 'before each row' fixture is specified") {
+                val missingFixtureName = "Try smashing blood oranges ricotta rinseed with champaign."
+                val hooks = TestCaseHooks(beforeEachRow = listOf(missingFixtureName))
+                val testCase = ProcedureTrilogyTestCase("some_procedure", "some description", tests, hooks)
+
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+                expect(0) { scriptExecuterMock.executeCalls }
+                expect(0) { result.passed }
+                expect("Unable to find fixture '$missingFixtureName'") { result.errorMessage }
+            }
+
+            it("fails when a non-existing 'after all' fixture is specified") {
+                val missingFixtureName = "Luna, danista, et fortis."
+                val hooks = TestCaseHooks(afterAll = listOf(missingFixtureName))
+                val testCase = ProcedureTrilogyTestCase("some_procedure", "some description", tests, hooks)
+
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+                expect(0) { scriptExecuterMock.executeCalls }
+                expect(0) { result.passed }
+                expect("Unable to find fixture '$missingFixtureName'") { result.errorMessage }
+            }
+
+            it("fails when a non-existing 'after each test' fixture is specified") {
+                val missingFixtureName = "The parasite yells mineral like an extraterrestrial mermaid."
+                val hooks = TestCaseHooks(afterEachTest = listOf(missingFixtureName))
+                val testCase = ProcedureTrilogyTestCase("some_procedure", "some description", tests, hooks)
+
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+                expect(0) { scriptExecuterMock.executeCalls }
+                expect(0) { result.passed }
+                expect("Unable to find fixture '$missingFixtureName'") { result.errorMessage }
+            }
+
+            it("fails when a non-existing 'after each row' fixture is specified") {
+                val missingFixtureName = "Courage is an evil wind."
+                val hooks = TestCaseHooks(afterEachRow = listOf(missingFixtureName))
+                val testCase = ProcedureTrilogyTestCase("some_procedure", "some description", tests, hooks)
+
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+                expect(0) { scriptExecuterMock.executeCalls }
+                expect(0) { result.passed }
+                expect("Unable to find fixture '$missingFixtureName'") { result.errorMessage }
+            }
+
+            it("combines all the missing fixture error messages") {
+                val missingFixtures = listOf(
+                        "Fly tightly like a clear creature.",
+                        "Sunt ventuses aperto gratis, raptus specieses.",
+                        "Champaign soup is just not the same without black pepper and fresh salty turkey.",
+                        "Wow, beauty!",
+                        "Be inner.",
+                        "Ahoy, sunny treasure!"
+                )
+                val hooks = TestCaseHooks(beforeAll = listOf(missingFixtures[0]), beforeEachTest = listOf(missingFixtures[1]),
+                        beforeEachRow = listOf(missingFixtures[2]), afterEachRow = listOf(missingFixtures[3]),
+                        afterEachTest = listOf(missingFixtures[4]), afterAll = listOf(missingFixtures[5]))
+                val testCase = ProcedureTrilogyTestCase("Some_procedure", "Some description", tests, hooks)
+
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+                expect(0) { scriptExecuterMock.executeCalls }
+                expect(0) { result.passed }
+                missingFixtures.forEach {
+                    result.errorMessage!! shouldContain "Unable to find fixture '$it'"
+                }
+            }
         }
     }
 
