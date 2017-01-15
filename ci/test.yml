@@ -3,7 +3,6 @@ image_resource:
   type: docker-image
   source:
     repository: sath89/oracle-12c
-    tag: master
 
 inputs:
 - name: trilogy

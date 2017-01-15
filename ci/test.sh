@@ -11,7 +11,9 @@ boot_oracle() {
   done
 }
 
-prepare_driver() {
+prepare_java_runtime() {
+  cp /u01/app/oracle-product/12.1.0/xe/jdk/lib/tools.jar /usr/lib/jvm/java-7-openjdk-amd64/jre/lib/
+  
   mkdir -p ./lib
   cp /u01/app/oracle-product/12.1.0/xe/jdbc/lib/ojdbc7.jar ./lib
   perl -pi -e 's#(\s+)(testCompile\("org.springframework.boot:spring-boot-starter-test"\))#$1$2\n$1testRuntime(files("lib/ojdbc7.jar"))#' build.gradle.kts
@@ -25,6 +27,6 @@ setup_dependencies() {
 pushd ./trilogy
   setup_dependencies
   boot_oracle
-  prepare_driver
+  prepare_java_runtime
   DB_URL=jdbc:oracle:thin:@$(hostname -i):1521:xe ./gradlew clean testAll
 popd
