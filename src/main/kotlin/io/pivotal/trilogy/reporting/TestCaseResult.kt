@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.reporting
 
 data class TestCaseResult(val testCaseName: String, val tests: List<TestResult> = emptyList(), val errorMessage: String? = null) {
-    val didPass: Boolean get() = failedTests.isEmpty()
+    val didPass: Boolean get() = failedTests.isEmpty() and errorMessage.isNullOrBlank()
     val total: Int = tests.count()
     val failedTests: List<TestResult> by lazy { tests.filter { it.hasFailed } }
     val passedTests: List<TestResult> by lazy { tests.filter { it.hasSucceeded } }

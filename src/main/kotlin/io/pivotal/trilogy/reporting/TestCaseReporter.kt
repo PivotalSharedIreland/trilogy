@@ -15,7 +15,13 @@ object TestCaseReporter {
     private val List<TestCaseResult>.failures: String get() = this.map { it.failureDigest }.joinToString("\n")
 
     private val TestCaseResult.failureDigest: String get() {
-        return this.failedTests.map { "[FAIL] ${this.testCaseName} - ${it.testName}:\n${it.displayMessage}" }.joinToString("\n")
+        return this.testCaseFailure + this.failedTests.map { "[FAIL] ${this.testCaseName} - ${it.testName}:\n${it.displayMessage}" }.joinToString("\n")
     }
-    private val TestResult.displayMessage: String get() = this.errorMessage!!.split("\n").map { "    $it" }.joinToString("\n")
+    private val TestResult.displayMessage: String get() = this.errorMessage!!.prependIndent("    ")
+
+    private val TestCaseResult.testCaseFailure: String get() {
+        if (this.errorMessage == null) return ""
+        return "[FAIL] ${this.testCaseName}:\n" + this.errorMessage.prependIndent("    ")
+    }
 }
+

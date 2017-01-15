@@ -70,5 +70,16 @@ class TestCaseReporterTests : Spek({
         }
     }
 
+    describe("test case failures") {
+        it("should include test case failures in the report") {
+            val result = listOf(TestCaseResult("Mad test", emptyList(), "I can haz a panda"))
+            val report = TestCaseReporter.generateReport(result)
+
+            report shouldContain "FAILED"
+
+            report shouldContain "[FAIL] Mad test:\n    I can haz a panda"
+        }
+    }
+
 
 })
