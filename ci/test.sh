@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash -ex
 
 boot_oracle() {
   cp ./ci/oracle_setup.sql /docker-entrypoint-initdb.d/
