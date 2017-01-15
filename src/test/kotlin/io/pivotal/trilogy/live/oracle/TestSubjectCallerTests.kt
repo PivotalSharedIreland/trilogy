@@ -122,7 +122,7 @@ class TestSubjectCallerTests : Spek({
             } catch (e: UnexpectedArgumentException) {
                 e
             }
-            error.localizedMessage!! shouldContain "Unknown parameter(s) 'V_PLUS'"
+            error.localizedMessage!! shouldContain "Unexpected parameter(s) 'V_PLUS'"
         }
     }
 
