@@ -6,7 +6,6 @@ import io.pivotal.trilogy.mocks.TestSubjectCallerStub
 import io.pivotal.trilogy.test_helpers.Fixtures
 import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.test_helpers.shouldContain
-import io.pivotal.trilogy.test_helpers.shouldMatch
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
