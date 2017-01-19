@@ -6,13 +6,16 @@ import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.reporting.TestResult
 import io.pivotal.trilogy.test_helpers.shouldStartWith
+import io.pivotal.trilogy.test_helpers.shouldThrow
 import io.pivotal.trilogy.test_helpers.timesRepeat
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testproject.TestProjectBuilder
 import io.pivotal.trilogy.testproject.TrilogyTestProject
 import io.pivotal.trilogy.testproject.UrlTestProjectResourceLocator
 import org.jetbrains.spek.api.Spek
+import org.springframework.jdbc.BadSqlGrammarException
 import java.io.File
+import java.sql.SQLException
 import kotlin.test.expect
 
 class DatabaseTestProjectRunnerTests : Spek({
@@ -56,7 +59,7 @@ class DatabaseTestProjectRunnerTests : Spek({
                 runResult = TestCaseResult("", singleRunResult)
             }
             val testProjectResult = DatabaseTestProjectRunner(mockTestCaseRunner, ScriptExecuterMock()).run(project)
-            expect(expectedResult) { testProjectResult }
+            expect(expectedResult) { testProjectResult.testCaseResults }
         }
 
         it("executes scripts from the src directory") {
@@ -86,6 +89,18 @@ class DatabaseTestProjectRunnerTests : Spek({
             val scriptExecuterMock = ScriptExecuterMock()
             DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecuterMock).run(project)
             scriptExecuterMock.executeArgList.first() shouldStartWith "CREATE TABLE CLIENTS"
+        }
+    }
+
+    describe("test case with broken source scripts") {
+        val project = projectNamed("broken_source")
+
+        it("raises an inconsistency error") {
+            val scriptExecuterMock = ScriptExecuterMock()
+            scriptExecuterMock.shouldFailExecution = true
+            scriptExecuterMock.failureException = BadSqlGrammarException("Uhm...", "what?", SQLException("Bang!"))
+            val runner = DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecuterMock);
+            { runner.run(project) } shouldThrow InconsistentDatabaseException::class
         }
     }
 

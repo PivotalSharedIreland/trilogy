@@ -59,6 +59,7 @@ configure<JavaPluginConvention> {
 
 dependencies {
     compile(kotlinModule("stdlib", version = "1.1.+"))
+    compile(kotlinModule("reflect", version = "1.1.+"))
     compile("org.springframework.boot:spring-boot-starter-jdbc")
     compile("org.springframework.boot:spring-boot-starter:1.4.3.RELEASE")
     compile("commons-cli:commons-cli:1.3.1")

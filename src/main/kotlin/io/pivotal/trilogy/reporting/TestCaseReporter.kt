@@ -1,11 +1,19 @@
 package io.pivotal.trilogy.reporting
 
+import io.pivotal.trilogy.testproject.TestProjectResult
+
 object TestCaseReporter {
-    fun generateReport(result: List<TestCaseResult>): String {
-        return if (result.all { it.didPass }) reportSuccess(result) else reportFailure(result)
+    fun generateReport(result: TestProjectResult): String {
+        if (result.didFail)
+            return listOf("[FAIL] ${result.failureMessage}", "FAILED").joinToString("\n")
+
+        return if (result.testCaseResults.all { it.didPass }) reportSuccess(result.testCaseResults) else reportFailure(result)
     }
 
-    private fun reportFailure(result: List<TestCaseResult>) = listOf(result.failures, "FAILED", result.digest).joinToString("\n")
+    private fun reportFailure(result: TestProjectResult): String {
+        return listOf(result.testCaseResults.failures, "FAILED", result.testCaseResults.digest).joinToString("\n")
+    }
+
     private fun reportSuccess(result: List<TestCaseResult>) = "SUCCEEDED\n${result.digest}"
 
     private val List<TestCaseResult>.total: Int get() = this.fold(0) { accumulated, result -> accumulated + result.total }

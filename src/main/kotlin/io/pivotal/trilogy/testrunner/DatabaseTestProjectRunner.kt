@@ -1,26 +1,36 @@
 package io.pivotal.trilogy.testrunner
 
-import io.pivotal.trilogy.reporting.TestCaseResult
+import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
+import io.pivotal.trilogy.testproject.TestProjectResult
 import io.pivotal.trilogy.testproject.TrilogyTestProject
+import org.springframework.jdbc.BadSqlGrammarException
 
 class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptExecuter: ScriptExecuter) : TestProjectRunner {
 
-    override fun run(project: TrilogyTestProject): List<TestCaseResult> {
+    override fun run(project: TrilogyTestProject): TestProjectResult {
         return project.runTests()
     }
 
-    private fun TrilogyTestProject.runTests(): List<TestCaseResult> {
+    private fun TrilogyTestProject.runTests(): TestProjectResult {
         applySchema()
         runSourceScripts()
         return runTestCases()
     }
 
     private fun TrilogyTestProject.runSourceScripts() {
-        sourceScripts.forEach { script -> scriptExecuter.execute(script) }
+        sourceScripts.forEach { script ->
+            try {
+                scriptExecuter.execute(script.content)
+            } catch(e: BadSqlGrammarException) {
+                val errorObjects = listOf(script.name, e.localizedMessage.prependIndent("    "))
+                val message = createErrorMessage("testProjectRunner.errors.scripts.invalid", errorObjects)
+                throw InconsistentDatabaseException(message, e)
+            }
+        }
     }
 
-    private fun TrilogyTestProject.runTestCases(): List<TestCaseResult> {
-        return this.testCases.map { testCaseRunner.run(it, this.fixtures) }
+    private fun TrilogyTestProject.runTestCases(): TestProjectResult {
+        return TestProjectResult(this.testCases.map { testCaseRunner.run(it, this.fixtures) })
     }
 
     private fun TrilogyTestProject.applySchema() {

@@ -114,8 +114,8 @@ class TestProjectBuilderTests : Spek({
         val project = TestProjectBuilder.build(options)
 
         expect(2) { project.sourceScripts.count() }
-        project.sourceScripts[0] shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE$"
-        project.sourceScripts[1] shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE_PROCEDURE"
+        project.sourceScripts[0].content shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE$"
+        project.sourceScripts[1].content shouldStartWith "CREATE OR REPLACE PROCEDURE EXAMPLE_PROCEDURE"
     }
 
     it("should create a project with a schema") {

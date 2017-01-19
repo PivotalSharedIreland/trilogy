@@ -32,36 +32,36 @@ class TrilogyControllerTests : Spek({
         describe("simple cases") {
             it("succeeds for a simple case") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/should_pass.stt")
-                expect(true) { controller.run(options).all { it.didPass } }
+                expect(true) { controller.run(options).testCaseResults.all { it.didPass } }
             }
 
             it("fails for a simple case") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/should_fail.stt")
-                expect(false) { controller.run(options).all { it.didPass } }
+                expect(false) { controller.run(options).testCaseResults.all { it.didPass } }
             }
         }
 
         describe("tests with assertions") {
             it("succeed when the assertions pass") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/should_pass_with_sql.stt")
-                expect(true) { controller.run(options).all { it.didPass } }
+                expect(true) { controller.run(options).testCaseResults.all { it.didPass } }
             }
 
             it("fails when the assertions raise an error") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/should_fail_with_sql.stt")
-                expect(false) { controller.run(options).all { it.didPass } }
+                expect(false) { controller.run(options).testCaseResults.all { it.didPass } }
             }
         }
 
         describe("multiple tests in a test case") {
             it("succeeds when all the tests succeed") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/multiple/shouldPass.stt")
-                expect(true) { controller.run(options).all { it.didPass } }
+                expect(true) { controller.run(options).testCaseResults.all { it.didPass } }
             }
 
             it("fails when one of the tests is failing") {
                 val options = TrilogyApplicationOptions("src/test/resources/testcases/multiple/shouldFail.stt")
-                expect(false) { controller.run(options).all { it.didPass } }
+                expect(false) { controller.run(options).testCaseResults.all { it.didPass } }
             }
         }
 
@@ -70,7 +70,7 @@ class TrilogyControllerTests : Spek({
 
             it("passes for a simple project") {
                 val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/simple")
-                val testCaseResult = controller.run(options)
+                val testCaseResult = controller.run(options).testCaseResults
                 expect(true) { testCaseResult.all { it.didPass } }
                 expect(2) { testCaseResult.fold(0) { acc, result -> acc + result.passed } }
                 expect(0) { testCaseResult.fold(0) { acc, result -> acc + result.failed } }
@@ -79,7 +79,7 @@ class TrilogyControllerTests : Spek({
             it("passes for a simple schema") {
                 DatabaseHelper.executeScript("dropClients")
                 val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/schema")
-                val testCaseResult = controller.run(options)
+                val testCaseResult = controller.run(options).testCaseResults
                 expect(true) { testCaseResult.all { it.didPass } }
                 expect(1) { testCaseResult.fold(0) { acc, result -> acc + result.passed } }
                 expect(0) { testCaseResult.fold(0) { acc, result -> acc + result.failed } }
@@ -88,7 +88,7 @@ class TrilogyControllerTests : Spek({
             describe("fixtures") {
                 val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/setup_teardown")
                 it("runs the test project with fixtures") {
-                    val testCaseResult = controller.run(options)
+                    val testCaseResult = controller.run(options).testCaseResults
                     expect(true) { testCaseResult.all { it.didPass } }
                     expect(0) { testCaseResult.fold(0) { acc, result -> acc + result.failed } }
                     expect(2) { testCaseResult.fold(0) { acc, result -> acc + result.passed } }
@@ -98,11 +98,17 @@ class TrilogyControllerTests : Spek({
             describe("errors") {
                 val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/errors")
                 it("validates the errors") {
-                    val testCaseResult = controller.run(options)
+                    val testCaseResult = controller.run(options).testCaseResults
                     expect(false) { testCaseResult.all { it.didPass } }
                     expect(1) { testCaseResult.fold(0) { acc, result -> acc + result.passed } }
                     expect(3) { testCaseResult.fold(0) { acc, result -> acc + result.failed } }
                 }
+
+            }
+
+            it("fails with broken source") {
+                val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/broken_source")
+                expect(true) { controller.run(options).didFail }
             }
 
 

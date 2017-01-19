@@ -82,7 +82,7 @@ class UrlTestProjectResourceLocatorTests : Spek({
                             "CREATE OR REPLACE PROCEDURE EXAMPLE_PROCEDURE",
                             "CREATE OR REPLACE PROCEDURE EXAMPLE_PROCEDURES",
                             "CREATE OR REPLACE PROCEDURE SUBJECT_EXAMPLE$"
-                    ).forEachIndexed { i, snippet -> subject.sourceScripts[i] shouldStartWith snippet }
+                    ).forEachIndexed { i, snippet -> subject.sourceScripts[i].content shouldStartWith snippet }
                 }
             }
 

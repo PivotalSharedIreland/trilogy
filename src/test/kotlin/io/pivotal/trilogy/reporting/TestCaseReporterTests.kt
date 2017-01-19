@@ -3,6 +3,7 @@ package io.pivotal.trilogy.reporting
 import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.test_helpers.shouldStartWith
 import io.pivotal.trilogy.test_helpers.timesRepeat
+import io.pivotal.trilogy.testproject.TestProjectResult
 import org.jetbrains.spek.api.Spek
 
 class TestCaseReporterTests : Spek({
@@ -11,7 +12,7 @@ class TestCaseReporterTests : Spek({
     val failedTestResult = TestResult("Failed test name", "Multi\nline\nerror\nmessage")
     describe("no failures") {
         val report = listOf(TestCaseResult("", 3.timesRepeat { passedTestResult }))
-        val generatedReport = TestCaseReporter.generateReport(report)
+        val generatedReport = TestCaseReporter.generateReport(TestProjectResult(report))
 
         it("should report success") {
             generatedReport shouldStartWith "SUCCEEDED"
@@ -32,7 +33,7 @@ class TestCaseReporterTests : Spek({
 
     describe("passed and failed") {
         val report = listOf(TestCaseResult("Nirvana or zion", 2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult }))
-        val generatedReport = TestCaseReporter.generateReport(report)
+        val generatedReport = TestCaseReporter.generateReport(TestProjectResult(report))
 
         it("should report the number of failed tests, as well as passed tests") {
             generatedReport shouldContain "Failed: 3"
@@ -50,7 +51,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("all failures") {
-        val report = listOf(TestCaseResult("", 3.timesRepeat { failedTestResult }))
+        val report = TestProjectResult(listOf(TestCaseResult("", 3.timesRepeat { failedTestResult })))
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report failure") {
@@ -73,7 +74,7 @@ class TestCaseReporterTests : Spek({
     describe("test case failures") {
         it("should include test case failures in the report") {
             val result = listOf(TestCaseResult("Mad test", emptyList(), "I can haz a panda"))
-            val report = TestCaseReporter.generateReport(result)
+            val report = TestCaseReporter.generateReport(TestProjectResult(result))
 
             report shouldContain "FAILED"
 

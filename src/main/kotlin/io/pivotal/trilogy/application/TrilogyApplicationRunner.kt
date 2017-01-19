@@ -14,14 +14,20 @@ open class TrilogyApplicationRunner : ApplicationRunner {
     lateinit var trilogyController: TrilogyController
 
     override fun run(args: ApplicationArguments?) {
+        var suppressStacktrace = false
         if (args != null) {
             try {
                 val applicationOptions = TrilogyApplicationOptionsParser.parse(args.sourceArgs)
                 val testResults = trilogyController.run(applicationOptions)
                 val output = TestCaseReporter.generateReport(testResults)
                 System.out.println(output)
+                if (testResults.didFail) {
+                    suppressStacktrace = true
+                    throw RuntimeException()
+                }
             } catch (e: RuntimeException) {
-                printFailure(e.stackTrace)
+                if (!suppressStacktrace) printFailure(e.stackTrace)
+                throw e
             }
         } else {
             printFailure(null)
