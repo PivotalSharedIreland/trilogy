@@ -1,5 +1,6 @@
 package io.pivotal.trilogy.application
 
+import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
 import io.pivotal.trilogy.parsing.TrilogyApplicationOptionsParser
 import io.pivotal.trilogy.reporting.TestCaseReporter
 import org.springframework.beans.factory.annotation.Autowired
@@ -23,20 +24,22 @@ open class TrilogyApplicationRunner : ApplicationRunner {
                 System.out.println(output)
                 if (testResults.didFail) {
                     suppressStacktrace = true
-                    throw RuntimeException()
+                    throw ApplicationRunFailed()
                 }
             } catch (e: RuntimeException) {
-                if (!suppressStacktrace) printFailure(e.stackTrace)
-                throw e
+                if (!suppressStacktrace) printFailure(e)
+                throw ApplicationRunFailed()
             }
         } else {
             printFailure(null)
+            throw ApplicationRunFailed()
         }
     }
 
-    private fun printFailure(stackTrace: Array<StackTraceElement>?) {
-        stackTrace?.forEach { frame -> System.out.println(frame) }
-        System.out.println("Usage: trilogy [<filePath>|--project=<path to trilogy test project>] --db-url=<jdbc url>")
+    private fun printFailure(e: Throwable?) {
+        println("$e")
+        e?.stackTrace?.forEach(::println)
+        System.out.println(createErrorMessage("applicationUsage"))
     }
 }
 
