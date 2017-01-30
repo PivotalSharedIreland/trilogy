@@ -1,0 +1,34 @@
+# TEST CASE VALIDATE_BALANCE
+Example
+## BEFORE ALL
+- Setup client
+## AFTER EACH TEST
+- Remove transactions
+## AFTER ALL
+- Remove clients
+## TEST
+(Passing) The client balance should be invalid
+### DATA
+|V_CLIENT_ID|V_IS_VALID$|=ERROR=|
+|----------:|----------:|-------|
+| 66778899  | 0         |       |
+## TEST
+(Assertion failing) The client balance should be invalid
+### DATA
+|V_CLIENT_ID|V_IS_VALID$|=ERROR=|
+|----------:|----------:|-------|
+| 66778899  | 1         |       |
+### ASSERTIONS
+#### SQL
+Procedural assertion
+```
+DECLARE
+    l_count NUMBER;
+BEGIN
+    SELECT count(*) INTO l_count FROM dual;
+    IF l_count <> 123
+    THEN
+        RAISE_APPLICATION_ERROR(-20345, 'Oh, noes!');
+    END IF;
+END;
+```

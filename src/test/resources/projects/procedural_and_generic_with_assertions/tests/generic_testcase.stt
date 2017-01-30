@@ -1,0 +1,47 @@
+# TEST CASE
+Generic test case example
+## BEFORE ALL
+- Setup client
+## BEFORE EACH TEST
+- Set client balance
+## AFTER EACH TEST
+- Remove transactions
+## AFTER ALL
+- Remove clients
+## TEST
+This test should fail
+```
+BEGIN
+  IF (1 <> 2) THEN
+    RAISE_APPLICATION_ERROR(-20112, 'This should never have happened');
+  END IF;
+END;
+```
+## TEST
+This test should pass
+```
+BEGIN
+  NULL;
+END;
+```
+## TEST
+This test should fail on assertion
+```
+BEGIN
+  NULL;
+END;
+```
+### ASSERTIONS
+#### SQL
+Generic assertion
+```
+DECLARE
+    l_count NUMBER;
+BEGIN
+    SELECT count(*) INTO l_count FROM dual;
+    IF l_count <> 123
+    THEN
+        RAISE_APPLICATION_ERROR(-20345, 'This is insane!');
+    END IF;
+END;
+```
