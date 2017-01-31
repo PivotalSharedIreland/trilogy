@@ -12,7 +12,8 @@ class DatabaseAssertionExecuter(val scriptExecuter: ScriptExecuter) : AssertionE
             scriptExecuter.execute(assertion.body)
         } catch(e: NestedRuntimeException) {
             if (e.cause is SQLException) {
-                return MessageCreator.createErrorMessage("assertionExecuter.error", listOf(assertion.description, e.cause!!.localizedMessage.prependIndent("    ")))
+                return MessageCreator.createErrorMessage("assertionExecuter.error",
+                        listOf(assertion.description, e.cause!!.localizedMessage.prependIndent("    ")))
             }
         }
 
