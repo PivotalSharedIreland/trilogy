@@ -98,7 +98,10 @@ class TrilogyControllerTests : Spek({
             describe("errors") {
                 val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/errors")
                 it("validates the errors") {
-                    val testCaseResult = controller.run(options).testCaseResults
+                    val result = controller.run(options)
+                    expect(false) { result.fatalFailure }
+
+                    val testCaseResult = result.testCaseResults
                     expect(false) { testCaseResult.all { it.didPass } }
                     expect(1) { testCaseResult.fold(0) { acc, result -> acc + result.passed } }
                     expect(3) { testCaseResult.fold(0) { acc, result -> acc + result.failed } }
@@ -108,7 +111,9 @@ class TrilogyControllerTests : Spek({
 
             it("fails with broken source") {
                 val options = TrilogyApplicationOptions(testProjectPath = "src/test/resources/projects/broken_source")
-                expect(true) { controller.run(options).didFail }
+                val result = controller.run(options)
+                expect(true) { result.didFail }
+                expect(true) { result.fatalFailure }
             }
 
 

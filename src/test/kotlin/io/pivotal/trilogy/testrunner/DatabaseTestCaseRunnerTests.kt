@@ -6,6 +6,7 @@ import io.pivotal.trilogy.mocks.TestSubjectCallerStub
 import io.pivotal.trilogy.test_helpers.Fixtures
 import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.test_helpers.shouldContain
+import io.pivotal.trilogy.test_helpers.shouldThrow
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
@@ -26,6 +27,15 @@ class DatabaseTestCaseRunnerTests : Spek({
     var assertionExecuterMock = AssertionExecuterMock(scriptExecuterMock)
     var testCaseRunner = DatabaseTestCaseRunner(testSubjectCallerStub, assertionExecuterMock, scriptExecuterMock)
     val testCaseHooks = TestCaseHooks()
+    val hooksWithBeforeAll = TestCaseHooks(beforeAll = listOf("set client balance"))
+    val hooksWithBeforeAllAndBeforeEachTest = TestCaseHooks(beforeAll = listOf("set client balance"),
+            beforeEachTest = listOf("Update client messages"))
+    val hooksWithBeforeEveryPossibleStep = TestCaseHooks(beforeAll = listOf("set client balance"),
+            beforeEachTest = listOf("Update client messages"), beforeEachRow = listOf("Update client balance"))
+    val hooksWithAfterEachRow = TestCaseHooks(afterEachRow = listOf("Clear client balance"))
+    val hooksWithAfterEachTest = TestCaseHooks(afterEachTest = listOf("Nowhere"))
+    val hooksWithAfterAll = TestCaseHooks(afterAll = listOf("Collision course"))
+
     val firstSetupScript = "First setup script"
     val secondSetupScript = "Second setup script"
     val thirdSetupScript = "Third setup script"
@@ -33,12 +43,12 @@ class DatabaseTestCaseRunnerTests : Spek({
     val secondTeardownScript = "Second teardown script"
     val thirdTeardownScript = "Third teardown script"
     val fixtureLibrary = FixtureLibrary(mapOf(
-            Pair("setup/set_client_balance", firstSetupScript),
-            Pair("setup/update_client_messages", secondSetupScript),
-            Pair("setup/update_client_balance", thirdSetupScript),
-            Pair("teardown/clear_client_balance", firstTeardownScript),
-            Pair("teardown/nowhere", secondTeardownScript),
-            Pair("teardown/collision_course", thirdTeardownScript)
+            "setup/set_client_balance" to firstSetupScript,
+            "setup/update_client_messages" to secondSetupScript,
+            "setup/update_client_balance" to thirdSetupScript,
+            "teardown/clear_client_balance" to firstTeardownScript,
+            "teardown/nowhere" to secondTeardownScript,
+            "teardown/collision_course" to thirdTeardownScript
     ))
 
 
@@ -377,6 +387,75 @@ class DatabaseTestCaseRunnerTests : Spek({
                 missingFixtures.forEach {
                     result.errorMessage!! shouldContain "Unable to find fixture '$it'"
                 }
+            }
+
+            context("fixture load failure") {
+                val table = TestArgumentTable(listOf("FOO"), listOf(listOf("Bar")))
+                val proceduralTest = ProcedureTrilogyTest("Gummy stuff", table, emptyList())
+                val genericTest = GenericTrilogyTest("Fixture error test", "", emptyList())
+
+                it("throws an exception when a 'before all' fixture load fails") {
+                    scriptExecuterMock.shouldFailExecution = true
+                    val trilogyTestCase = GenericTrilogyTestCase("Fixture error", listOf(genericTest), hooksWithBeforeAll);
+                    { testCaseRunner.run(trilogyTestCase, fixtureLibrary) }.shouldThrow(FixtureLoadException::class)
+                }
+
+                it("describes the setup fixture failure in an unrecoverable error") {
+                    scriptExecuterMock.shouldFailExecution = true
+                    val trilogyTestCase = GenericTrilogyTestCase("Fixture error", listOf(genericTest), hooksWithBeforeAll)
+                    val errorMessage = try {
+                        testCaseRunner.run(trilogyTestCase, fixtureLibrary)
+                        null
+                    } catch (e: UnrecoverableException) {
+                        e.localizedMessage
+                    }
+                    expect("Unable to load the 'set client balance' setup fixture\n    SQL Script exception") { errorMessage }
+                }
+
+                it("throws and exception when a 'before each test' fixture load fails") {
+                    scriptExecuterMock.shouldFailAfter(safeExecutions = 1)
+                    val trilogyTestCase = GenericTrilogyTestCase("Before each test failure", listOf(genericTest), hooksWithBeforeAllAndBeforeEachTest);
+                    { testCaseRunner.run(trilogyTestCase, fixtureLibrary) }.shouldThrow(FixtureLoadException::class)
+                }
+
+                it("throws and exception when a 'before each row' fixture load fails") {
+                    scriptExecuterMock.shouldFailAfter(safeExecutions = 2)
+                    val trilogyTestCase = ProcedureTrilogyTestCase("DUMMY", "I failz", listOf(proceduralTest), hooksWithBeforeEveryPossibleStep);
+                    { testCaseRunner.run(trilogyTestCase, fixtureLibrary) }.shouldThrow(FixtureLoadException::class)
+                }
+
+                it("throws and exception when an 'after each row' fixture load fails") {
+                    scriptExecuterMock.shouldFailExecution = true
+                    val trilogyTestCase = ProcedureTrilogyTestCase("MUDDY", "Lol!", listOf(proceduralTest), hooksWithAfterEachRow);
+                    { testCaseRunner.run(trilogyTestCase, fixtureLibrary) }.shouldThrow(FixtureLoadException::class)
+                }
+
+                it("describes the teardown fixture failure in an unrecoverable error") {
+                    scriptExecuterMock.shouldFailExecution = true
+                    val trilogyTestCase = ProcedureTrilogyTestCase("QUOUOQ", "Sqwiwel!", listOf(proceduralTest), hooksWithAfterEachRow)
+                    val errorMessage = try {
+                        testCaseRunner.run(trilogyTestCase, fixtureLibrary)
+                        null
+                    } catch (e: UnrecoverableException) {
+                        e.localizedMessage
+                    }
+
+                    expect("Unable to load the 'Clear client balance' teardown fixture\n    SQL Script exception") { errorMessage }
+                }
+
+                it("throws an exception when 'after each test' fixture load fails") {
+                    scriptExecuterMock.shouldFailAfter(safeExecutions = 1)
+                    val trilogyTestCase = GenericTrilogyTestCase("After Each test failure", listOf(genericTest), hooksWithAfterEachTest);
+                    { testCaseRunner.run(trilogyTestCase, fixtureLibrary) }.shouldThrow(FixtureLoadException::class)
+                }
+
+                it("throws an exception when an 'after all' fixture load fails") {
+                    scriptExecuterMock.shouldFailAfter(safeExecutions = 1)
+                    val trilogyTestCase = GenericTrilogyTestCase("After all test failure", listOf(genericTest), hooksWithAfterAll);
+                    { testCaseRunner.run(trilogyTestCase, fixtureLibrary) }.shouldThrow(FixtureLoadException::class)
+
+                }
+
             }
         }
     }

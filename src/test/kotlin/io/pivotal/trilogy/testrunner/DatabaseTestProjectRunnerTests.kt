@@ -100,7 +100,7 @@ class DatabaseTestProjectRunnerTests : Spek({
             scriptExecuterMock.shouldFailExecution = true
             scriptExecuterMock.failureException = BadSqlGrammarException("Uhm...", "what?", SQLException("Bang!"))
             val runner = DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecuterMock);
-            { runner.run(project) } shouldThrow InconsistentDatabaseException::class
+            { runner.run(project) } shouldThrow SourceScriptLoadException::class
         }
     }
 

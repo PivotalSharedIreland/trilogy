@@ -73,12 +73,21 @@ class TestCaseReporterTests : Spek({
 
     describe("test case failures") {
         it("should include test case failures in the report") {
-            val result = listOf(TestCaseResult("Mad test", emptyList(), "I can haz a panda"))
+            val result = listOf(TestCaseResult("Mad test", errorMessage = "I can haz a panda"))
             val report = TestCaseReporter.generateReport(TestProjectResult(result))
 
             report shouldContain "FAILED"
 
             report shouldContain "[FAIL] Mad test:\n    I can haz a panda"
+        }
+    }
+
+    describe("fatal failures") {
+        fit("should append the [STOP] message when a fatal failure is encountered") {
+            val result = listOf(TestCaseResult("Odd travel", errorMessage = "Walnut combines greatly with chopped steak"))
+            val report = TestCaseReporter.generateReport(TestProjectResult(result, fatalFailure = true))
+
+            report shouldContain "\n[STOP] Execution aborted - the database may be in an inconsistent state\n"
         }
     }
 

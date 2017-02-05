@@ -1,6 +1,7 @@
 package io.pivotal.trilogy.testrunner
 
 import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.reporting.TestResult
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
@@ -22,6 +23,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             val errorMessage = missingFixtures.map { createErrorMessage("testCaseRunner.errors.missingFixture", listOf(it)) }.joinToString("\n")
             return TestCaseResult(trilogyTestCase.description, errorMessage = errorMessage)
         }
+
         trilogyTestCase.hooks.beforeAll.runSetupScripts(library)
 
         val testResults = trilogyTestCase.tests.map { test ->
@@ -79,8 +81,30 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
 
     private fun failureWithException(e: RuntimeException) = mapOf("=FAIL=" to e.localizedMessage)
 
-    private fun List<String>.runSetupScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecuter.execute(library.getSetupFixtureByName(name)) }
-    private fun List<String>.runTeardownScripts(library: FixtureLibrary) = this.forEach { name -> scriptExecuter.execute(library.getTeardownFixtureByName(name)) }
+    private fun List<String>.runSetupScripts(library: FixtureLibrary) {
+        this.forEach { name ->
+            try {
+                scriptExecuter.execute(library.getSetupFixtureByName(name))
+            } catch(e: RuntimeException) {
+                val message = createErrorMessage("testCaseRunner.errors.fixtureRun",
+                        listOf(name, getI18nMessage("vocabulary.fixtures.setup"), e.localizedMessage.prependIndent("    ")))
+                throw FixtureLoadException(message, e)
+            }
+        }
+    }
+
+    private fun List<String>.runTeardownScripts(library: FixtureLibrary) {
+        this.forEach { name ->
+            try {
+                scriptExecuter.execute(library.getTeardownFixtureByName(name))
+            } catch(e: RuntimeException) {
+                val message = createErrorMessage("testCaseRunner.errors.fixtureRun",
+                        listOf(name, getI18nMessage("vocabulary.fixtures.teardown"), e.localizedMessage.prependIndent("    ")))
+                throw FixtureLoadException(message, e)
+            }
+        }
+
+    }
 
     private fun TrilogyTest.tryProceduralTest(library: FixtureLibrary, trilogyTestCase: TrilogyTestCase): TestResult? {
         if (this !is ProcedureTrilogyTest) return null
@@ -116,6 +140,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             }
         }.filterNotNull()
     }
+
     private fun TestCaseHooks.findMissingTeardownFixtures(library: FixtureLibrary): List<String> {
         return (this.afterAll + this.afterEachTest + this.afterEachRow).map {
             try {

@@ -24,13 +24,19 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
             } catch(e: BadSqlGrammarException) {
                 val errorObjects = listOf(script.name, e.localizedMessage.prependIndent("    "))
                 val message = createErrorMessage("testProjectRunner.errors.scripts.invalid", errorObjects)
-                throw InconsistentDatabaseException(message, e)
+                throw SourceScriptLoadException(message, e)
             }
         }
     }
 
     private fun TrilogyTestProject.runTestCases(): TestProjectResult {
-        return TestProjectResult(this.testCases.map { testCaseRunner.run(it, this.fixtures) })
+        return TestProjectResult(this.testCases.map {
+            try {
+                testCaseRunner.run(it, this.fixtures)
+            } catch (e: UnrecoverableException) {
+                throw UnrecoverableException("${it.description}:\n${e.localizedMessage.prependIndent("    ")}", e)
+            }
+        })
     }
 
     private fun TrilogyTestProject.applySchema() {
