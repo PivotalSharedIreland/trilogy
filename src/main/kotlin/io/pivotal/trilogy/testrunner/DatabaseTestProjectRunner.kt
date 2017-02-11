@@ -12,17 +12,27 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
     }
 
     private fun TrilogyTestProject.runTests(): TestProjectResult {
-        applySchema()
+        tryToApplySchema()
         runSourceScripts()
         return runTestCases()
     }
 
+    private fun TrilogyTestProject.tryToApplySchema() {
+        try {
+            applySchema()
+        } catch(e: RuntimeException) {
+            val errorObjects = listOf(e.localizedMessage.prependIndent("    "))
+            val message = createErrorMessage("testProjectRunner.errors.schema.invalid", errorObjects)
+            throw SchemaLoadFailedException(message, e)
+        }
+    }
+
     private fun TrilogyTestProject.runSourceScripts() {
-        sourceScripts.forEach { script ->
+        sourceScripts.forEach { (name, content) ->
             try {
-                scriptExecuter.execute(script.content)
+                scriptExecuter.execute(content)
             } catch(e: BadSqlGrammarException) {
-                val errorObjects = listOf(script.name, e.localizedMessage.prependIndent("    "))
+                val errorObjects = listOf(name, e.localizedMessage.prependIndent("    "))
                 val message = createErrorMessage("testProjectRunner.errors.scripts.invalid", errorObjects)
                 throw SourceScriptLoadException(message, e)
             }

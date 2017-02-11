@@ -12,6 +12,7 @@ import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testproject.TestProjectBuilder
 import io.pivotal.trilogy.testproject.TrilogyTestProject
 import io.pivotal.trilogy.testproject.UrlTestProjectResourceLocator
+import org.amshove.kluent.AnyException
 import org.jetbrains.spek.api.Spek
 import org.springframework.jdbc.BadSqlGrammarException
 import java.io.File
@@ -76,7 +77,7 @@ class DatabaseTestProjectRunnerTests : Spek({
         }
     }
 
-    describe("test cases with schema definition") {
+    describe("test project with schema definition") {
         val project = projectNamed("schema")
 
         it("excludes fixtures from test case file list") {
@@ -89,6 +90,27 @@ class DatabaseTestProjectRunnerTests : Spek({
             val scriptExecuterMock = ScriptExecuterMock()
             DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecuterMock).run(project)
             scriptExecuterMock.executeArgList.first() shouldStartWith "CREATE TABLE CLIENTS"
+        }
+
+        it("stops on failed schema load") {
+            val scriptExecuterMock = ScriptExecuterMock()
+            scriptExecuterMock.shouldFailExecution = true
+            { DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecuterMock).run(project) } shouldThrow SchemaLoadFailedException::class
+        }
+
+        it("describes the schema load error") {
+            val scriptExecutorMock = ScriptExecuterMock()
+            scriptExecutorMock.shouldFailExecution = true
+            scriptExecutorMock.failureException = RuntimeException("The transformator\nis quickly seismic.")
+            val exception = try {
+                DatabaseTestProjectRunner(TestCaseRunnerMock(), scriptExecutorMock).run(project)
+                null
+            } catch (e: SchemaLoadFailedException) {
+                e
+            }
+
+            val error = "Unable to load schema:\n    The transformator\n    is quickly seismic."
+            expect(error) { exception!!.localizedMessage }
         }
     }
 
