@@ -15,6 +15,6 @@ class TrilogyApplicationOptionsTests : Spek({
     }
 
     it("should provide a test case resource locator") {
-        expect(true) { TrilogyApplicationOptions(testCaseFilePath = "src/test/resources/testcases/sample.stt").resourceLocator is UrlTestCaseResourceLocator }
+        expect(true) { TrilogyApplicationOptions(testCaseFilePath = "src/test/resources/testcases/generic.stt").resourceLocator is UrlTestCaseResourceLocator }
     }
 })
