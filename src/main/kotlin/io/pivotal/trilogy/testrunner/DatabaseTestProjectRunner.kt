@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.testrunner
 
-import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.testproject.TestProjectResult
 import io.pivotal.trilogy.testproject.TrilogyTestProject
 import org.springframework.jdbc.BadSqlGrammarException
@@ -22,7 +22,7 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
             applySchema()
         } catch(e: RuntimeException) {
             val errorObjects = listOf(e.localizedMessage.prependIndent("    "))
-            val message = createErrorMessage("testProjectRunner.errors.schema.invalid", errorObjects)
+            val message = getI18nMessage("testProjectRunner.errors.schema.invalid", errorObjects)
             throw SchemaLoadFailedException(message, e)
         }
     }
@@ -33,7 +33,7 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
                 scriptExecuter.execute(content)
             } catch(e: BadSqlGrammarException) {
                 val errorObjects = listOf(name, e.localizedMessage.prependIndent("    "))
-                val message = createErrorMessage("testProjectRunner.errors.scripts.invalid", errorObjects)
+                val message = getI18nMessage("testProjectRunner.errors.scripts.invalid", errorObjects)
                 throw SourceScriptLoadException(message, e)
             }
         }

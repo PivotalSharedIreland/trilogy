@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.application
 
-import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.parsing.TrilogyApplicationOptionsParser
 import io.pivotal.trilogy.reporting.TestCaseReporter
 import org.springframework.beans.factory.annotation.Autowired
@@ -39,7 +39,7 @@ open class TrilogyApplicationRunner : ApplicationRunner {
     private fun printFailure(e: Throwable?) {
         println("$e")
         e?.stackTrace?.forEach(::println)
-        System.out.println(createErrorMessage("applicationUsage"))
+        System.out.println(getI18nMessage("applicationUsage"))
     }
 }
 

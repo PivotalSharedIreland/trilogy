@@ -1,5 +1,6 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.MalformedDataSection
 import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldThrow
@@ -105,6 +106,10 @@ class ProcedureStringTestParserTests : Spek({
     context("procedural") {
         it("fails when data section is missing") {
             { ProcedureStringTestParser("## TEST\nPathways fly on wind at earth!").getTest() } shouldThrow MissingDataSection::class
+        }
+
+        it("fails when data section is malformed") {
+            { ProcedureStringTestParser("## TEST\nPathways fly on wind at earth!\n### DATA\nHubba bubba").getTest() } shouldThrow MalformedDataSection::class
         }
     }
 })

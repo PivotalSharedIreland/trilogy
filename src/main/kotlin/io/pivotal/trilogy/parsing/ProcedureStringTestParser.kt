@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
+import io.pivotal.trilogy.parsing.exceptions.MalformedDataSection
 import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
@@ -37,18 +37,25 @@ class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBod
 
     override fun validate() {
         super.validate()
-        if (!testBody.hasDataSection()) {
-            val testName = try {
-                parseDescription()
-            } catch (e: RuntimeException) {
-                getI18nMessage("test.untitled")
-            }
-            throw MissingDataSection(createErrorMessage("testCaseParser.errors.missingDataSection"), testName)
+        if (!testBody.hasDataSection()) throw MissingDataSection(getI18nMessage("testCaseParser.errors.missingDataSection"), testNameOrDefault())
+        if (!testBody.hasValidDataSection()) throw MalformedDataSection(getI18nMessage("testCaseParser.errors.malformedDataSection"), testNameOrDefault())
+    }
+
+    private fun testNameOrDefault(): String {
+        val testName = try {
+            parseDescription()
+        } catch (e: RuntimeException) {
+            getI18nMessage("test.untitled")
         }
+        return testName
+    }
+
+    private fun String.hasDataSection(): Boolean {
+        return this.contains(Regex(dataSectionHeader))
     }
 
 
-    private fun String.hasDataSection(): Boolean {
+    private fun String.hasValidDataSection(): Boolean {
         return this.contains(Regex(dataSectionHeader + headerRow + headerSeparationRow + valueRows))
     }
 }

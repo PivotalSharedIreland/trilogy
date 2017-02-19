@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.validators
 
-import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.testcase.TestArgumentTableTokens
 
 class OutputArgumentValidator(val parameterNames: List<String>) {
@@ -23,11 +23,11 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
 
         val actualError = actualValues[TestArgumentTableTokens.errorColumnName]
         if (actualError != null) {
-            if (expectedError.isBlank()) return createErrorMessage("assertions.errors.unexpected", listOf(actualError))
+            if (expectedError.isBlank()) return getI18nMessage("assertions.errors.unexpected", listOf(actualError))
             if (actualValues.containsError && actualError.toString().toUpperCase().contains(expectedError.toUpperCase())) return null
-            return createErrorMessage("assertions.errors.mismatch", listOf(expectedError, actualError))
+            return getI18nMessage("assertions.errors.mismatch", listOf(expectedError, actualError))
         } else {
-            return createErrorMessage("assertions.errors.absent.specific", listOf(expectedError))
+            return getI18nMessage("assertions.errors.absent.specific", listOf(expectedError))
         }
     }
 
@@ -43,7 +43,7 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
     }
 
     private fun describeDifference(expectedRow: Map<String, String>, actualRow: Map<String, String>): String? {
-        return actualRow.filterNot { (k, v) -> v == expectedRow[k] }.map { (k, v) -> createErrorMessage("output.errors.mismatch", listOf(expectedRow[k] as String, k, v))  }.joinToString("\n")
+        return actualRow.filterNot { (k, v) -> v == expectedRow[k] }.map { (k, v) -> getI18nMessage("output.errors.mismatch", listOf(expectedRow[k] as String, k, v))  }.joinToString("\n")
     }
 
 
@@ -58,6 +58,6 @@ class OutputArgumentValidator(val parameterNames: List<String>) {
     private fun <V> Map<String, V>.withoutErrors(): Map<String, V> = this.filterKeys { it != TestArgumentTableTokens.errorColumnName }
     private val Map<String, Any?>.containsError: Boolean get() = this.containsKey(TestArgumentTableTokens.errorColumnName)
     private val Map<String, Any?>.hasNoError: Boolean get() = !this.containsError
-    private val Map<String, Any?>.wildcardErrorMessage: String? get() = if (this.containsError) null else createErrorMessage("assertions.errors.absent.any", emptyList())
+    private val Map<String, Any?>.wildcardErrorMessage: String? get() = if (this.containsError) null else getI18nMessage("assertions.errors.absent.any", emptyList())
 }
 

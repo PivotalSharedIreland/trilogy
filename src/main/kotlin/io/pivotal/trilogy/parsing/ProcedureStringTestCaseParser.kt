@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
+import io.pivotal.trilogy.parsing.exceptions.ProceduralTestParseException
 import io.pivotal.trilogy.testcase.MalformedProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
@@ -56,7 +56,7 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
         return testStrings.map {
             try {
                 ProcedureStringTestParser(it).getTest()
-            } catch (e: MissingDataSection) {
+            } catch (e: ProceduralTestParseException) {
                 MalformedProcedureTrilogyTest(errorMessage = e.localizedMessage, description = e.testName)
             }
         }

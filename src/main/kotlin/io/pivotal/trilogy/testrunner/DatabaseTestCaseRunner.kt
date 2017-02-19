@@ -1,6 +1,5 @@
 package io.pivotal.trilogy.testrunner
 
-import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.reporting.TestResult
@@ -22,7 +21,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     override fun run(trilogyTestCase: TrilogyTestCase, library: FixtureLibrary): TestCaseResult {
         val missingFixtures = trilogyTestCase.hooks.findMissingFixtures(library)
         if (missingFixtures.isNotEmpty()) {
-            val errorMessage = missingFixtures.map { createErrorMessage("testCaseRunner.errors.missingFixture", listOf(it)) }.joinToString("\n")
+            val errorMessage = missingFixtures.map { getI18nMessage("testCaseRunner.errors.missingFixture", listOf(it)) }.joinToString("\n")
             return TestCaseResult(trilogyTestCase.description, errorMessage = errorMessage)
         }
 
@@ -88,7 +87,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             try {
                 scriptExecuter.execute(library.getSetupFixtureByName(name))
             } catch(e: RuntimeException) {
-                val message = createErrorMessage("testCaseRunner.errors.fixtureRun",
+                val message = getI18nMessage("testCaseRunner.errors.fixtureRun",
                         listOf(name, getI18nMessage("vocabulary.fixtures.setup"), e.localizedMessage.prependIndent("    ")))
                 throw FixtureLoadException(message, e)
             }
@@ -100,7 +99,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             try {
                 scriptExecuter.execute(library.getTeardownFixtureByName(name))
             } catch(e: RuntimeException) {
-                val message = createErrorMessage("testCaseRunner.errors.fixtureRun",
+                val message = getI18nMessage("testCaseRunner.errors.fixtureRun",
                         listOf(name, getI18nMessage("vocabulary.fixtures.teardown"), e.localizedMessage.prependIndent("    ")))
                 throw FixtureLoadException(message, e)
             }
@@ -126,7 +125,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     }
 
     private fun Any?.rowCallError(rowNumber: Int, rowCount: Int): String? {
-        return if (this != null) createErrorMessage("output.errors.forRow", listOf(rowNumber, rowCount, this)) else null
+        return if (this != null) getI18nMessage("output.errors.forRow", listOf(rowNumber, rowCount, this)) else null
     }
 
     private fun TestCaseHooks.findMissingFixtures(library: FixtureLibrary): List<String> {

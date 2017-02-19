@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.testrunner
 
-import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.testcase.TestArgumentTableTokens
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.dao.DataAccessException
@@ -42,9 +42,9 @@ class DatabaseTestSubjectCaller(@Autowired val dataSource: DataSource) : TestSub
         } catch (e: DataAccessException) {
             mapOf(Pair(TestArgumentTableTokens.errorColumnName, e.cause?.message ?: e.message))
         } catch (e: NumberFormatException) {
-            throw InputArgumentException(createErrorMessage("testSubjectCaller.errors.mismatch.input.numeric", listOf(parameters.dumpInput)), e)
+            throw InputArgumentException(getI18nMessage("testSubjectCaller.errors.mismatch.input.numeric", listOf(parameters.dumpInput)), e)
         } catch (e: IllegalArgumentException) {
-            throw InputArgumentException(createErrorMessage("testSubjectCaller.errors.mismatch.input.datetime", listOf(parameters.dumpInput, e.localizedMessage)), e)
+            throw InputArgumentException(getI18nMessage("testSubjectCaller.errors.mismatch.input.datetime", listOf(parameters.dumpInput, e.localizedMessage)), e)
         }
     }
 
@@ -52,7 +52,7 @@ class DatabaseTestSubjectCaller(@Autowired val dataSource: DataSource) : TestSub
         val callParameters = parameters.keys - setOf(TestArgumentTableTokens.errorColumnName)
         val unknownArguments = callParameters - validArguments(callParameters)
         if (unknownArguments.isNotEmpty())
-            throw UnexpectedArgumentException(createErrorMessage("testSubjectCaller.errors.mismatch.input.unexpected", listOf(unknownArguments.joinToString(", "))),
+            throw UnexpectedArgumentException(getI18nMessage("testSubjectCaller.errors.mismatch.input.unexpected", listOf(unknownArguments.joinToString(", "))),
                     RuntimeException("Unexpected arguments"))
     }
 

@@ -53,7 +53,7 @@ class ProcedureStringTestCaseParserTests : Spek({
             { ProcedureStringTestCaseParser(brokenProceduralTests).getTestCase() } shouldNotThrow AnyException
         }
 
-        it("has one failed test") {
+        it("has one malformed test") {
             val testCase = ProcedureStringTestCaseParser(brokenProceduralTests).getTestCase()
             expect(1) { testCase.tests.count { it is MalformedProcedureTrilogyTest } }
         }
@@ -65,6 +65,26 @@ class ProcedureStringTestCaseParserTests : Spek({
             expect("DATA section is missing from a procedural test") { (malformedTest as MalformedProcedureTrilogyTest).errorMessage }
         }
 
+    }
+
+    describe("malformed data in procedural tests") {
+        val malformedDataProceduralTests = ResourceHelper.getTestCaseByName("malformed_data_section")
+
+        it("succeeds when parsing the whole test case") {
+            { ProcedureStringTestCaseParser(malformedDataProceduralTests).getTestCase() } shouldNotThrow AnyException
+        }
+
+        it("has malformed test") {
+            val testCase = ProcedureStringTestCaseParser(malformedDataProceduralTests).getTestCase()
+            expect(1) { testCase.tests.count { it is MalformedProcedureTrilogyTest } }
+        }
+
+        it("sets the failure message") {
+            val testCase = ProcedureStringTestCaseParser(malformedDataProceduralTests).getTestCase()
+            val malformedTest = testCase.tests.find { it is MalformedProcedureTrilogyTest }
+
+            expect("Expected the DATA section to contain a test table") { (malformedTest as MalformedProcedureTrilogyTest).errorMessage }
+        }
     }
 
     describe("multiple tests") {

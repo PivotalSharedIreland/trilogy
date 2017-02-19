@@ -1,6 +1,6 @@
 package io.pivotal.trilogy.application
 
-import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import org.springframework.beans.factory.UnsatisfiedDependencyException
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
@@ -18,11 +18,11 @@ open class TrilogyApplication {
                 SpringApplication.run(TrilogyApplication::class.java, *args)
             } catch(e: IllegalStateException) {
                 if (e.isCausedByConnectionFault) {
-                    println(createErrorMessage("connectionFailure", listOf("${e.cause}")))
+                    println(getI18nMessage("connectionFailure", listOf("${e.cause}")))
                 }
                 throw e
             } catch (e: UnsatisfiedDependencyException) {
-                println(createErrorMessage("applicationUsage"))
+                println(getI18nMessage("applicationUsage"))
                 throw e
             }
         }
