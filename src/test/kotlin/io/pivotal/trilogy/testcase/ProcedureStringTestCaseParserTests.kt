@@ -1,7 +1,9 @@
 package io.pivotal.trilogy.testcase
 
-import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
+import io.pivotal.trilogy.test_helpers.ResourceHelper
+import io.pivotal.trilogy.test_helpers.shouldNotThrow
+import org.amshove.kluent.AnyException
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect
@@ -34,13 +36,33 @@ class ProcedureStringTestCaseParserTests : Spek({
                     listOf("", "12", "")
             )
             val arguments = TestArgumentTable(header, values)
-            val test = ProcedureTrilogyTest("Test description", arguments, emptyList())
+            val test = ValidProcedureTrilogyTest("Test description", arguments, emptyList())
 
             expect(test) { ProcedureStringTestCaseParser(validTestCase).getTestCase().tests.first() }
         }
 
         it("should parse as a procedure test case") {
             expect(true) { ProcedureStringTestCaseParser(validTestCase).getTestCase() is ProcedureTrilogyTestCase }
+        }
+    }
+
+    describe("broken procedural tests") {
+        val brokenProceduralTests = ResourceHelper.getTestCaseByName("broken_procedural_tests")
+
+        it("succeeds with parsing the whole test case") {
+            { ProcedureStringTestCaseParser(brokenProceduralTests).getTestCase() } shouldNotThrow AnyException
+        }
+
+        it("has one failed test") {
+            val testCase = ProcedureStringTestCaseParser(brokenProceduralTests).getTestCase()
+            expect(1) { testCase.tests.count { it is MalformedProcedureTrilogyTest } }
+        }
+
+        it("sets the failure message") {
+            val testCase = ProcedureStringTestCaseParser(brokenProceduralTests).getTestCase()
+            val malformedTest = testCase.tests.find { it is MalformedProcedureTrilogyTest }
+
+            expect("DATA section is missing from a procedural test") { (malformedTest as MalformedProcedureTrilogyTest).errorMessage }
         }
 
     }

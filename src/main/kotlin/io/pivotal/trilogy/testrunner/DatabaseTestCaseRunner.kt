@@ -4,8 +4,9 @@ import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.reporting.TestResult
+import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
-import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
+import io.pivotal.trilogy.testcase.MalformedProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyAssertion
@@ -15,7 +16,8 @@ import io.pivotal.trilogy.testproject.FixtureLibrary
 import io.pivotal.trilogy.validators.OutputArgumentValidator
 
 class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
-                             val assertionExecuter: AssertionExecuter, val scriptExecuter: ScriptExecuter) : TestCaseRunner {
+                             val assertionExecuter: AssertionExecuter,
+                             val scriptExecuter: ScriptExecuter) : TestCaseRunner {
 
     override fun run(trilogyTestCase: TrilogyTestCase, library: FixtureLibrary): TestCaseResult {
         val missingFixtures = trilogyTestCase.hooks.findMissingFixtures(library)
@@ -50,7 +52,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         return getAssertionError(this.assertions)
     }
 
-    private fun ProcedureTrilogyTest.runTestReturningError(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): String? {
+    private fun ValidProcedureTrilogyTest.runTestReturningError(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): String? {
         val outputValidator = OutputArgumentValidator(argumentTable.outputArgumentNames)
 
         return argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->
@@ -107,7 +109,8 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     }
 
     private fun TrilogyTest.tryProceduralTest(library: FixtureLibrary, trilogyTestCase: TrilogyTestCase): TestResult? {
-        if (this !is ProcedureTrilogyTest) return null
+        if (this is MalformedProcedureTrilogyTest) return TestResult(this.description, this.errorMessage)
+        if (this !is ValidProcedureTrilogyTest) return null
         val errorMessage = this.runTestReturningError(trilogyTestCase as ProcedureTrilogyTestCase, library)
         return TestResult(this.description, errorMessage)
     }

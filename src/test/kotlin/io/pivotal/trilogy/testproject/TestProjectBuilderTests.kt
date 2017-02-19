@@ -1,11 +1,12 @@
 package io.pivotal.trilogy.testproject
 
-import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
+import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.test_helpers.shouldNotThrow
 import io.pivotal.trilogy.test_helpers.shouldStartWith
 import io.pivotal.trilogy.test_helpers.shouldThrow
+import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
@@ -30,6 +31,18 @@ class TestProjectBuilderTests : Spek({
         options.locator = UrlTestProjectResourceLocator(projectUrl);
 
         { TestProjectBuilder.build(options) } shouldThrow AnyException
+    }
+
+    context("malformed test cases and tests") {
+        val projectUrl = ResourceHelper.getResourceUrl("/projects/broken_tests/")
+
+        beforeEach {
+            options.locator = UrlTestProjectResourceLocator(projectUrl)
+        }
+
+        it("should include malformed procedural tests") {
+            { TestProjectBuilder.build(options) } shouldNotThrow AnyException
+        }
     }
 
     context("mixed generic and procedural test cases") {
@@ -92,7 +105,7 @@ class TestProjectBuilderTests : Spek({
             description shouldEqual "Example"
             hooks shouldEqual TestCaseHooks(emptyList(), emptyList(), emptyList(), emptyList())
             tests.count() shouldEqual 2
-            tests.first().apply {
+            (tests.first() as ValidProcedureTrilogyTest).apply {
                 description shouldEqual "Output should echo the input"
                 argumentTable.inputArgumentNames shouldEqual listOf("V_IN")
                 argumentTable.outputArgumentNames shouldEqual listOf("V_OUT", "=ERROR=")

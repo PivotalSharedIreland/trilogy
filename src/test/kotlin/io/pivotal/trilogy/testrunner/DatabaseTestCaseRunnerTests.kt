@@ -7,9 +7,9 @@ import io.pivotal.trilogy.test_helpers.Fixtures
 import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.test_helpers.shouldThrow
+import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
-import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TestCaseHooks
@@ -279,7 +279,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         }
 
         context("error handling") {
-            val tests = listOf(ProcedureTrilogyTest("some test", TestArgumentTable(emptyList(), emptyList()), emptyList()))
+            val tests = listOf(ValidProcedureTrilogyTest("some test", TestArgumentTable(emptyList(), emptyList()), emptyList()))
 
             it("fails when a non-existing 'before all' fixture is specified") {
                 val missingFixtureName = "I influence this beauty, it's called neutral vision."
@@ -391,7 +391,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             context("fixture load failure") {
                 val table = TestArgumentTable(listOf("FOO"), listOf(listOf("Bar")))
-                val proceduralTest = ProcedureTrilogyTest("Gummy stuff", table, emptyList())
+                val proceduralTest = ValidProcedureTrilogyTest("Gummy stuff", table, emptyList())
                 val genericTest = GenericTrilogyTest("Fixture error test", "", emptyList())
 
                 it("throws an exception when a 'before all' fixture load fails") {
@@ -601,7 +601,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val argumentTable = TestArgumentTable(listOf("=ERROR="), listOf(listOf("ERROR")))
 
             it("should report an error when no error is thrown") {
-                val singleTest = ProcedureTrilogyTest("foo", argumentTable, emptyList())
+                val singleTest = ValidProcedureTrilogyTest("foo", argumentTable, emptyList())
                 testSubjectCallerStub.resultToReturn = emptyMap()
                 val expectedError = "Row 1 of 1: Expected an error with text 'ERROR' to occur, but no errors were triggered"
                 val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(singleTest), testCaseHooks)
@@ -613,7 +613,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val argumentTable = TestArgumentTable(listOf("=ERROR="), listOf(listOf("ANY")))
 
             it("should report when no error is thrown") {
-                val singleTest = ProcedureTrilogyTest("bar", argumentTable, emptyList())
+                val singleTest = ValidProcedureTrilogyTest("bar", argumentTable, emptyList())
                 testSubjectCallerStub.resultToReturn = emptyMap()
                 val expectedError = "Row 1 of 1: Expected any error to occur, but no errors were triggered"
                 val testCase = ProcedureTrilogyTestCase("someOtherProcedure", "d.e.s.c.r.i.p.t.i.o.n", listOf(singleTest), testCaseHooks)
@@ -635,6 +635,25 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             it("should include the table row number, and total number of rows in the error message") {
                 testCaseRunner.run(testCase, fixtureLibrary).failedTests.first().errorMessage!! shouldContain "Row 1 of 1: "
+            }
+        }
+
+        context("when a malformed test is present") {
+            val testCase = ProcedureTrilogyTestCase("someProcedure", "some description",
+                    Fixtures.buildSingleMalformedTest(), hooksWithBeforeAllAndBeforeEachTest)
+
+            it("should fail the test case") {
+                expect(false) { testCaseRunner.run(testCase, fixtureLibrary).didPass }
+            }
+
+            it("should include the reason for failure") {
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+                expect("Belay, misty shipmate.") { result.failedTests.first().errorMessage }
+            }
+
+            it("should give the failed test name") {
+                val result = testCaseRunner.run(testCase, fixtureLibrary)
+                expect("Warm rice quickly.") { result.failedTests.first().testName }
             }
         }
     }

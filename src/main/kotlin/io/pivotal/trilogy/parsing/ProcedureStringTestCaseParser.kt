@@ -1,5 +1,7 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
+import io.pivotal.trilogy.testcase.MalformedProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
@@ -51,7 +53,13 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
     private fun String.hasValidHeader() = this.contains(testCaseHeaderRegex)
 
     private fun parseTests(): List<ProcedureTrilogyTest> {
-        return testStrings.map { ProcedureStringTestParser(it).getTest() }
+        return testStrings.map {
+            try {
+                ProcedureStringTestParser(it).getTest()
+            } catch (e: MissingDataSection) {
+                MalformedProcedureTrilogyTest(errorMessage = e.localizedMessage, description = e.testName)
+            }
+        }
     }
 
 }

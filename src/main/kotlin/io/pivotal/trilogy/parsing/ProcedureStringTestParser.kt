@@ -1,11 +1,12 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
+import io.pivotal.trilogy.i18n.MessageCreator.createErrorMessage
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
+import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
 import io.pivotal.trilogy.testcase.TestArgumentTable
-import io.pivotal.trilogy.testcase.TrilogyAssertion
+import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 
 class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBody) {
-    class MissingDataSection(message: String?) : RuntimeException(message)
     private val dataSectionHeader = "### DATA\\n"
     private val headerRow = "\\s*\\|.*?\\n"
     private val headerSeparationRow = "\\s*\\|([:-]+\\|)+\\n"
@@ -15,8 +16,8 @@ class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBod
         validate()
     }
 
-    override fun getTest(): ProcedureTrilogyTest {
-        return ProcedureTrilogyTest(parseDescription(), parseArgumentTable(), parseAssertions())
+    override fun getTest(): ValidProcedureTrilogyTest {
+        return ValidProcedureTrilogyTest(parseDescription(), parseArgumentTable(), parseAssertions())
     }
 
     private fun parseArgumentTable(): TestArgumentTable {
@@ -36,7 +37,14 @@ class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBod
 
     override fun validate() {
         super.validate()
-        if (!testBody.hasDataSection()) throw MissingDataSection("The test is missing a data section")
+        if (!testBody.hasDataSection()) {
+            val testName = try {
+                parseDescription()
+            } catch (e: RuntimeException) {
+                getI18nMessage("test.untitled")
+            }
+            throw MissingDataSection(createErrorMessage("testCaseParser.errors.missingDataSection"), testName)
+        }
     }
 
 

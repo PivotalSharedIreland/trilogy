@@ -1,6 +1,8 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
 import io.pivotal.trilogy.test_helpers.ResourceHelper
+import io.pivotal.trilogy.test_helpers.shouldThrow
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
 import kotlin.test.expect
@@ -98,5 +100,11 @@ class ProcedureStringTestParserTests : Spek({
 
     it("fails for empty test description") {
         assertFails { ProcedureStringTestParser(ResourceHelper.getTestByName("emptyDescription")).getTest() }
+    }
+
+    context("procedural") {
+        it("fails when data section is missing") {
+            { ProcedureStringTestParser("## TEST\nPathways fly on wind at earth!").getTest() } shouldThrow MissingDataSection::class
+        }
     }
 })
