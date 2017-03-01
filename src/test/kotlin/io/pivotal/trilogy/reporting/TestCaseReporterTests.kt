@@ -83,7 +83,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("fatal failures") {
-        fit("should append the [STOP] message when a fatal failure is encountered") {
+        it("should append the [STOP] message when a fatal failure is encountered") {
             val result = listOf(TestCaseResult("Odd travel", errorMessage = "Walnut combines greatly with chopped steak"))
             val report = TestCaseReporter.generateReport(TestProjectResult(result, fatalFailure = true))
 
