@@ -1,12 +1,13 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.parsing.exceptions.MissingDescription
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
+import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
+import io.pivotal.trilogy.parsing.exceptions.MissingTestBody
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 
 class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody) {
-    class MissingTestBody(message: String?) : RuntimeException(message)
 
-    private val headerlessBody : String by lazy { testBody.replace(testHeaderRegex, "") }
+    private val headerlessBody: String by lazy { testBody.replace(testHeaderRegex, "") }
 
     private val testSection: String by lazy {
         headerlessBody.replace(Regex("\\s*#+ [A-Z]{4,}.*", RegexOption.DOT_MATCHES_ALL), "").trim()
@@ -17,7 +18,7 @@ class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody)
     }
 
     private val description: String? by lazy {
-        Regex("(.+?)```", RegexOption.DOT_MATCHES_ALL).find(headerlessBody)?.groupValues.orEmpty().getOrNull(1)
+        Regex("(.+?)```", RegexOption.DOT_MATCHES_ALL).find(headerlessBody)?.groupValues.orEmpty().getOrElse(1, { _ -> testSection })
     }
 
     init {
@@ -30,8 +31,12 @@ class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody)
 
     override fun validate() {
         super.validate()
-        if (test == null) throw MissingTestBody("Test body not provided")
-        if (description == null || description!!.contains(Regex("\\A\\s*```"))) throw MissingDescription("Every test should have a description")
+        if (description == null || description!!.contains(Regex("\\A\\s*```")))
+            throw MissingTestDescription(
+                    getI18nMessage("testParser.generic.errors.missingDescription.message"),
+                    getI18nMessage("testParser.generic.errors.missingDescription.testName")
+            )
+        if (test == null) throw MissingTestBody(getI18nMessage("testParser.generic.errors.missingBody.message"), description!!)
     }
 
 }

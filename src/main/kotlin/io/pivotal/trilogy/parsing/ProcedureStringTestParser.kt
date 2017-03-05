@@ -3,7 +3,7 @@ package io.pivotal.trilogy.parsing
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.parsing.exceptions.MalformedDataSection
 import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
-import io.pivotal.trilogy.parsing.exceptions.MissingDescription
+import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 
@@ -32,7 +32,11 @@ class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBod
 
     private fun parseDescription(): String {
         val description = testBody.replace(testHeaderRegex, "").replace(Regex("\\s*### DATA.*", RegexOption.DOT_MATCHES_ALL), "").trim()
-        if (description.isEmpty()) throw MissingDescription("Every test should have a description")
+        if (description.isEmpty())
+            throw MissingTestDescription(
+                    getI18nMessage("testParser.generic.errors.missingDescription.message"),
+                    getI18nMessage("testParser.generic.errors.missingDescription.testName")
+            )
         return description
     }
 

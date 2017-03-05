@@ -70,4 +70,30 @@ class GenericStringTestCaseParserTest : Spek({
             expect("Contains a syntax error") { testCase.tests[1].description }
         }
     }
+
+    context("malformed") {
+        val malformedTestCase = ResourceHelper.getTestCaseByName("broken_generic")
+
+
+        it("should collect readable tests") {
+            val testCase = GenericStringTestCaseParser(malformedTestCase).getTestCase()
+            expect(1) { testCase.tests.count() }
+        }
+
+        it("should collect malformed tests") {
+            val testCase = GenericStringTestCaseParser(malformedTestCase).getTestCase()
+            expect(2) { testCase.malformedTests.count() }
+        }
+
+        it("should include malformed test names") {
+            val testCase = GenericStringTestCaseParser(malformedTestCase).getTestCase()
+            expect(setOf("Untitled test", "This test should fail")) { testCase.malformedTests.map { it.description }.toSet() }
+        }
+
+        it("should include malformed test errors") {
+            val testCase = GenericStringTestCaseParser(malformedTestCase).getTestCase()
+            val messages = setOf("Please check whether every test has a description", "Test body not provided")
+            expect(messages) { testCase.malformedTests.map { it.errorMessage }.toSet() }
+        }
+    }
 })

@@ -6,10 +6,10 @@ import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.test_helpers.shouldNotThrow
 import io.pivotal.trilogy.test_helpers.shouldStartWith
 import io.pivotal.trilogy.test_helpers.shouldThrow
-import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
+import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import org.amshove.kluent.AnyException
 import org.amshove.kluent.shouldEqual
 import org.jetbrains.spek.api.Spek
@@ -40,7 +40,7 @@ class TestProjectBuilderTests : Spek({
             options.locator = UrlTestProjectResourceLocator(projectUrl)
         }
 
-        it("should include malformed procedural tests") {
+        it("should not throw an exception") {
             { TestProjectBuilder.build(options) } shouldNotThrow AnyException
         }
     }

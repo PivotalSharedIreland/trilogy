@@ -1,7 +1,9 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.BaseTestParserException
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
+import io.pivotal.trilogy.testcase.MalformedTrilogyTest
 import io.pivotal.trilogy.testcase.TestCaseHooks
 
 class GenericStringTestCaseParser(testCaseBody: String) : BaseStringTestCaseParser(testCaseBody) {
@@ -10,7 +12,18 @@ class GenericStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePars
     }
 
     override fun getTestCase(): GenericTrilogyTestCase {
-        return GenericTrilogyTestCase(parseDescription(), parseTests(), parseTestHooks())
+        return GenericTrilogyTestCase(parseDescription(), parseTests(), parseTestHooks(), malformedTests())
+    }
+
+    private fun malformedTests(): List<MalformedTrilogyTest> {
+        return testStrings.map {
+            try {
+                GenericStringTestParser(it).getTest()
+                null
+            } catch (e: BaseTestParserException) {
+                MalformedTrilogyTest(e.testName, e.localizedMessage)
+            }
+        }.filterNotNull()
     }
 
     private fun parseTestHooks(): TestCaseHooks {
@@ -26,10 +39,16 @@ class GenericStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePars
         if (testCaseBody.hasInvalidHeader()) throw InvalidTestCaseFormat("Extra characters found in the test case header")
     }
 
-    private fun String.hasValidHeader() : Boolean = this.contains(Regex("^# TEST CASE\\s*$", kotlin.text.RegexOption.MULTILINE))
+    private fun String.hasValidHeader(): Boolean = this.contains(Regex("^# TEST CASE\\s*$", RegexOption.MULTILINE))
     private fun String.hasInvalidHeader() = !this.hasValidHeader()
 
     private fun parseTests(): List<GenericTrilogyTest> {
-        return testStrings.map { GenericStringTestParser(it).getTest() }
+        return testStrings.map {
+            try {
+                GenericStringTestParser(it).getTest()
+            } catch (e: BaseTestParserException) {
+                null
+            }
+        }.filterNotNull()
     }
 }

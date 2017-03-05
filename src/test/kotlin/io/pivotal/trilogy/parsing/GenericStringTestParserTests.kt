@@ -1,5 +1,7 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
+import io.pivotal.trilogy.parsing.exceptions.MissingTestBody
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.test_helpers.shouldThrow
@@ -49,15 +51,14 @@ class GenericStringTestParserTests : Spek({
     }
 
     it("requires a test body") {
-        { GenericStringTestParser("## TEST\nStigma at the alpha quadrant") } shouldThrow GenericStringTestParser.MissingTestBody::class
+        { GenericStringTestParser("## TEST\nStigma at the alpha quadrant") } shouldThrow MissingTestBody::class
     }
 
     it("cannot contain a data section") {
-        { GenericStringTestParser("## TEST\nBlah\n### DATA\n| P1 |\n|----|\n| 12 |\n") } shouldThrow AnyException
+        { GenericStringTestParser("## TEST\nBlah\n### DATA\n| P1 |\n|----|\n| 12 |\n") } shouldThrow MissingTestBody::class
     }
 
     it("requires a test description") {
-//        expect("fasldkf") { GenericStringTestParser("## TEST\n```\nBEGIN\nNULL\nEND\n```").getTest().description };
-        { GenericStringTestParser("## TEST\n```\nBEGIN\nNULL\nEND\n```") } shouldThrow AnyException
+        { GenericStringTestParser("## TEST\n```\nBEGIN\nNULL\nEND\n```") } shouldThrow MissingTestDescription::class
     }
 })

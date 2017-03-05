@@ -3,7 +3,7 @@ package io.pivotal.trilogy.parsing
 import io.pivotal.trilogy.parsing.exceptions.InvalidTestFormat
 import io.pivotal.trilogy.parsing.exceptions.MalformedDataSection
 import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
-import io.pivotal.trilogy.parsing.exceptions.MissingDescription
+import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldThrow
 import org.jetbrains.spek.api.Spek
@@ -102,7 +102,7 @@ class ProcedureStringTestParserTests : Spek({
     }
 
     it("fails for empty test description") {
-        { ProcedureStringTestParser(ResourceHelper.getTestByName("emptyDescription")).getTest() } shouldThrow MissingDescription::class
+        { ProcedureStringTestParser(ResourceHelper.getTestByName("emptyDescription")).getTest() } shouldThrow MissingTestDescription::class
     }
 
     context("procedural") {
