@@ -4,7 +4,7 @@ Generic unnamed test and test without a body
 ```
 BEGIN
   NULL;
-END
+END;
 ```
 ## TEST
 This test should fail
@@ -13,5 +13,5 @@ This test should be okay
 ```
 BEGIN
   NULL;
-END
+END;
 ```

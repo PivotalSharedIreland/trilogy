@@ -7,13 +7,14 @@ import io.pivotal.trilogy.test_helpers.Fixtures
 import io.pivotal.trilogy.test_helpers.isEven
 import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.test_helpers.shouldThrow
-import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
+import io.pivotal.trilogy.testcase.MalformedTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyAssertion
+import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import io.pivotal.trilogy.testproject.FixtureLibrary
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.shouldEqual
@@ -135,6 +136,16 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             expect(1) { result.passed }
             expect(0) { result.failed }
+        }
+
+        it("includes the malformed tests in the test case report") {
+            val malformedTest = MalformedTrilogyTest("Cantare etiam", "Combine avocado, nachos and pork butt.")
+            val testCase = GenericTrilogyTestCase("Jive", emptyList(), testCaseHooks, listOf(malformedTest))
+
+            val result = testCaseRunner.run(testCase, fixtureLibrary)
+
+            expect(0) { result.passed }
+            expect(1) { result.failed }
         }
     }
 

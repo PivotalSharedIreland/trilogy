@@ -32,7 +32,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
             val testResult = test.tryProceduralTest(library, trilogyTestCase) ?: test.tryGenericTest() ?: TestResult(test.description, "Unknown test type")
             trilogyTestCase.hooks.afterEachTest.runTeardownScripts(library)
             testResult
-        }
+        } + trilogyTestCase.malformedTests.map { (description, errorMessage) -> TestResult(description, errorMessage) }
         trilogyTestCase.hooks.afterAll.runTeardownScripts(library)
 
         return TestCaseResult(trilogyTestCase.description, testResults)
