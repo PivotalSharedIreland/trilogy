@@ -3,6 +3,7 @@ package io.pivotal.trilogy.parsing
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.parsing.exceptions.MalformedDataSection
 import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
+import io.pivotal.trilogy.parsing.exceptions.MissingDescription
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 

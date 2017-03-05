@@ -55,4 +55,9 @@ class GenericStringTestParserTests : Spek({
     it("cannot contain a data section") {
         { GenericStringTestParser("## TEST\nBlah\n### DATA\n| P1 |\n|----|\n| 12 |\n") } shouldThrow AnyException
     }
+
+    it("requires a test description") {
+//        expect("fasldkf") { GenericStringTestParser("## TEST\n```\nBEGIN\nNULL\nEND\n```").getTest().description };
+        { GenericStringTestParser("## TEST\n```\nBEGIN\nNULL\nEND\n```") } shouldThrow AnyException
+    }
 })

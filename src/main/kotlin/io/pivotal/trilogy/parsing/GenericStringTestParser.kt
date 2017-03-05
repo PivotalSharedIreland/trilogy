@@ -1,5 +1,6 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.MissingDescription
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 
 class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody) {
@@ -30,7 +31,7 @@ class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody)
     override fun validate() {
         super.validate()
         if (test == null) throw MissingTestBody("Test body not provided")
-        if (description == null) throw MissingDescription("Every test should have a description")
+        if (description == null || description!!.contains(Regex("\\A\\s*```"))) throw MissingDescription("Every test should have a description")
     }
 
 }

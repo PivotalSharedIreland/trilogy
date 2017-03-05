@@ -1,10 +1,9 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.InvalidTestFormat
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 
 abstract class BaseStringTestParser(val testBody: String) : TestParser {
-    class InvalidTestFormat(message: String?) : RuntimeException(message)
-    class MissingDescription(message: String?) : RuntimeException(message)
 
     protected val testHeaderRegex = Regex("\\A\\s*## TEST\\s*")
     protected val assertionHeaderRegex = Regex("### ASSERTIONS\\s+(.*)", RegexOption.DOT_MATCHES_ALL)
