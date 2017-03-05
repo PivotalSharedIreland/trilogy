@@ -3,7 +3,7 @@ package io.pivotal.trilogy.testrunner
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.reporting.TestResult
-import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
@@ -50,7 +50,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
         return getAssertionError(this.assertions)
     }
 
-    private fun ValidProcedureTrilogyTest.runTestReturningError(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): String? {
+    private fun ProcedureTrilogyTest.runTestReturningError(testCase: ProcedureTrilogyTestCase, library: FixtureLibrary): String? {
         val outputValidator = OutputArgumentValidator(argumentTable.outputArgumentNames)
 
         return argumentTable.inputArgumentValues.withIndex().map { inputRowWithIndex ->
@@ -107,7 +107,7 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     }
 
     private fun TrilogyTest.tryProceduralTest(library: FixtureLibrary, trilogyTestCase: TrilogyTestCase): TestResult? {
-        if (this !is ValidProcedureTrilogyTest) return null
+        if (this !is ProcedureTrilogyTest) return null
         val errorMessage = this.runTestReturningError(trilogyTestCase as ProcedureTrilogyTestCase, library)
         return TestResult(this.description, errorMessage)
     }

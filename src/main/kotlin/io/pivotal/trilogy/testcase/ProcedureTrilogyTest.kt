@@ -1,3 +1,4 @@
 package io.pivotal.trilogy.testcase
 
-interface ProcedureTrilogyTest : TrilogyTest
+data class ProcedureTrilogyTest(override val description: String, val argumentTable: TestArgumentTable,
+                                override val assertions: List<TrilogyAssertion>) : TrilogyTest

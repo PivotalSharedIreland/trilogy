@@ -17,7 +17,7 @@ class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody)
         Regex("```(.+?)```", RegexOption.DOT_MATCHES_ALL).find(testSection)?.groupValues.orEmpty().getOrNull(1)
     }
 
-    private val description: String? by lazy {
+    override val description: String? by lazy {
         Regex("(.+?)```", RegexOption.DOT_MATCHES_ALL).find(headerlessBody)?.groupValues.orEmpty().getOrElse(1, { _ -> testSection })
     }
 

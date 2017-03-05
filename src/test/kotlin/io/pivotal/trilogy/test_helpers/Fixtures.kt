@@ -5,17 +5,16 @@ import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 import io.pivotal.trilogy.testcase.TrilogyTestCase
-import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 
 object Fixtures {
     val argumentTable = TestArgumentTable(listOf("IN", "OUT$"), listOf(listOf("1", "1")))
     val assertions = listOf(TrilogyAssertion("some description", "some SQL"))
     val testWithThreeRows: ProcedureTrilogyTest by lazy {
-        ValidProcedureTrilogyTest("", argumentTableWithThreeRows, emptyList())
+        ProcedureTrilogyTest("", argumentTableWithThreeRows, emptyList())
     }
 
     fun testWithThreeRowsAndAssertions(assertions: List<TrilogyAssertion>): ProcedureTrilogyTest {
-        return ValidProcedureTrilogyTest("", argumentTableWithThreeRows, assertions)
+        return ProcedureTrilogyTest("", argumentTableWithThreeRows, assertions)
     }
 
     private val argumentTableWithThreeRows: TestArgumentTable
@@ -30,11 +29,11 @@ object Fixtures {
         return ProcedureStringTestCaseParser(ResourceHelper.getTestCaseByName(testCaseName)).getTestCase()
     }
 
-    fun buildSingleTest(): List<ProcedureTrilogyTest> = listOf(ValidProcedureTrilogyTest("I am a test", argumentTable, assertions))
+    fun buildSingleTest(): List<ProcedureTrilogyTest> = listOf(ProcedureTrilogyTest("I am a test", argumentTable, assertions))
 
     fun buildMultipleTests(): List<ProcedureTrilogyTest> = listOf(
-            ValidProcedureTrilogyTest("I am a test", argumentTable, assertions),
-            ValidProcedureTrilogyTest("I am also a test", argumentTable, assertions),
-            ValidProcedureTrilogyTest("Me three", argumentTable, assertions)
+            ProcedureTrilogyTest("I am a test", argumentTable, assertions),
+            ProcedureTrilogyTest("I am also a test", argumentTable, assertions),
+            ProcedureTrilogyTest("Me three", argumentTable, assertions)
     )
 }

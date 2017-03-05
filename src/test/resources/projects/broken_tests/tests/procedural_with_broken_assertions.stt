@@ -1,0 +1,58 @@
+# TEST CASE DEGENERATE
+Procedural tests with broken assertions
+## TEST
+Unnamed assertion
+### DATA
+|V_IN|V_OUT$|
+|---:|-----:|
+|0   | 0    |
+|1   | 1    |
+|3   | 3    |
+### ASSERTIONS
+#### SQL
+```
+BEGIN
+  END;
+NULL;
+```
+## TEST
+Assertion with an empty body
+### DATA
+|V_IN|V_OUT$|
+|---:|-----:|
+|0   | 0    |
+|1   | 1    |
+|3   | 3    |
+### ASSERTIONS
+#### SQL
+Jumble the cabbage with minced radish sprouts, pepper, onion powder, and corn syrup making sure to cover all of it.
+```
+
+
+
+```
+## TEST
+Assertion without a body block
+### DATA
+|V_IN|V_OUT$|
+|---:|-----:|
+|0   | 0    |
+|1   | 1    |
+|3   | 3    |
+### ASSERTIONS
+#### SQL
+Yo-ho-ho, weird woodchuck. go to la marsa beach.
+## TEST
+This test should be okay
+### DATA
+|V_IN|V_OUT$|
+|---:|-----:|
+|0   | 0    |
+|1   | 1    |
+|3   | 3    |
+## TEST
+This test should genuinely fail
+### DATA
+|V_IN|V_OUT$|
+|---:|-----:|
+|3   | 0    |

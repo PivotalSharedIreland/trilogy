@@ -1,0 +1,47 @@
+# TEST CASE
+Generic tests with broken assertions
+## TEST
+Has an unnamed assertion
+```
+BEGIN
+  NULL;
+END;
+```
+### ASSERTIONS
+#### SQL
+```
+BEGIN
+  END;
+NULL;
+```
+## TEST
+Has an assertion with an empty body
+```
+BEGIN
+  NULL;
+END;
+```
+### ASSERTIONS
+#### SQL
+Fußball über alles!
+```
+   
+   
+```
+## TEST
+Has an assertion without a body block
+```
+BEGIN
+  NULL;
+END;
+```
+### ASSERTIONS
+#### SQL
+Studere cito ducunt ad primus mens.
+## TEST
+This test should be okay
+```
+BEGIN
+  NULL;
+END;
+```

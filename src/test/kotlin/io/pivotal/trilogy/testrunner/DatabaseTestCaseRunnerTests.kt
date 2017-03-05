@@ -14,7 +14,7 @@ import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyAssertion
-import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testproject.FixtureLibrary
 import org.amshove.kluent.`should contain`
 import org.amshove.kluent.shouldEqual
@@ -290,7 +290,7 @@ class DatabaseTestCaseRunnerTests : Spek({
         }
 
         context("error handling") {
-            val tests = listOf(ValidProcedureTrilogyTest("some test", TestArgumentTable(emptyList(), emptyList()), emptyList()))
+            val tests = listOf(ProcedureTrilogyTest("some test", TestArgumentTable(emptyList(), emptyList()), emptyList()))
 
             it("fails when a non-existing 'before all' fixture is specified") {
                 val missingFixtureName = "I influence this beauty, it's called neutral vision."
@@ -402,7 +402,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             context("fixture load failure") {
                 val table = TestArgumentTable(listOf("FOO"), listOf(listOf("Bar")))
-                val proceduralTest = ValidProcedureTrilogyTest("Gummy stuff", table, emptyList())
+                val proceduralTest = ProcedureTrilogyTest("Gummy stuff", table, emptyList())
                 val genericTest = GenericTrilogyTest("Fixture error test", "", emptyList())
 
                 it("throws an exception when a 'before all' fixture load fails") {
@@ -612,7 +612,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val argumentTable = TestArgumentTable(listOf("=ERROR="), listOf(listOf("ERROR")))
 
             it("should report an error when no error is thrown") {
-                val singleTest = ValidProcedureTrilogyTest("foo", argumentTable, emptyList())
+                val singleTest = ProcedureTrilogyTest("foo", argumentTable, emptyList())
                 testSubjectCallerStub.resultToReturn = emptyMap()
                 val expectedError = "Row 1 of 1: Expected an error with text 'ERROR' to occur, but no errors were triggered"
                 val testCase = ProcedureTrilogyTestCase("someProcedure", "someDescription", listOf(singleTest), testCaseHooks)
@@ -624,7 +624,7 @@ class DatabaseTestCaseRunnerTests : Spek({
             val argumentTable = TestArgumentTable(listOf("=ERROR="), listOf(listOf("ANY")))
 
             it("should report when no error is thrown") {
-                val singleTest = ValidProcedureTrilogyTest("bar", argumentTable, emptyList())
+                val singleTest = ProcedureTrilogyTest("bar", argumentTable, emptyList())
                 testSubjectCallerStub.resultToReturn = emptyMap()
                 val expectedError = "Row 1 of 1: Expected any error to occur, but no errors were triggered"
                 val testCase = ProcedureTrilogyTestCase("someOtherProcedure", "d.e.s.c.r.i.p.t.i.o.n", listOf(singleTest), testCaseHooks)

@@ -1,11 +1,12 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
+import io.pivotal.trilogy.parsing.exceptions.MissingAssertionBody
+import io.pivotal.trilogy.parsing.exceptions.MissingAssertionDescription
 import io.pivotal.trilogy.parsing.exceptions.MissingTestBody
+import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.test_helpers.shouldThrow
-import org.amshove.kluent.AnyException
 import org.jetbrains.spek.api.Spek
 import kotlin.test.expect
 
@@ -61,4 +62,14 @@ class GenericStringTestParserTests : Spek({
     it("requires a test description") {
         { GenericStringTestParser("## TEST\n```\nBEGIN\nNULL\nEND\n```") } shouldThrow MissingTestDescription::class
     }
+
+    it("requires an assertion name") {
+        { GenericStringTestParser("## TEST\nBlah\n```\nfoo\n```\n### ASSERTIONS\n#### SQL\n```\nbar\n```").getTest() } shouldThrow MissingAssertionDescription::class
+    }
+
+    it("requires the assertion body") {
+        { GenericStringTestParser("## TEST\nBlah\n```\nfoo\n```\n### ASSERTIONS\n#### SQL\nbar```\n\n```").getTest() } shouldThrow MissingAssertionBody::class
+        { GenericStringTestParser("## TEST\nBlah\n```\nfoo\n```\n### ASSERTIONS\n#### SQL\nbar").getTest() } shouldThrow MissingAssertionBody::class
+    }
+
 })

@@ -92,7 +92,7 @@ class GenericStringTestCaseParserTest : Spek({
 
         it("should include malformed test errors") {
             val testCase = GenericStringTestCaseParser(malformedTestCase).getTestCase()
-            val messages = setOf("Please check whether every test has a description", "Test body not provided")
+            val messages = setOf("Please make sure that every test has a description", "Test body not provided")
             expect(messages) { testCase.malformedTests.map { it.errorMessage }.toSet() }
         }
     }

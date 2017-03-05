@@ -5,7 +5,7 @@ import io.pivotal.trilogy.parsing.exceptions.MalformedDataSection
 import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
 import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
 import io.pivotal.trilogy.testcase.TestArgumentTable
-import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
+import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 
 class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBody) {
     private val dataSectionHeader = "### DATA\\n"
@@ -17,8 +17,8 @@ class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBod
         validate()
     }
 
-    override fun getTest(): ValidProcedureTrilogyTest {
-        return ValidProcedureTrilogyTest(parseDescription(), parseArgumentTable(), parseAssertions())
+    override fun getTest(): ProcedureTrilogyTest {
+        return ProcedureTrilogyTest(description!!, parseArgumentTable(), parseAssertions())
     }
 
     private fun parseArgumentTable(): TestArgumentTable {
@@ -30,14 +30,14 @@ class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBod
         return TestArgumentTable(table.getHeaders(), table.getValues())
     }
 
-    private fun parseDescription(): String {
+    override val description: String? by lazy {
         val description = testBody.replace(testHeaderRegex, "").replace(Regex("\\s*### DATA.*", RegexOption.DOT_MATCHES_ALL), "").trim()
         if (description.isEmpty())
             throw MissingTestDescription(
                     getI18nMessage("testParser.generic.errors.missingDescription.message"),
                     getI18nMessage("testParser.generic.errors.missingDescription.testName")
             )
-        return description
+        description
     }
 
     override fun validate() {
@@ -47,12 +47,11 @@ class ProcedureStringTestParser(testBody: String) : BaseStringTestParser(testBod
     }
 
     private fun testNameOrDefault(): String {
-        val testName = try {
-            parseDescription()
+        return try {
+            description!!
         } catch (e: RuntimeException) {
             getI18nMessage("test.untitled")
         }
-        return testName
     }
 
     private fun String.hasDataSection(): Boolean {

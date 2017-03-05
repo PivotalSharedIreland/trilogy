@@ -9,7 +9,6 @@ import io.pivotal.trilogy.test_helpers.shouldThrow
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
-import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import org.amshove.kluent.AnyException
 import org.amshove.kluent.shouldEqual
 import org.jetbrains.spek.api.Spek
@@ -105,7 +104,7 @@ class TestProjectBuilderTests : Spek({
             description shouldEqual "Example"
             hooks shouldEqual TestCaseHooks(emptyList(), emptyList(), emptyList(), emptyList())
             tests.count() shouldEqual 2
-            (tests.first() as ValidProcedureTrilogyTest).apply {
+            tests.first().apply {
                 description shouldEqual "Output should echo the input"
                 argumentTable.inputArgumentNames shouldEqual listOf("V_IN")
                 argumentTable.outputArgumentNames shouldEqual listOf("V_OUT", "=ERROR=")
