@@ -1,7 +1,6 @@
 package io.pivotal.trilogy.test_helpers
 
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
-import io.pivotal.trilogy.testcase.MalformedProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.TestArgumentTable
 import io.pivotal.trilogy.testcase.TrilogyAssertion
@@ -32,9 +31,6 @@ object Fixtures {
     }
 
     fun buildSingleTest(): List<ProcedureTrilogyTest> = listOf(ValidProcedureTrilogyTest("I am a test", argumentTable, assertions))
-
-    fun buildSingleMalformedTest(): List<ProcedureTrilogyTest> = listOf(
-            MalformedProcedureTrilogyTest(errorMessage = "Belay, misty shipmate.", description = "Warm rice quickly."))
 
     fun buildMultipleTests(): List<ProcedureTrilogyTest> = listOf(
             ValidProcedureTrilogyTest("I am a test", argumentTable, assertions),

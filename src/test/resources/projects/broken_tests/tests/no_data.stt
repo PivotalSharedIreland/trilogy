@@ -11,6 +11,13 @@ This test should be okay
 |1   | 1    |
 |3   | 3    |
 ## TEST
+### DATA
+|V_IN|V_OUT$|
+|---:|-----:|
+|0   | 0    |
+|1   | 1    |
+|3   | 3    |
+## TEST
 This test should genuinely fail
 ### DATA
 |V_IN|V_OUT$|

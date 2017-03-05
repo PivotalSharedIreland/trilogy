@@ -1,7 +1,7 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.parsing.exceptions.ProceduralTestParseException
-import io.pivotal.trilogy.testcase.MalformedProcedureTrilogyTest
+import io.pivotal.trilogy.parsing.exceptions.BaseTestParserException
+import io.pivotal.trilogy.testcase.MalformedTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
@@ -26,7 +26,7 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
     }
 
     private fun parse(): TrilogyTestCase {
-        return ProcedureTrilogyTestCase(parseFunctionName(), parseDescription(), parseTests(), parseHooks())
+        return ProcedureTrilogyTestCase(parseFunctionName(), parseDescription(), parseTests(), parseHooks(), malformedTests())
     }
 
     private fun parseFunctionName(): String {
@@ -56,10 +56,21 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
         return testStrings.map {
             try {
                 ProcedureStringTestParser(it).getTest()
-            } catch (e: ProceduralTestParseException) {
-                MalformedProcedureTrilogyTest(errorMessage = e.localizedMessage, description = e.testName)
+            } catch (e: BaseTestParserException) {
+                null
             }
-        }
+        }.filterNotNull()
+    }
+
+    private fun malformedTests(): List<MalformedTrilogyTest> {
+        return testStrings.map {
+            try {
+                ProcedureStringTestParser(it).getTest()
+                null
+            } catch (e: BaseTestParserException) {
+                MalformedTrilogyTest(e.testName, e.localizedMessage)
+            }
+        }.filterNotNull()
     }
 
 }

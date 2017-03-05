@@ -651,7 +651,7 @@ class DatabaseTestCaseRunnerTests : Spek({
 
         context("when a malformed test is present") {
             val testCase = ProcedureTrilogyTestCase("someProcedure", "some description",
-                    Fixtures.buildSingleMalformedTest(), hooksWithBeforeAllAndBeforeEachTest)
+                    emptyList(), hooksWithBeforeAllAndBeforeEachTest, listOf(MalformedTrilogyTest("one", "two")))
 
             it("should fail the test case") {
                 expect(false) { testCaseRunner.run(testCase, fixtureLibrary).didPass }
@@ -659,12 +659,12 @@ class DatabaseTestCaseRunnerTests : Spek({
 
             it("should include the reason for failure") {
                 val result = testCaseRunner.run(testCase, fixtureLibrary)
-                expect("Belay, misty shipmate.") { result.failedTests.first().errorMessage }
+                expect("two") { result.failedTests.first().errorMessage }
             }
 
             it("should give the failed test name") {
                 val result = testCaseRunner.run(testCase, fixtureLibrary)
-                expect("Warm rice quickly.") { result.failedTests.first().testName }
+                expect("one") { result.failedTests.first().testName }
             }
         }
     }

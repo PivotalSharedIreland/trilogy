@@ -5,7 +5,6 @@ import io.pivotal.trilogy.reporting.TestCaseResult
 import io.pivotal.trilogy.reporting.TestResult
 import io.pivotal.trilogy.testcase.ValidProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
-import io.pivotal.trilogy.testcase.MalformedProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
 import io.pivotal.trilogy.testcase.TestCaseHooks
 import io.pivotal.trilogy.testcase.TrilogyAssertion
@@ -108,7 +107,6 @@ class DatabaseTestCaseRunner(val testSubjectCaller: TestSubjectCaller,
     }
 
     private fun TrilogyTest.tryProceduralTest(library: FixtureLibrary, trilogyTestCase: TrilogyTestCase): TestResult? {
-        if (this is MalformedProcedureTrilogyTest) return TestResult(this.description, this.errorMessage)
         if (this !is ValidProcedureTrilogyTest) return null
         val errorMessage = this.runTestReturningError(trilogyTestCase as ProcedureTrilogyTestCase, library)
         return TestResult(this.description, errorMessage)

@@ -53,16 +53,16 @@ class ProcedureStringTestCaseParserTests : Spek({
             { ProcedureStringTestCaseParser(brokenProceduralTests).getTestCase() } shouldNotThrow AnyException
         }
 
-        it("has one malformed test") {
+        it("has some malformed tests") {
             val testCase = ProcedureStringTestCaseParser(brokenProceduralTests).getTestCase()
-            expect(1) { testCase.tests.count { it is MalformedProcedureTrilogyTest } }
+            expect(2) { testCase.malformedTests.count() }
         }
 
         it("sets the failure message") {
             val testCase = ProcedureStringTestCaseParser(brokenProceduralTests).getTestCase()
-            val malformedTest = testCase.tests.find { it is MalformedProcedureTrilogyTest }
+            val malformedTest = testCase.malformedTests[0]
 
-            expect("DATA section is missing from a procedural test") { (malformedTest as MalformedProcedureTrilogyTest).errorMessage }
+            expect("DATA section is missing from a procedural test") { malformedTest.errorMessage }
         }
 
     }
@@ -74,16 +74,16 @@ class ProcedureStringTestCaseParserTests : Spek({
             { ProcedureStringTestCaseParser(malformedDataProceduralTests).getTestCase() } shouldNotThrow AnyException
         }
 
-        it("has malformed test") {
+        it("has a malformed test") {
             val testCase = ProcedureStringTestCaseParser(malformedDataProceduralTests).getTestCase()
-            expect(1) { testCase.tests.count { it is MalformedProcedureTrilogyTest } }
+            expect(1) { testCase.malformedTests.count() }
         }
 
         it("sets the failure message") {
             val testCase = ProcedureStringTestCaseParser(malformedDataProceduralTests).getTestCase()
-            val malformedTest = testCase.tests.find { it is MalformedProcedureTrilogyTest }
+            val malformedTest = testCase.malformedTests[0]
 
-            expect("Expected the DATA section to contain a test table") { (malformedTest as MalformedProcedureTrilogyTest).errorMessage }
+            expect("Expected the DATA section to contain a test table") { malformedTest.errorMessage }
         }
     }
 
@@ -170,10 +170,6 @@ class ProcedureStringTestCaseParserTests : Spek({
 
     it("fails with invalid test case") {
         assertFails { ProcedureStringTestCaseParser("") }
-    }
-
-    it("fails with empty test case description") {
-        assertFails { ProcedureStringTestCaseParser(ResourceHelper.getTestCaseByName("emptyDescription")).getTestCase() }
     }
 
     it("fails with empty function name") {
