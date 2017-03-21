@@ -31,7 +31,7 @@ Standalone test cases are good for small ad-hoc tests that do not require loadin
 The generic test case allows the developer to use a set of plain SQL statements as the test body. A generic test will fail if an error occurs during test or assertion execution. The layout of a generic test case is shown below:
 ```
 # TEST CASE
-<test case desription>
+<test case description>
 ## TEST
 <test description>
 ```< SQL  statements >```
