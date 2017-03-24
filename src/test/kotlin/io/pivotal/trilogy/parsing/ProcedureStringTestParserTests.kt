@@ -1,9 +1,9 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.parsing.exceptions.InvalidTestFormat
-import io.pivotal.trilogy.parsing.exceptions.MalformedDataSection
-import io.pivotal.trilogy.parsing.exceptions.MissingDataSection
-import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
+import io.pivotal.trilogy.parsing.exceptions.test.InvalidFormat
+import io.pivotal.trilogy.parsing.exceptions.test.MalformedDataSection
+import io.pivotal.trilogy.parsing.exceptions.test.MissingDataSection
+import io.pivotal.trilogy.parsing.exceptions.test.MissingDescription
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldThrow
 import org.jetbrains.spek.api.Spek
@@ -94,7 +94,7 @@ class ProcedureStringTestParserTests : Spek({
     }
 
     it("fails for an empty string") {
-        { ProcedureStringTestParser("").getTest() } shouldThrow InvalidTestFormat::class
+        { ProcedureStringTestParser("").getTest() } shouldThrow InvalidFormat::class
     }
 
     it("fails for a test without a body") {
@@ -102,7 +102,7 @@ class ProcedureStringTestParserTests : Spek({
     }
 
     it("fails for empty test description") {
-        { ProcedureStringTestParser(ResourceHelper.getTestByName("emptyDescription")).getTest() } shouldThrow MissingTestDescription::class
+        { ProcedureStringTestParser(ResourceHelper.getTestByName("emptyDescription")).getTest() } shouldThrow MissingDescription::class
     }
 
     context("procedural") {

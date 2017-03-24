@@ -1,9 +1,9 @@
 package io.pivotal.trilogy.parsing
 
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
-import io.pivotal.trilogy.parsing.exceptions.InvalidTestFormat
-import io.pivotal.trilogy.parsing.exceptions.MissingAssertionBody
-import io.pivotal.trilogy.parsing.exceptions.MissingAssertionDescription
+import io.pivotal.trilogy.parsing.exceptions.test.InvalidFormat
+import io.pivotal.trilogy.parsing.exceptions.test.MissingAssertionBody
+import io.pivotal.trilogy.parsing.exceptions.test.MissingAssertionDescription
 import io.pivotal.trilogy.testcase.TrilogyAssertion
 
 abstract class BaseStringTestParser(val testBody: String) : TestParser {
@@ -13,7 +13,7 @@ abstract class BaseStringTestParser(val testBody: String) : TestParser {
     abstract val description: String?
 
     open protected fun validate() {
-        if (!testBody.hasValidFormat()) throw InvalidTestFormat("Unable to recognise the test")
+        if (!testBody.hasValidFormat()) throw InvalidFormat("Unable to recognise the test")
     }
 
     protected fun String.hasValidFormat() : Boolean = this.contains(testHeaderRegex)

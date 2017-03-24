@@ -1,10 +1,9 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.testcase.MissingDescription
 import io.pivotal.trilogy.testcase.TestCaseParser
 
 abstract class BaseStringTestCaseParser(val testCaseBody: String) : TestCaseParser {
-    class InvalidTestCaseFormat(message: String?) : RuntimeException(message)
-    class MissingDescription(message: String?) : RuntimeException(message)
 
     open protected val testCaseHeaderRegex = Regex("^# TEST CASE")
     protected val testStrings: List<String> by lazy {

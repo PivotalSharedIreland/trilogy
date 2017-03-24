@@ -1,8 +1,8 @@
 package io.pivotal.trilogy.parsing
 
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
-import io.pivotal.trilogy.parsing.exceptions.MissingTestDescription
-import io.pivotal.trilogy.parsing.exceptions.MissingTestBody
+import io.pivotal.trilogy.parsing.exceptions.test.MissingDescription
+import io.pivotal.trilogy.parsing.exceptions.test.MissingBody
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 
 class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody) {
@@ -32,11 +32,11 @@ class GenericStringTestParser(testBody: String) : BaseStringTestParser(testBody)
     override fun validate() {
         super.validate()
         if (description == null || description!!.contains(Regex("\\A\\s*```")))
-            throw MissingTestDescription(
+            throw MissingDescription(
                     getI18nMessage("testParser.generic.errors.missingDescription.message"),
                     getI18nMessage("testParser.generic.errors.missingDescription.testName")
             )
-        if (test == null) throw MissingTestBody(getI18nMessage("testParser.generic.errors.missingBody.message"), description!!)
+        if (test == null) throw MissingBody(getI18nMessage("testParser.generic.errors.missingBody.message"), description!!)
     }
 
 }

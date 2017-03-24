@@ -1,6 +1,7 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.parsing.exceptions.BaseTestParserException
+import io.pivotal.trilogy.parsing.exceptions.test.BaseParseException
+import io.pivotal.trilogy.parsing.exceptions.testcase.InvalidFormat
 import io.pivotal.trilogy.testcase.GenericTrilogyTest
 import io.pivotal.trilogy.testcase.GenericTrilogyTestCase
 import io.pivotal.trilogy.testcase.MalformedTrilogyTest
@@ -20,7 +21,7 @@ class GenericStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePars
             try {
                 GenericStringTestParser(it).getTest()
                 null
-            } catch (e: BaseTestParserException) {
+            } catch (e: BaseParseException) {
                 MalformedTrilogyTest(e.testName, e.localizedMessage)
             }
         }.filterNotNull()
@@ -36,7 +37,7 @@ class GenericStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePars
     }
 
     override fun validate() {
-        if (testCaseBody.hasInvalidHeader()) throw InvalidTestCaseFormat("Extra characters found in the test case header")
+        if (testCaseBody.hasInvalidHeader()) throw InvalidFormat("Extra characters found in the test case header")
     }
 
     private fun String.hasValidHeader(): Boolean = this.contains(Regex("^# TEST CASE\\s*$", RegexOption.MULTILINE))
@@ -46,7 +47,7 @@ class GenericStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePars
         return testStrings.map {
             try {
                 GenericStringTestParser(it).getTest()
-            } catch (e: BaseTestParserException) {
+            } catch (e: BaseParseException) {
                 null
             }
         }.filterNotNull()

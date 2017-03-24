@@ -1,5 +1,7 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.parsing.exceptions.testcase.InvalidFormat
+import io.pivotal.trilogy.parsing.exceptions.testcase.MissingDescription
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldNotThrow
 import io.pivotal.trilogy.test_helpers.shouldThrow
@@ -37,7 +39,7 @@ class GenericStringTestCaseParserTest : Spek({
 
     context("invalid") {
         it("fails for procedure test case") {
-            { GenericStringTestCaseParser(ResourceHelper.getTestCaseByName("degenerate")) } shouldThrow BaseStringTestCaseParser.InvalidTestCaseFormat::class
+            { GenericStringTestCaseParser(ResourceHelper.getTestCaseByName("degenerate")) } shouldThrow InvalidFormat::class
         }
 
         it("fails for test cases with inappropriate hooks") {

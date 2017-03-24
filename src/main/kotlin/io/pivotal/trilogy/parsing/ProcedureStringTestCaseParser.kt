@@ -1,6 +1,7 @@
 package io.pivotal.trilogy.parsing
 
-import io.pivotal.trilogy.parsing.exceptions.BaseTestParserException
+import io.pivotal.trilogy.parsing.exceptions.test.BaseParseException
+import io.pivotal.trilogy.parsing.exceptions.testcase.InvalidFormat
 import io.pivotal.trilogy.testcase.MalformedTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
@@ -22,7 +23,7 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
     }
 
     override fun validate() {
-        if (!testCaseBody.isValidTestCase()) throw InvalidTestCaseFormat("Unable to recognise a test case")
+        if (!testCaseBody.isValidTestCase()) throw InvalidFormat("Unable to recognise a test case")
     }
 
     private fun parse(): TrilogyTestCase {
@@ -56,7 +57,7 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
         return testStrings.map {
             try {
                 ProcedureStringTestParser(it).getTest()
-            } catch (e: BaseTestParserException) {
+            } catch (e: BaseParseException) {
                 null
             }
         }.filterNotNull()
@@ -67,7 +68,7 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
             try {
                 ProcedureStringTestParser(it).getTest()
                 null
-            } catch (e: BaseTestParserException) {
+            } catch (e: BaseParseException) {
                 MalformedTrilogyTest(e.testName, e.localizedMessage)
             }
         }.filterNotNull()
