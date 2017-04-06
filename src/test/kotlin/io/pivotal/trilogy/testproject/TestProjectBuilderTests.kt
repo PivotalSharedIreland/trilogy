@@ -3,6 +3,7 @@ package io.pivotal.trilogy.testproject
 import io.pivotal.trilogy.mocks.TrilogyApplicationOptionsStub
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldContain
+import io.pivotal.trilogy.test_helpers.shouldEndWith
 import io.pivotal.trilogy.test_helpers.shouldNotThrow
 import io.pivotal.trilogy.test_helpers.shouldStartWith
 import io.pivotal.trilogy.test_helpers.shouldThrow
@@ -155,7 +156,24 @@ class TestProjectBuilderTests : Spek({
         val project = TestProjectBuilder.build(schemalessOptions)
 
         expect(null) { project.schema }
+    }
 
+    context("broken test cases") {
+        val projectUrl = ResourceHelper.getResourceUrl("/projects/broken_test_cases/")
+        val malformedProjectOptions = TrilogyApplicationOptionsStub()
+                .apply { locator = UrlTestProjectResourceLocator(projectUrl) }
+
+        it("should include malformed tests") {
+            val project = TestProjectBuilder.build(malformedProjectOptions)
+
+            expect(true) { project.malformedTestCases.isNotEmpty() }
+        }
+
+        it("should specify the path to the malformed test case") {
+            val project = TestProjectBuilder.build(malformedProjectOptions)
+
+            project.malformedTestCases[0].name shouldEndWith "blank_test_case.stt"
+        }
     }
 })
 

@@ -3,6 +3,7 @@ package io.pivotal.trilogy.testproject
 import io.pivotal.trilogy.application.TrilogyOptions
 import io.pivotal.trilogy.parsing.GenericStringTestCaseParser
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
+import io.pivotal.trilogy.testcase.MalformedTrilogyTestCase
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 
 object TestProjectBuilder {
@@ -10,17 +11,40 @@ object TestProjectBuilder {
         if (options.resourceLocator.testsAbsent) throw UnsupportedOperationException("No tests were found")
         return TrilogyTestProject(
                 extractTestCases(options),
+                malformedTestCases = extractMalformedTestCases(options),
                 sourceScripts = options.resourceLocator.sourceScripts,
                 fixtures = options.resourceLocator.fixtures(),
                 schema = if (options.shouldSkipSchema) null else options.resourceLocator.schema
         )
     }
 
-    private fun extractTestCases(options: TrilogyOptions): List<TrilogyTestCase> {
-        return options.resourceLocator.testCases.map { extractTestCase(it) }
+    private fun extractMalformedTestCases(options: TrilogyOptions): List<MalformedTrilogyTestCase> {
+        return options.resourceLocator.testCases.map { extractMalformedTestCase(it) }.filterNotNull()
+
     }
 
-    private fun extractTestCase(testCase: String): TrilogyTestCase {
+    private fun extractMalformedTestCase(testCase: TestCaseResource): MalformedTrilogyTestCase? {
+        return try {
+            tryToExtractTestCase(testCase.body)
+            null
+        } catch (e: RuntimeException) {
+            MalformedTrilogyTestCase(testCase.path, "")
+        }
+    }
+
+    private fun extractTestCases(options: TrilogyOptions): List<TrilogyTestCase> {
+        return options.resourceLocator.testCases.map { extractTestCase(it.body) }.filterNotNull()
+    }
+
+    private fun extractTestCase(testCase: String): TrilogyTestCase? {
+        return try {
+            tryToExtractTestCase(testCase)
+        } catch (e: RuntimeException) {
+            null
+        }
+    }
+
+    private fun tryToExtractTestCase(testCase: String): TrilogyTestCase {
         return try {
             ProcedureStringTestCaseParser(testCase).getTestCase()
         } catch (e: RuntimeException) {

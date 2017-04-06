@@ -12,7 +12,7 @@ class UrlTestCaseResourceLocatorTests : Spek({
         val locator = UrlTestCaseResourceLocator(ResourceHelper.getResourceUrl("/testcases/degenerate.stt"))
         expect(true) { locator.testsPresent }
         expect(1) { locator.testCases.count() }
-        locator.testCases.first() shouldStartWith "# TEST CASE DEGENERATE"
+        locator.testCases.first().body shouldStartWith "# TEST CASE DEGENERATE"
     }
 
     it("crashes when the supplied URL is not for a test case") {

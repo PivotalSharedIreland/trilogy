@@ -96,8 +96,8 @@ class UrlTestProjectResourceLocatorTests : Spek({
                 }
 
                 it("should order the test cases by filename") {
-                    subject.testCases.first() shouldStartWith "# TEST CASE DEGENERATE"
-                    subject.testCases.last() shouldStartWith "# TEST CASE EXAMPLE_PROCEDURE"
+                    subject.testCases.first().body shouldStartWith "# TEST CASE DEGENERATE"
+                    subject.testCases.last().body shouldStartWith "# TEST CASE EXAMPLE_PROCEDURE"
                 }
             }
             it("should only list test cases from the appropriate directory") {

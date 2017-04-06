@@ -42,8 +42,12 @@ class GenericStringTestCaseParserTest : Spek({
             { GenericStringTestCaseParser(ResourceHelper.getTestCaseByName("degenerate")) } shouldThrow InvalidFormat::class
         }
 
-        it("fails for test cases with inappropriate hooks") {
+        it("fails for a test case without the proper header") {
+            { GenericStringTestCaseParser(ResourceHelper.getTestCaseByName("blank")) } shouldThrow InvalidFormat::class
+        }
 
+        it("fails for a test case without a description") {
+            { GenericStringTestCaseParser(ResourceHelper.getTestCaseByName("generic_without_description")).getTestCase() } shouldThrow MissingDescription::class
         }
     }
 
@@ -73,7 +77,7 @@ class GenericStringTestCaseParserTest : Spek({
         }
     }
 
-    context("malformed") {
+    context("malformed tests") {
         val malformedTestCase = ResourceHelper.getTestCaseByName("broken_generic")
 
 

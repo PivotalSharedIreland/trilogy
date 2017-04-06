@@ -13,8 +13,8 @@ class UrlTestProjectResourceLocator(val projectUrl: URL) : TestProjectResourceLo
         if (schemaFile.isFile) schemaFile.readText() else null
     }
 
-    override val testCases: List<String> by lazy {
-        testCaseFiles.map { testCaseFile -> testCaseFile.readText() }
+    override val testCases: List<TestCaseResource> by lazy {
+        testCaseFiles.map { testCaseFile -> TestCaseResource(testCaseFile.path, testCaseFile.readText()) }
     }
 
     override val sourceScripts: List<ProjectSourceScript> by lazy {

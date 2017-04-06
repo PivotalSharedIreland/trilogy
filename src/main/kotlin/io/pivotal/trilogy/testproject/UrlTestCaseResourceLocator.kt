@@ -7,7 +7,7 @@ class UrlTestCaseResourceLocator(url: URL) : TestProjectResourceLocator {
     init {
         if (url.isInvalid) throw UnsupportedOperationException()
     }
-    override val testCases = listOf(url.textContent)
+    override val testCases = listOf(TestCaseResource(url.path ,url.textContent))
 
     private val URL.isInvalid: Boolean get() = !isValid
     private val URL.isValid: Boolean get() = file.toLowerCase().endsWith(".stt")
