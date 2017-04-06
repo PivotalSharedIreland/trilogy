@@ -28,7 +28,7 @@ object TestProjectBuilder {
             tryToExtractTestCase(testCase.body)
             null
         } catch (e: RuntimeException) {
-            MalformedTrilogyTestCase(testCase.path, "")
+            MalformedTrilogyTestCase(testCase.path, e.localizedMessage)
         }
     }
 

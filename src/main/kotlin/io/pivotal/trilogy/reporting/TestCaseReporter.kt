@@ -2,13 +2,14 @@ package io.pivotal.trilogy.reporting
 
 import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.testproject.TestProjectResult
+import io.pivotal.trilogy.testproject.TrilogyRunResult
 
 object TestCaseReporter {
-    fun generateReport(result: TestProjectResult): String {
-        if (result.didFail or result.fatalFailure)
-            return listOf("[FAIL] ${result.failureMessage}", result.fatalFailureMessage, "FAILED").filterNotNull().joinToString("\n")
+    fun generateReport(result: TrilogyRunResult): String {
+        if (result.projectResult.didFail or result.projectResult.fatalFailure)
+            return listOf("[FAIL] ${result.projectResult.failureMessage}", result.projectResult.fatalFailureMessage, "FAILED").filterNotNull().joinToString("\n")
 
-        return if (result.testCaseResults.all { it.didPass }) reportSuccess(result.testCaseResults) else reportFailure(result)
+        return if (result.projectResult.testCaseResults.all { it.didPass }) reportSuccess(result.projectResult.testCaseResults) else reportFailure(result.projectResult)
     }
 
     private fun reportFailure(result: TestProjectResult): String {
