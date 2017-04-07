@@ -46,7 +46,7 @@ class DatabaseTestProjectRunner(val testCaseRunner: TestCaseRunner, val scriptEx
             } catch (e: UnrecoverableException) {
                 throw UnrecoverableException("${it.description}:\n${e.localizedMessage.prependIndent("    ")}", e)
             }
-        })
+        }, malformedTestCases = this.malformedTestCases)
     }
 
     private fun TrilogyTestProject.applySchema() {

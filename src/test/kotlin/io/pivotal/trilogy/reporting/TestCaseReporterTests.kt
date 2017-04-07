@@ -3,8 +3,8 @@ package io.pivotal.trilogy.reporting
 import io.pivotal.trilogy.test_helpers.shouldContain
 import io.pivotal.trilogy.test_helpers.shouldStartWith
 import io.pivotal.trilogy.test_helpers.timesRepeat
+import io.pivotal.trilogy.testcase.MalformedTrilogyTestCase
 import io.pivotal.trilogy.testproject.TestProjectResult
-import io.pivotal.trilogy.testproject.TrilogyRunResult
 import org.jetbrains.spek.api.Spek
 
 class TestCaseReporterTests : Spek({
@@ -13,7 +13,7 @@ class TestCaseReporterTests : Spek({
     val failedTestResult = TestResult("Failed test name", "Multi\nline\nerror\nmessage")
     describe("no failures") {
         val report = listOf(TestCaseResult("", 3.timesRepeat { passedTestResult }))
-        val generatedReport = TestCaseReporter.generateReport(TrilogyRunResult(TestProjectResult(report)))
+        val generatedReport = TestCaseReporter.generateReport(TestProjectResult(report))
 
         it("should report success") {
             generatedReport shouldStartWith "SUCCEEDED"
@@ -34,7 +34,7 @@ class TestCaseReporterTests : Spek({
 
     describe("passed and failed") {
         val report = listOf(TestCaseResult("Nirvana or zion", 2.timesRepeat { passedTestResult } + 3.timesRepeat { failedTestResult }))
-        val generatedReport = TestCaseReporter.generateReport(TrilogyRunResult(TestProjectResult(report)))
+        val generatedReport = TestCaseReporter.generateReport(TestProjectResult(report))
 
         it("should report the number of failed tests, as well as passed tests") {
             generatedReport shouldContain "Failed: 3"
@@ -52,7 +52,7 @@ class TestCaseReporterTests : Spek({
     }
 
     describe("all failures") {
-        val report = TrilogyRunResult(TestProjectResult(listOf(TestCaseResult("", 3.timesRepeat { failedTestResult }))))
+        val report = TestProjectResult(listOf(TestCaseResult("", 3.timesRepeat { failedTestResult })))
         val generatedReport = TestCaseReporter.generateReport(report)
 
         it("should report failure") {
@@ -75,20 +75,57 @@ class TestCaseReporterTests : Spek({
     describe("test case failures") {
         it("should include test case failures in the report") {
             val result = listOf(TestCaseResult("Mad test", errorMessage = "I can haz a panda"))
-            val report = TestCaseReporter.generateReport(TrilogyRunResult(TestProjectResult(result)))
-
-            report shouldContain "FAILED"
+            val report = TestCaseReporter.generateReport(TestProjectResult(result))
 
             report shouldContain "[FAIL] Mad test:\n    I can haz a panda"
+
+            report shouldContain "FAILED"
         }
     }
 
     describe("fatal failures") {
         it("should append the [STOP] message when a fatal failure is encountered") {
             val result = listOf(TestCaseResult("Odd travel", errorMessage = "Walnut combines greatly with chopped steak"))
-            val report = TestCaseReporter.generateReport(TrilogyRunResult(TestProjectResult(result, fatalFailure = true)))
+            val report = TestCaseReporter.generateReport(TestProjectResult(result, fatalFailure = true))
 
             report shouldContain "\n[STOP] Execution aborted - the database may be in an inconsistent state\n"
+        }
+    }
+
+    describe("malformed test cases") {
+        val malformedTestCases = listOf(
+                MalformedTrilogyTestCase("/path/to/me", "Ouch!"),
+                MalformedTrilogyTestCase("/another/path", "Calm your vogons")
+        )
+
+        val testCaseResults = listOf(
+                TestCaseResult("Zucchini lassi",
+                        listOf(
+                                TestResult("Why does the jack wave?"),
+                                TestResult("Primus gabaliums ducunt ad glos"),
+                                TestResult("Attraction happens when you fear hypnosis.", "Where is the rainy gold?")
+                        )
+                )
+        )
+        val trilogyRunResult = TestProjectResult(testCaseResults, malformedTestCases)
+
+        it("should report malformed test cases") {
+            val report = TestCaseReporter.generateReport(trilogyRunResult)
+
+            report shouldContain "[FAIL] /path/to/me - Ouch!"
+            report shouldContain "[FAIL] /another/path - Calm your vogons"
+        }
+
+        it("should increase the number of tests") {
+            val report = TestCaseReporter.generateReport(trilogyRunResult)
+
+            report shouldContain "Total: 5"
+        }
+
+        it("should increase the number of failed tests") {
+            val report = TestCaseReporter.generateReport(trilogyRunResult)
+
+            report shouldContain "Failed: 3"
         }
     }
 

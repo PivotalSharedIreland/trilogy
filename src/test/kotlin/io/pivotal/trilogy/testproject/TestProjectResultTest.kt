@@ -9,6 +9,6 @@ class TestProjectResultTest : Spek({
     }
 
     it("has failed when a failure message is present") {
-        expect(true) { TestProjectResult(emptyList(), "message").didFail }
+        expect(true) { TestProjectResult(emptyList(), failureMessage = "message").didFail }
     }
 })
