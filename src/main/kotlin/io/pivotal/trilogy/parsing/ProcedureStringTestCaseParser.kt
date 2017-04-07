@@ -1,5 +1,7 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.i18n.MessageCreator
+import io.pivotal.trilogy.i18n.MessageCreator.getI18nMessage
 import io.pivotal.trilogy.parsing.exceptions.test.BaseParseException
 import io.pivotal.trilogy.parsing.exceptions.testcase.InvalidFormat
 import io.pivotal.trilogy.parsing.exceptions.testcase.TypeMismatch
@@ -13,7 +15,8 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
 
     class MissingFunctionName(message: String?) : RuntimeException(message)
 
-    override val testCaseHeaderRegex = Regex("^# TEST CASE (\\S*)\\s+")
+    override val testCaseHeaderRegex = Regex("^# TEST CASE (\\S+)\\s+")
+    val strictHeaderRegex = Regex("^# TEST CASE (\\S+)\n")
 
     init {
         validate()
@@ -25,7 +28,8 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
 
     override fun validate() {
         if (!testCaseBody.isAProceduralTestCase()) throw TypeMismatch("Not a procedural test case")
-        if (!testCaseBody.isValidTestCase()) throw InvalidFormat("Unable to recognise a test case")
+        if (testCaseBody.hasExtraWordsInHeader()) throw InvalidFormat(getI18nMessage("testCaseParser.errors.unexpectedWordsInHeader"))
+        if (!testCaseBody.isValidTestCase()) throw InvalidFormat(getI18nMessage("testCaseParser.errors.unexpectedWordsInHeader"))
     }
 
     private fun parse(): TrilogyTestCase {
@@ -58,6 +62,7 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
     }
 
     private fun String.hasValidHeader() = this.contains(testCaseHeaderRegex)
+    private fun String.hasExtraWordsInHeader() = !this.contains(strictHeaderRegex)
 
     private fun parseTests(): List<ProcedureTrilogyTest> {
         return testStrings.map {

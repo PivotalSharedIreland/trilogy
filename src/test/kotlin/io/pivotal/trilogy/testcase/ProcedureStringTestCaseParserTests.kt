@@ -1,6 +1,7 @@
 package io.pivotal.trilogy.testcase
 
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
+import io.pivotal.trilogy.parsing.exceptions.testcase.InvalidFormat
 import io.pivotal.trilogy.parsing.exceptions.testcase.TypeMismatch
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldNotThrow
@@ -175,8 +176,12 @@ class ProcedureStringTestCaseParserTests : Spek({
     }
 
     it("fails with other errors when the header matches") {
-        { ProcedureStringTestCaseParser("# TEST CASE FOO\n#TEST") } shouldThrow AnyException
-        { ProcedureStringTestCaseParser("# TEST CASE FOO\n#TEST") } shouldNotThrow TypeMismatch::class
+        { ProcedureStringTestCaseParser("# TEST CASE FOO\n## TEST").getTestCase() } shouldThrow AnyException
+        { ProcedureStringTestCaseParser("# TEST CASE FOO\n## TEST").getTestCase() } shouldNotThrow TypeMismatch::class
+    }
+
+    it("fails when extra words are added to the header") {
+        { ProcedureStringTestCaseParser("# TEST CASE FOO BAR BAZ\n## TEST")} shouldThrow InvalidFormat::class
     }
 
     it("fails with empty function name") {

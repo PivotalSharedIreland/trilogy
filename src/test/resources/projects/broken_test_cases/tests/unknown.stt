@@ -1,0 +1,16 @@
+# TEST CASE DEGENERATE DECIBELS LURK IN DARK WATERS
+Slice two truffels, onion, and butter in a large soup pot over medium heat, simmer for five minutes and mash up with some escargot.
+## TEST
+Output should echo the input
+### DATA
+|V_INOUT   |V_INOUT$  |=ERROR=|
+|---------:|---------:|-------|
+| 1243     | 1243     |       |
+| 321      | 321      |       |
+| 5834     | 5834     |       |
+## TEST
+Must handle NULL values
+### DATA
+|V_INOUT   |V_INOUT$  |=ERROR=|
+|---------:|---------:|-------|
+| __NULL__ | __NULL__ |       |
