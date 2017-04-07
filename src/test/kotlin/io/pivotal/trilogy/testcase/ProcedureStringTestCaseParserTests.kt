@@ -1,8 +1,10 @@
 package io.pivotal.trilogy.testcase
 
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
+import io.pivotal.trilogy.parsing.exceptions.testcase.TypeMismatch
 import io.pivotal.trilogy.test_helpers.ResourceHelper
 import io.pivotal.trilogy.test_helpers.shouldNotThrow
+import io.pivotal.trilogy.test_helpers.shouldThrow
 import org.amshove.kluent.AnyException
 import org.jetbrains.spek.api.Spek
 import kotlin.test.assertFails
@@ -168,8 +170,13 @@ class ProcedureStringTestCaseParserTests : Spek({
 
     }
 
-    it("fails with invalid test case") {
-        assertFails { ProcedureStringTestCaseParser("") }
+    it("fails with a type mismatch when the input is not a procedural test case") {
+        { ProcedureStringTestCaseParser("") } shouldThrow TypeMismatch::class
+    }
+
+    it("fails with other errors when the header matches") {
+        { ProcedureStringTestCaseParser("# TEST CASE FOO\n#TEST") } shouldThrow AnyException
+        { ProcedureStringTestCaseParser("# TEST CASE FOO\n#TEST") } shouldNotThrow TypeMismatch::class
     }
 
     it("fails with empty function name") {

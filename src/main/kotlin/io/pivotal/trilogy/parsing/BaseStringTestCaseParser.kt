@@ -1,5 +1,6 @@
 package io.pivotal.trilogy.parsing
 
+import io.pivotal.trilogy.i18n.MessageCreator
 import io.pivotal.trilogy.parsing.exceptions.testcase.MissingDescription
 import io.pivotal.trilogy.testcase.TestCaseParser
 
@@ -37,7 +38,7 @@ abstract class BaseStringTestCaseParser(val testCaseBody: String) : TestCasePars
 
 
     protected fun parseDescription(): String {
-        if (parsedDescription.isEmpty()) throw MissingDescription("Every test case must have a description")
+        if (parsedDescription.isEmpty()) throw MissingDescription(MessageCreator.getI18nMessage("testCaseParser.errors.missingDescription"))
         return parsedDescription
     }
 

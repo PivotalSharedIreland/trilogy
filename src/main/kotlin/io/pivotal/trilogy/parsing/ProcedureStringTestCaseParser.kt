@@ -2,6 +2,7 @@ package io.pivotal.trilogy.parsing
 
 import io.pivotal.trilogy.parsing.exceptions.test.BaseParseException
 import io.pivotal.trilogy.parsing.exceptions.testcase.InvalidFormat
+import io.pivotal.trilogy.parsing.exceptions.testcase.TypeMismatch
 import io.pivotal.trilogy.testcase.MalformedTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTest
 import io.pivotal.trilogy.testcase.ProcedureTrilogyTestCase
@@ -23,6 +24,7 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
     }
 
     override fun validate() {
+        if (!testCaseBody.isAProceduralTestCase()) throw TypeMismatch("Not a procedural test case")
         if (!testCaseBody.isValidTestCase()) throw InvalidFormat("Unable to recognise a test case")
     }
 
@@ -51,6 +53,10 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
         return hasValidHeader() && hasValidTest()
     }
 
+    private fun String.isAProceduralTestCase(): Boolean {
+        return hasValidHeader()
+    }
+
     private fun String.hasValidHeader() = this.contains(testCaseHeaderRegex)
 
     private fun parseTests(): List<ProcedureTrilogyTest> {
@@ -75,3 +81,4 @@ class ProcedureStringTestCaseParser(testCaseBody: String) : BaseStringTestCasePa
     }
 
 }
+

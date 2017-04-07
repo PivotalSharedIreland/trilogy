@@ -3,6 +3,7 @@ package io.pivotal.trilogy.testproject
 import io.pivotal.trilogy.application.TrilogyOptions
 import io.pivotal.trilogy.parsing.GenericStringTestCaseParser
 import io.pivotal.trilogy.parsing.ProcedureStringTestCaseParser
+import io.pivotal.trilogy.parsing.exceptions.testcase.TypeMismatch
 import io.pivotal.trilogy.testcase.MalformedTrilogyTestCase
 import io.pivotal.trilogy.testcase.TrilogyTestCase
 
@@ -47,7 +48,7 @@ object TestProjectBuilder {
     private fun tryToExtractTestCase(testCase: String): TrilogyTestCase {
         return try {
             ProcedureStringTestCaseParser(testCase).getTestCase()
-        } catch (e: RuntimeException) {
+        } catch (e: TypeMismatch) {
             GenericStringTestCaseParser(testCase).getTestCase()
         }
     }
