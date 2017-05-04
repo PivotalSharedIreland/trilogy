@@ -1,9 +1,0 @@
-# TEST CASE
-Test case description
-## TEST
-Test description
-```
-  BEGIN
-    -- some test statements here
-  END;
-```

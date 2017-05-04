@@ -1,8 +1,0 @@
-# TEST CASE VALIDATE_BALANCE
-This test case should be okay
-## TEST
-The client balance should be valid
-### DATA
-|V_CLIENT_ID|V_IS_VALID$|=ERROR=|
-|----------:|----------:|-------|
-| 66778899  | 1         |       |
